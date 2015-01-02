@@ -21,9 +21,18 @@ sb_add_library(sb-core
     sb-abstractdata.cpp
     sb-abstractdata.h
     sb-abstractdata-private.h
+    sb-abstractfilter.cpp
+    sb-abstractfilter.h
+    sb-abstractfilter-private.h
     sb-abstractobject.cpp
     sb-abstractobject.h
     sb-abstractobject-private.h
+    sb-abstractsink.cpp
+    sb-abstractsink.h
+    sb-abstractsink-private.h
+    sb-abstractsource.cpp
+    sb-abstractsource.h
+    sb-abstractsource-private.h
     sb-core.h
     sb-coredefine.h
 )

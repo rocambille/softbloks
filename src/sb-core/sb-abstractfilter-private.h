@@ -15,14 +15,30 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef SB_CORE_H
-#define SB_CORE_H
+#ifndef SB_ABSTRACTFILTER_PRIVATE_H
+#define SB_ABSTRACTFILTER_PRIVATE_H
 
-#include "sb-abstractblok.h"
-#include "sb-abstractdata.h"
 #include "sb-abstractfilter.h"
-#include "sb-abstractobject.h"
-#include "sb-abstractsink.h"
-#include "sb-abstractsource.h"
 
-#endif // SB_CORE_H
+namespace sb
+{
+
+class AbstractFilter::Private
+{
+
+public:
+
+    AbstractFilter::Private
+    (
+        AbstractFilter* _q
+    );
+
+public:
+
+    AbstractFilter* q_ptr;
+
+};
+
+}
+
+#endif // SB_ABSTRACTFILTER_PRIVATE_H

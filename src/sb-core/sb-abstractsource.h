@@ -37,10 +37,20 @@ public:
     (
     );
 
+protected:
+
+    void
+    set_output_count
+    (
+        int _value
+    );
+
 private:
 
     class Private;
-    Private* d_ptr;
+
+    Private*
+    d_ptr;
 
 };
 

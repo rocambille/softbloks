@@ -25,8 +25,37 @@ AbstractBlok::Private::Private
 (
     AbstractBlok* _q
 ):
-    q_ptr   (_q)
+    q_ptr       (_q),
+    input_count (0),
+    output_count(0)
 {
+}
+
+void
+AbstractBlok::Private::set_input_count
+(
+    int _value
+)
+{
+    this->input_count = _value;
+}
+
+void
+AbstractBlok::Private::set_output_count
+(
+    int _value
+)
+{
+    this->output_count = _value;
+}
+
+AbstractBlok::Private*
+AbstractBlok::Private::from
+(
+    AbstractBlok* _q
+)
+{
+    return _q->d_ptr;
 }
 
 AbstractBlok::AbstractBlok
@@ -41,4 +70,22 @@ AbstractBlok::~AbstractBlok
 )
 {
     delete d_ptr;
+}
+
+int
+AbstractBlok::get_input_count
+(
+)
+const
+{
+    return d_ptr->input_count;
+}
+
+int
+AbstractBlok::get_output_count
+(
+)
+const
+{
+    return d_ptr->output_count;
 }

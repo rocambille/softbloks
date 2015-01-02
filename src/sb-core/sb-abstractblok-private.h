@@ -33,9 +33,35 @@ public:
         AbstractBlok* _q
     );
 
+    void
+    set_input_count
+    (
+        int _value
+    );
+
+    void
+    set_output_count
+    (
+        int _value
+    );
+
+    static
+    AbstractBlok::Private*
+    from
+    (
+        AbstractBlok* _q
+    );
+
 public:
 
-    AbstractBlok* q_ptr;
+    AbstractBlok*
+    q_ptr;
+
+    int
+    input_count;
+
+    int
+    output_count;
 
 };
 

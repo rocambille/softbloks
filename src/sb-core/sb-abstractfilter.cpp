@@ -19,6 +19,8 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "sb-abstractfilter-private.h"
 
+#include "sb-abstractblok-private.h"
+
 using namespace sb;
 
 AbstractFilter::Private::Private
@@ -41,4 +43,30 @@ AbstractFilter::~AbstractFilter
 )
 {
     delete d_ptr;
+}
+
+void
+AbstractFilter::set_input_count
+(
+    int _value
+)
+{
+    AbstractBlok::Private::from(
+        this
+    )->set_input_count(
+        _value
+    );
+}
+
+void
+AbstractFilter::set_output_count
+(
+    int _value
+)
+{
+    AbstractBlok::Private::from(
+        this
+    )->set_output_count(
+        _value
+    );
 }

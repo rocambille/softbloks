@@ -19,6 +19,8 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "sb-abstractsource-private.h"
 
+#include "sb-abstractblok-private.h"
+
 using namespace sb;
 
 AbstractSource::Private::Private
@@ -41,4 +43,17 @@ AbstractSource::~AbstractSource
 )
 {
     delete d_ptr;
+}
+
+void
+AbstractSource::set_output_count
+(
+    int _value
+)
+{
+    AbstractBlok::Private::from(
+        this
+    )->set_output_count(
+        _value
+    );
 }

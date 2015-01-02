@@ -37,10 +37,26 @@ public:
     (
     );
 
-private:
+    int
+    get_input_count
+    (
+    )
+    const;
+
+    int
+    get_output_count
+    (
+    )
+    const;
+
+protected:
 
     class Private;
-    Private* d_ptr;
+
+private:
+
+    Private*
+    d_ptr;
 
 };
 

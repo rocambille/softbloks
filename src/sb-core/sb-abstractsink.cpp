@@ -19,6 +19,8 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "sb-abstractsink-private.h"
 
+#include "sb-abstractblok-private.h"
+
 using namespace sb;
 
 AbstractSink::Private::Private
@@ -41,4 +43,17 @@ AbstractSink::~AbstractSink
 )
 {
     delete d_ptr;
+}
+
+void
+AbstractSink::set_input_count
+(
+    int _value
+)
+{
+    AbstractBlok::Private::from(
+        this
+    )->set_input_count(
+        _value
+    );
 }

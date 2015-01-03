@@ -57,3 +57,18 @@ AbstractSource::set_output_count
         _value
     );
 }
+
+void
+AbstractSource::set_output_count
+(
+    int _minimum,
+    int _maximum
+)
+{
+    AbstractBlok::Private::from(
+        this
+    )->set_output_count(
+        _minimum,
+        _maximum
+    );
+}

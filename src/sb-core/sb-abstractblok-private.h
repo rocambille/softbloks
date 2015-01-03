@@ -40,9 +40,23 @@ public:
     );
 
     void
+    set_input_count
+    (
+        int _minimum,
+        int _maximum
+    );
+
+    void
     set_output_count
     (
         int _value
+    );
+
+    void
+    set_output_count
+    (
+        int _minimum,
+        int _maximum
     );
 
     static
@@ -58,7 +72,19 @@ public:
     q_ptr;
 
     int
+    minimum_input_count;
+
+    int
+    maximum_input_count;
+
+    int
     input_count;
+
+    int
+    minimum_output_count;
+
+    int
+    maximum_output_count;
 
     int
     output_count;

@@ -59,6 +59,21 @@ AbstractFilter::set_input_count
 }
 
 void
+AbstractFilter::set_input_count
+(
+    int _minimum,
+    int _maximum
+)
+{
+    AbstractBlok::Private::from(
+        this
+    )->set_input_count(
+        _minimum,
+        _maximum
+    );
+}
+
+void
 AbstractFilter::set_output_count
 (
     int _value
@@ -68,5 +83,20 @@ AbstractFilter::set_output_count
         this
     )->set_output_count(
         _value
+    );
+}
+
+void
+AbstractFilter::set_output_count
+(
+    int _minimum,
+    int _maximum
+)
+{
+    AbstractBlok::Private::from(
+        this
+    )->set_output_count(
+        _minimum,
+        _maximum
     );
 }

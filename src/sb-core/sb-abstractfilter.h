@@ -46,9 +46,23 @@ protected:
     );
 
     void
+    set_input_count
+    (
+        int _minimum,
+        int _maximum
+    );
+
+    void
     set_output_count
     (
         int _value
+    );
+
+    void
+    set_output_count
+    (
+        int _minimum,
+        int _maximum
     );
 
 private:

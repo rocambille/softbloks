@@ -45,6 +45,13 @@ protected:
         int _value
     );
 
+    void
+    set_output_count
+    (
+        int _minimum,
+        int _maximum
+    );
+
 private:
 
     class Private;

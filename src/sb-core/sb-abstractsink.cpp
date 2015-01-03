@@ -57,3 +57,18 @@ AbstractSink::set_input_count
         _value
     );
 }
+
+void
+AbstractSink::set_input_count
+(
+    int _minimum,
+    int _maximum
+)
+{
+    AbstractBlok::Private::from(
+        this
+    )->set_input_count(
+        _minimum,
+        _maximum
+    );
+}

@@ -38,7 +38,31 @@ public:
     );
 
     int
+    get_minimum_input_count
+    (
+    )
+    const;
+
+    int
+    get_maximum_input_count
+    (
+    )
+    const;
+
+    int
     get_input_count
+    (
+    )
+    const;
+
+    int
+    get_minimum_output_count
+    (
+    )
+    const;
+
+    int
+    get_maximum_output_count
     (
     )
     const;

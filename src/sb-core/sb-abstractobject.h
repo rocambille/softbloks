@@ -192,7 +192,7 @@ public:
 protected:
 
     template<typename T>
-    void
+    bool
     register_property
     (
         const std::string& _name,
@@ -201,34 +201,39 @@ protected:
         const std::function<void(const T&)>& _set
     )
     {
-        // forget any previous registration
+        bool registered = false;
 
-        this->unregister_property(_name);
+        if(this->properties.count(_name) == 0)
+        {
+            // initialize the new property
 
-        // initialize the new property
+            PropertyValues<T>* new_property_values = new PropertyValues<T>;
+            new_property_values->get = _get;
+            new_property_values->set = _set;
 
-        PropertyValues<T>* new_property_values = new PropertyValues<T>;
-        new_property_values->get = _get;
-        new_property_values->set = _set;
+            Property new_property = {
+                std::type_index(typeid(T)),
+                _mode,
+                std::shared_ptr<void>(
+                    reinterpret_cast<void*>(
+                        new_property_values
+                    ),
+                    [] (void* _ptr) {
+                        delete reinterpret_cast<PropertyValues<T>*>(
+                            _ptr
+                        );
+                    }
+                )
+            };
 
-        Property new_property = {
-            std::type_index(typeid(T)),
-            _mode,
-            std::shared_ptr<void>(
-                reinterpret_cast<void*>(
-                    new_property_values
-                ),
-                [] (void* _ptr) {
-                    delete reinterpret_cast<PropertyValues<T>*>(
-                        _ptr
-                    );
-                }
-            )
-        };
+            // store the property
 
-        // store the property
+            this->properties->emplace(_name, new_property);
 
-        this->properties->emplace(_name, new_property);
+            registered = true;
+        }
+
+        return registered;
     }
 
     void

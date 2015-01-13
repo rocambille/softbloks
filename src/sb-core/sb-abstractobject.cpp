@@ -104,20 +104,42 @@ const
     return this->properties->at(_name).mode;
 }
 
-void
+bool
+AbstractObject::unregister_property_for
+(
+    void* _caller,
+    const std::string& _name
+)
+{
+    bool unregistered = false;
+
+    // check if _name is known and if _caller matches
+
+    auto find_result = this->properties->find(_name);
+
+    if(
+        find_result != this->properties->end() &&
+        find_result->second.register_caller == _caller
+    )
+    {
+        // erase property
+
+        this->properties->erase(find_result);
+
+        unregistered = true;
+    }
+
+    return unregistered;
+}
+
+bool
 AbstractObject::unregister_property
 (
     const std::string& _name
 )
 {
-    // check if _name is known
-
-    auto find_result = this->properties->find(_name);
-
-    if(find_result != this->properties->end())
-    {
-        // erase property
-
-        this->properties->erase(find_result);
-    }
+    return this->unregister_property_for(
+        this,
+        _name
+    );
 }

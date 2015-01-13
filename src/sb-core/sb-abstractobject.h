@@ -189,12 +189,11 @@ public:
         )->set(_value);
     }
 
-protected:
-
     template<typename T>
     bool
-    register_property
+    register_property_for
     (
+        void* _caller,
         const std::string& _name,
         Mode _mode,
         const std::function<T(void)>& _get,
@@ -212,6 +211,7 @@ protected:
             new_property_values->set = _set;
 
             Property new_property = {
+                _caller,
                 std::type_index(typeid(T)),
                 _mode,
                 std::shared_ptr<void>(
@@ -236,7 +236,35 @@ protected:
         return registered;
     }
 
-    void
+    bool
+    unregister_property_for
+    (
+        void* _caller,
+        const std::string& _name
+    );
+
+protected:
+
+    template<typename T>
+    bool
+    register_property
+    (
+        const std::string& _name,
+        Mode _mode,
+        const std::function<T(void)>& _get,
+        const std::function<void(const T&)>& _set
+    )
+    {
+        return this->register_property_for(
+            this,
+            _name,
+            _mode,
+            _get,
+            _set
+        );
+    }
+
+    bool
     unregister_property
     (
         const std::string& _name
@@ -253,6 +281,7 @@ private:
 
     struct Property
     {
+        void*                           register_caller;
         std::type_index                 type;
         sb::Mode                        mode;
         std::shared_ptr<void>           values;

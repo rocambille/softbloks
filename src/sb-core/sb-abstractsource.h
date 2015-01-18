@@ -42,14 +42,28 @@ protected:
     void
     set_output_count
     (
-        int _value
+        size_t _value
     );
 
     void
     set_output_count
     (
-        int _minimum,
-        int _maximum
+        size_t _minimum,
+        size_t _maximum
+    );
+
+    void
+    set_step_range
+    (
+        size_t _output,
+        const StepRange& _value
+    );
+
+    void
+    set_defined_steps
+    (
+        size_t _output,
+        const StepList& _value
     );
 
 private:

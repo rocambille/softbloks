@@ -44,6 +44,57 @@ private:
 
 };
 
+typedef std::shared_ptr<AbstractData> SharedData;
+
+class SB_CORE_API DataSet : public AbstractObject
+{
+
+public:
+
+    DataSet
+    (
+    );
+
+    virtual
+    ~DataSet
+    (
+    );
+
+    StepRange
+    get_step_range
+    (
+    )
+    const;
+
+    StepList
+    get_defined_steps
+    (
+    )
+    const;
+
+    SharedData
+    get_step
+    (
+        double _key
+    )
+    const;
+
+    void
+    set_step
+    (
+        double _key,
+        const SharedData& _value
+    );
+
+private:
+
+    class Private;
+    Private* d_ptr;
+
+};
+
+typedef std::shared_ptr<DataSet> SharedDataSet;
+
 }
 
 #endif // SB_ABSTRACTDATA_H

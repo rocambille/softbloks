@@ -20,6 +20,9 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "sb-global.h"
 
+#include <array>
+#include <vector>
+
 #ifdef sb_core_EXPORTS
 #define SB_CORE_API SB_DECL_EXPORT
 #else
@@ -35,6 +38,9 @@ enum Mode
     WRITE_ONLY  = 0x2,
     READ_WRITE  = 0x3,
 };
+
+typedef std::array<double, 2>   StepRange;
+typedef std::vector<double>     StepList;
 
 }
 

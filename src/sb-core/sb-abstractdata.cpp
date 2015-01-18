@@ -21,14 +21,6 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace sb;
 
-AbstractData::Private::Private
-(
-    AbstractData* _q
-):
-    q_ptr(_q)
-{
-}
-
 AbstractData::AbstractData
 (
 )
@@ -41,4 +33,74 @@ AbstractData::~AbstractData
 )
 {
     delete d_ptr;
+}
+
+AbstractData::Private::Private
+(
+    AbstractData* _q
+):
+    q_ptr(_q)
+{
+}
+
+DataSet::DataSet
+(
+)
+{
+    d_ptr = new Private(this);
+}
+
+DataSet::~DataSet
+(
+)
+{
+    delete d_ptr;
+}
+
+StepRange
+DataSet::get_step_range
+(
+)
+const
+{
+    return d_ptr->step_range;
+}
+
+StepList
+DataSet::get_defined_steps
+(
+)
+const
+{
+    return d_ptr->defined_steps;
+}
+
+SharedData
+DataSet::get_step
+(
+    double _key
+)
+const
+{
+    return SharedData();
+}
+
+void
+DataSet::set_step
+(
+    double _key,
+    const SharedData& _value
+)
+{
+
+}
+
+DataSet::Private::Private
+(
+    DataSet* _q
+):
+    q_ptr       (_q),
+    source_blok (nullptr),
+    step_range  ({{0, 0}})
+{
 }

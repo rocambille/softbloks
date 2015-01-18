@@ -20,6 +20,8 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "sb-abstractdata.h"
 
+#include "sb-abstractblok.h"
+
 namespace sb
 {
 
@@ -35,7 +37,64 @@ public:
 
 public:
 
-    AbstractData* q_ptr;
+    AbstractData*
+    q_ptr;
+
+};
+
+class DataSet::Private
+{
+
+public:
+
+    DataSet::Private
+    (
+        DataSet* _q
+    );
+
+    void
+    set_step_range
+    (
+        const StepRange& _value
+    );
+
+    void
+    set_defined_steps
+    (
+        const StepList& _value
+    );
+
+    void
+    set_wanted_steps
+    (
+        const StepList& _value
+    );
+
+public:
+
+    DataSet*
+    q_ptr;
+
+    sb::AbstractBlok*
+    source_blok;
+
+    std::list<sb::AbstractBlok*>
+    followers;
+
+    StepRange
+    step_range;
+
+    StepList
+    defined_steps;
+
+    StepList
+    wanted_steps;
+
+    StepList
+    available_steps;
+
+    std::map<double, SharedData>
+    data_map;
 
 };
 

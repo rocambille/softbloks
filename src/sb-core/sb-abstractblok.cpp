@@ -21,79 +21,6 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace sb;
 
-AbstractBlok::Private::Private
-(
-    AbstractBlok* _q
-):
-    q_ptr               (_q),
-    minimum_input_count (0),
-    maximum_input_count (-1),
-    input_count         (0),
-    minimum_output_count(0),
-    maximum_output_count(-1),
-    output_count        (0)
-{
-}
-
-void
-AbstractBlok::Private::set_input_count
-(
-    int _value
-)
-{
-    this->input_count =
-        this->minimum_input_count =
-        this->maximum_input_count =
-        _value;
-}
-
-void
-AbstractBlok::Private::set_input_count
-(
-    int _minimum,
-    int _maximum
-)
-{
-    this->minimum_input_count = _minimum;
-    this->maximum_input_count = _maximum;
-
-    this->input_count = this->minimum_input_count;
-}
-
-void
-AbstractBlok::Private::set_output_count
-(
-    int _value
-)
-{
-    this->output_count =
-        this->minimum_output_count =
-        this->maximum_output_count =
-        _value;
-}
-
-void
-AbstractBlok::Private::set_output_count
-(
-    int _minimum,
-    int _maximum
-)
-{
-    this->minimum_output_count = _minimum;
-    this->maximum_output_count = _maximum;
-
-    this->output_count = this->minimum_output_count;
-}
-
-AbstractBlok::Private*
-AbstractBlok::Private::from
-(
-    AbstractBlok* _q
-)
-{
-    return _q->d_ptr;
-}
-
 AbstractBlok::AbstractBlok
 (
 )
@@ -108,7 +35,7 @@ AbstractBlok::~AbstractBlok
     delete d_ptr;
 }
 
-int
+size_t
 AbstractBlok::get_minimum_input_count
 (
 )
@@ -117,7 +44,7 @@ const
     return d_ptr->minimum_input_count;
 }
 
-int
+size_t
 AbstractBlok::get_maximum_input_count
 (
 )
@@ -126,16 +53,16 @@ const
     return d_ptr->maximum_input_count;
 }
 
-int
+size_t
 AbstractBlok::get_input_count
 (
 )
 const
 {
-    return d_ptr->input_count;
+    return d_ptr->inputs.size();
 }
 
-int
+size_t
 AbstractBlok::get_minimum_output_count
 (
 )
@@ -144,7 +71,7 @@ const
     return d_ptr->minimum_output_count;
 }
 
-int
+size_t
 AbstractBlok::get_maximum_output_count
 (
 )
@@ -153,11 +80,84 @@ const
     return d_ptr->maximum_output_count;
 }
 
-int
+size_t
 AbstractBlok::get_output_count
 (
 )
 const
 {
-    return d_ptr->output_count;
+    return d_ptr->outputs.size();
+}
+
+AbstractBlok::Private::Private
+(
+    AbstractBlok* _q
+):
+    q_ptr               (_q),
+    minimum_input_count (0),
+    maximum_input_count (-1),
+    minimum_output_count(0),
+    maximum_output_count(-1)
+{
+}
+
+void
+AbstractBlok::Private::set_input_count
+(
+    size_t _value
+)
+{
+    this->minimum_input_count =
+    this->maximum_input_count =
+        _value;
+
+    this->inputs.resize(_value);
+}
+
+void
+AbstractBlok::Private::set_input_count
+(
+    size_t _minimum,
+    size_t _maximum
+)
+{
+    this->minimum_input_count = _minimum;
+    this->maximum_input_count = _maximum;
+
+    this->inputs.resize(_minimum);
+}
+
+void
+AbstractBlok::Private::set_output_count
+(
+    size_t _value
+)
+{
+    this->minimum_output_count =
+    this->maximum_output_count =
+        _value;
+
+    this->outputs.resize(_value);
+}
+
+void
+AbstractBlok::Private::set_output_count
+(
+    size_t _minimum,
+    size_t _maximum
+)
+{
+    this->minimum_output_count = _minimum;
+    this->maximum_output_count = _maximum;
+
+    this->outputs.resize(_minimum);
+}
+
+AbstractBlok::Private*
+AbstractBlok::Private::from
+(
+    AbstractBlok* _q
+)
+{
+    return _q->d_ptr;
 }

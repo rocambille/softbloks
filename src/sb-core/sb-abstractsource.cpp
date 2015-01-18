@@ -48,7 +48,7 @@ AbstractSource::~AbstractSource
 void
 AbstractSource::set_output_count
 (
-    int _value
+    size_t _value
 )
 {
     AbstractBlok::Private::from(
@@ -61,8 +61,8 @@ AbstractSource::set_output_count
 void
 AbstractSource::set_output_count
 (
-    int _minimum,
-    int _maximum
+    size_t _minimum,
+    size_t _maximum
 )
 {
     AbstractBlok::Private::from(

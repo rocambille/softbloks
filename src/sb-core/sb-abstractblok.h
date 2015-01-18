@@ -37,43 +37,68 @@ public:
     (
     );
 
-    int
+    size_t
     get_minimum_input_count
     (
     )
     const;
 
-    int
+    size_t
     get_maximum_input_count
     (
     )
     const;
 
-    int
+    size_t
     get_input_count
     (
     )
     const;
 
-    int
+    size_t
     get_minimum_output_count
     (
     )
     const;
 
-    int
+    size_t
     get_maximum_output_count
     (
     )
     const;
 
-    int
+    size_t
     get_output_count
     (
     )
     const;
 
 protected:
+
+    typedef std::function<StepRange(const std::vector<StepRange>&)> StepRangeConverter;
+
+    void
+    setStepRangeConverter
+    (
+        size_t _output,
+        const StepRangeConverter& _value
+    );
+
+    typedef std::function<StepList(const std::vector<StepList>&)> StepListConverter;
+
+    void
+    setDefinedStepsConverter
+    (
+        size_t _output,
+        const StepListConverter& _value
+    );
+
+    void
+    setWantedStepsConverter
+    (
+        size_t _input,
+        const StepListConverter& _value
+    );
 
     class Private;
 

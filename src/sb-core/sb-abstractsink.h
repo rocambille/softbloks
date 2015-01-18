@@ -37,19 +37,26 @@ public:
     (
     );
 
+    void
+    set_wanted_steps
+    (
+        size_t _input,
+        const StepList& _value
+    );
+
 protected:
 
     void
     set_input_count
     (
-        int _value
+        size_t _value
     );
 
     void
     set_input_count
     (
-        int _minimum,
-        int _maximum
+        size_t _minimum,
+        size_t _maximum
     );
 
 private:

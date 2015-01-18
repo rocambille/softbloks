@@ -20,6 +20,8 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "sb-abstractblok.h"
 
+#include "sb-abstractdata.h"
+
 namespace sb
 {
 
@@ -36,27 +38,48 @@ public:
     void
     set_input_count
     (
-        int _value
+        size_t _value
     );
 
     void
     set_input_count
     (
-        int _minimum,
-        int _maximum
+        size_t _minimum,
+        size_t _maximum
     );
 
     void
     set_output_count
     (
-        int _value
+        size_t _value
     );
 
     void
     set_output_count
     (
-        int _minimum,
-        int _maximum
+        size_t _minimum,
+        size_t _maximum
+    );
+
+    void
+    set_step_range
+    (
+        size_t _output,
+        const StepRange& _value
+    );
+
+    void
+    set_defined_steps
+    (
+        size_t _output,
+        const StepList& _value
+    );
+
+    void
+    set_wanted_steps
+    (
+        size_t _input,
+        const StepList& _value
     );
 
     static
@@ -71,23 +94,23 @@ public:
     AbstractBlok*
     q_ptr;
 
-    int
+    size_t
     minimum_input_count;
 
-    int
+    size_t
     maximum_input_count;
 
-    int
-    input_count;
+    std::vector<SharedData>
+    inputs;
 
-    int
+    size_t
     minimum_output_count;
 
-    int
+    size_t
     maximum_output_count;
 
-    int
-    output_count;
+    std::vector<SharedData>
+    outputs;
 
 };
 

@@ -48,7 +48,7 @@ AbstractSink::~AbstractSink
 void
 AbstractSink::set_input_count
 (
-    int _value
+    size_t _value
 )
 {
     AbstractBlok::Private::from(
@@ -61,8 +61,8 @@ AbstractSink::set_input_count
 void
 AbstractSink::set_input_count
 (
-    int _minimum,
-    int _maximum
+    size_t _minimum,
+    size_t _maximum
 )
 {
     AbstractBlok::Private::from(

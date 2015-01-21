@@ -28,6 +28,8 @@ class SB_CORE_API AbstractSink : public AbstractBlok
 
 public:
 
+    class Private;
+
     AbstractSink
     (
     );
@@ -60,8 +62,6 @@ protected:
     );
 
 private:
-
-    class Private;
 
     Private*
     d_ptr;

@@ -28,6 +28,8 @@ class SB_CORE_API AbstractBlok : public AbstractObject
 
 public:
 
+    class Private;
+
     AbstractBlok
     (
     );
@@ -75,16 +77,12 @@ public:
 
 protected:
 
-    typedef std::function<StepRange(const std::vector<StepRange>&)> StepRangeConverter;
-
     void
     setStepRangeConverter
     (
         size_t _output,
         const StepRangeConverter& _value
     );
-
-    typedef std::function<StepList(const std::vector<StepList>&)> StepListConverter;
 
     void
     setDefinedStepsConverter
@@ -99,8 +97,6 @@ protected:
         size_t _input,
         const StepListConverter& _value
     );
-
-    class Private;
 
 private:
 

@@ -28,6 +28,8 @@ class SB_CORE_API AbstractSource : public AbstractBlok
 
 public:
 
+    class Private;
+
     AbstractSource
     (
     );
@@ -67,8 +69,6 @@ protected:
     );
 
 private:
-
-    class Private;
 
     Private*
     d_ptr;

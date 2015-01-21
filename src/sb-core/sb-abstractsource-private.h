@@ -35,7 +35,8 @@ public:
 
 public:
 
-    AbstractSource* q_ptr;
+    AbstractSource*
+    q_ptr;
 
 };
 

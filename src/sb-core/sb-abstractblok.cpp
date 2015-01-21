@@ -19,7 +19,63 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "sb-abstractblok-private.h"
 
+#include "sb-abstractdata-private.h"
+
 using namespace sb;
+
+#define SB_MIN(_a, _b) ((_a) < (_b)) ? (_a) : (_b)
+#define SB_MAX(_a, _b) ((_a) > (_b)) ? (_a) : (_b)
+
+namespace Global
+{
+
+    const StepRangeConverter default_step_range_converter =
+        [](const std::vector<StepRange>& _sources)
+        {
+            StepRange result = {{0, 0}};
+
+            if(_sources.size() > 0)
+            {
+                result = _sources[0];
+
+                for(size_t i(1); i < _sources.size(); ++i)
+                {
+                    result[0] = SB_MIN(result[0], _sources[i][0]);
+                    result[1] = SB_MAX(result[1], _sources[i][1]);
+                }
+            }
+
+            return result;
+        };
+
+    const StepListConverter default_step_list_converter =
+        [](const std::vector<StepList>& _sources)
+        {
+            StepList result;
+
+            if(_sources.size() > 0)
+            {
+                result = _sources[0];
+
+                for(size_t i(1); i < _sources.size(); ++i)
+                {
+                    result.insert(
+                        result.begin(),
+                        _sources[i].begin(),
+                        _sources[i].end()
+                    );
+
+                    std::unique(
+                        result.begin(),
+                        result.end()
+                    );
+                }
+            }
+
+            return result;
+        };
+
+}
 
 AbstractBlok::AbstractBlok
 (
@@ -89,6 +145,36 @@ const
     return d_ptr->outputs.size();
 }
 
+void
+AbstractBlok::setStepRangeConverter
+(
+    size_t _output,
+    const StepRangeConverter& _value
+)
+{
+    d_ptr->step_range_converters.at(_output) = _value;
+}
+
+void
+AbstractBlok::setDefinedStepsConverter
+(
+    size_t _output,
+    const StepListConverter& _value
+)
+{
+    d_ptr->defined_steps_converters.at(_output) = _value;
+}
+
+void
+AbstractBlok::setWantedStepsConverter
+(
+    size_t _input,
+    const StepListConverter& _value
+)
+{
+    d_ptr->wanted_steps_converters.at(_input) = _value;
+}
+
 AbstractBlok::Private::Private
 (
     AbstractBlok* _q
@@ -151,6 +237,122 @@ AbstractBlok::Private::set_output_count
     this->maximum_output_count = _maximum;
 
     this->outputs.resize(_minimum);
+}
+
+void
+AbstractBlok::Private::update_outputs_step_range
+(
+)
+{
+    std::vector<StepRange> step_ranges;
+
+    for(SharedDataSet input : this->inputs)
+    {
+        if(input)
+        {
+            step_ranges.push_back(
+                input->get_step_range()
+            );
+        }
+    }
+
+    for(SharedDataSet output : this->outputs)
+    {
+        if(output)
+        {
+            auto converter = this->step_range_converters.at(
+                DataSet::Private::from(
+                    output.get()
+                )->source_index
+            );
+
+            DataSet::Private::from(
+                output.get()
+            )->set_step_range(
+                converter(
+                    step_ranges
+                )
+            );
+        }
+    }
+}
+
+void
+AbstractBlok::Private::update_outputs_defined_steps
+(
+)
+{
+    std::vector<StepList> step_lists;
+
+    for(SharedDataSet input : this->inputs)
+    {
+        if(input)
+        {
+            step_lists.push_back(
+                input->get_defined_steps()
+            );
+        }
+    }
+
+    for(SharedDataSet output : this->outputs)
+    {
+        if(output)
+        {
+            auto converter = this->defined_steps_converters.at(
+                DataSet::Private::from(
+                    output.get()
+                )->source_index
+            );
+
+            DataSet::Private::from(
+                output.get()
+            )->set_defined_steps(
+                converter(
+                    step_lists
+                )
+            );
+        }
+    }
+}
+
+void
+AbstractBlok::Private::update_inputs_wanted_steps
+(
+)
+{
+    std::vector<StepList> step_lists;
+
+    for(SharedDataSet output : this->outputs)
+    {
+        if(output)
+        {
+            step_lists.push_back(
+                DataSet::Private::from(
+                    output.get()
+                )->wanted_steps
+            );
+        }
+    }
+
+    for(SharedDataSet input : this->inputs)
+    {
+        if(input)
+        {
+            auto converter = this->wanted_steps_converters.at(
+                DataSet::Private::from(
+                    input.get()
+                )->source_index
+            );
+
+            DataSet::Private::from(
+                input.get()
+            )->set_wanted_steps(
+                converter(
+                    step_lists
+                )
+            );
+        }
+    }
 }
 
 AbstractBlok::Private*

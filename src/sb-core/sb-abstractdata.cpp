@@ -19,6 +19,8 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "sb-abstractdata-private.h"
 
+#include "sb-abstractblok-private.h"
+
 using namespace sb;
 
 AbstractData::AbstractData
@@ -82,7 +84,7 @@ DataSet::get_step
 )
 const
 {
-    return SharedData();
+    return d_ptr->data_map.at(_key);
 }
 
 void
@@ -92,7 +94,7 @@ DataSet::set_step
     const SharedData& _value
 )
 {
-
+    d_ptr->data_map.at(_key) = _value;
 }
 
 DataSet::Private::Private
@@ -100,7 +102,119 @@ DataSet::Private::Private
     DataSet* _q
 ):
     q_ptr       (_q),
-    source_blok (nullptr),
-    step_range  ({{0, 0}})
+    source_blok (nullptr)
 {
+    this->set_step_range({{0, 0}});
+}
+
+void
+DataSet::Private::set_step_range
+(
+    const StepRange& _value
+)
+{
+    this->step_range = _value;
+
+    for(auto follower : this->followers)
+    {
+        AbstractBlok::Private::from(
+            follower
+        )->update_outputs_step_range();
+    }
+
+    this->defined_steps.clear();
+
+    this->defined_steps.push_back(
+        this->step_range[0]
+    );
+
+    if(this->step_range[0] != this->step_range[1])
+    {
+        this->defined_steps.push_back(
+            this->step_range[1]
+        );
+    }
+
+    this->set_defined_steps(this->defined_steps);
+}
+
+void
+DataSet::Private::set_defined_steps
+(
+    const StepList& _value
+)
+{
+    this->defined_steps = _value;
+
+    if(this->defined_steps.size() > 0)
+    {
+        double front_step = this->defined_steps.front();
+        double back_step = this->defined_steps.back();
+
+        bool step_range_changed = false;
+
+        if(front_step < this->step_range[0])
+        {
+            this->step_range[0] = front_step;
+
+            step_range_changed = true;
+        }
+
+        if(back_step < this->step_range[1])
+        {
+            this->step_range[1] = back_step;
+
+            step_range_changed = true;
+        }
+
+        if(step_range_changed)
+        {
+            for(auto follower : this->followers)
+            {
+                AbstractBlok::Private::from(
+                    follower
+                )->update_outputs_step_range();
+            }
+        }
+    }
+
+    this->wanted_steps.clear();
+    this->available_steps.clear();
+    this->data_map.clear();
+
+    for(double step : this->defined_steps)
+    {
+        this->data_map[step] = nullptr;
+    }
+
+    for(auto follower : this->followers)
+    {
+        AbstractBlok::Private::from(
+            follower
+        )->update_outputs_defined_steps();
+    }
+}
+
+void
+DataSet::Private::set_wanted_steps
+(
+    const StepList& _value
+)
+{
+    this->wanted_steps = _value;
+
+    // TODO
+
+    AbstractBlok::Private::from(
+        this->source_blok
+    )->update_inputs_wanted_steps();
+}
+
+DataSet::Private*
+DataSet::Private::from
+(
+    DataSet* _q
+)
+{
+    return _q->d_ptr;
 }

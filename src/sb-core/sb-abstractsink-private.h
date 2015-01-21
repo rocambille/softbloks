@@ -35,7 +35,8 @@ public:
 
 public:
 
-    AbstractSink* q_ptr;
+    AbstractSink*
+    q_ptr;
 
 };
 

@@ -35,9 +35,11 @@ public:
 
 public:
 
-    AbstractObject* q_ptr;
+    AbstractObject*
+    q_ptr;
 
-    bool            is_ready;
+    bool
+    is_ready;
 
 };
 

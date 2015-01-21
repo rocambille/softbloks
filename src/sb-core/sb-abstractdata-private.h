@@ -70,6 +70,13 @@ public:
         const StepList& _value
     );
 
+    static
+    DataSet::Private*
+    from
+    (
+        DataSet* _q
+    );
+
 public:
 
     DataSet*
@@ -77,6 +84,9 @@ public:
 
     sb::AbstractBlok*
     source_blok;
+
+    size_t
+    source_index;
 
     std::list<sb::AbstractBlok*>
     followers;

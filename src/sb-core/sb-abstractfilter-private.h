@@ -35,7 +35,8 @@ public:
 
 public:
 
-    AbstractFilter* q_ptr;
+    AbstractFilter*
+    q_ptr;
 
 };
 

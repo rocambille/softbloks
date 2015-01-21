@@ -20,16 +20,9 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #include "sb-abstractsource-private.h"
 
 #include "sb-abstractblok-private.h"
+#include "sb-abstractdata-private.h"
 
 using namespace sb;
-
-AbstractSource::Private::Private
-(
-    AbstractSource* _q
-):
-    q_ptr(_q)
-{
-}
 
 AbstractSource::AbstractSource
 (
@@ -71,4 +64,48 @@ AbstractSource::set_output_count
         _minimum,
         _maximum
     );
+}
+
+void
+AbstractSource::set_step_range
+(
+    size_t _output,
+    const StepRange& _value
+)
+{
+    DataSet::Private::from(
+        AbstractBlok::Private::from(
+            this
+        )->outputs.at(
+            _output
+        ).get()
+    )->set_step_range(
+        _value
+    );
+}
+
+void
+AbstractSource::set_defined_steps
+(
+    size_t _output,
+    const StepList& _value
+)
+{
+    DataSet::Private::from(
+        AbstractBlok::Private::from(
+            this
+        )->outputs.at(
+            _output
+        ).get()
+    )->set_defined_steps(
+        _value
+    );
+}
+
+AbstractSource::Private::Private
+(
+    AbstractSource* _q
+):
+    q_ptr(_q)
+{
 }

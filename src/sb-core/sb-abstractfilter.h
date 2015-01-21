@@ -28,6 +28,8 @@ class SB_CORE_API AbstractFilter : public AbstractBlok
 
 public:
 
+    class Private;
+
     AbstractFilter
     (
     );
@@ -66,8 +68,6 @@ protected:
     );
 
 private:
-
-    class Private;
 
     Private*
     d_ptr;

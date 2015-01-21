@@ -28,6 +28,8 @@ class SB_CORE_API AbstractData : public AbstractObject
 
 public:
 
+    class Private;
+
     AbstractData
     (
     );
@@ -39,17 +41,21 @@ public:
 
 private:
 
-    class Private;
-    Private* d_ptr;
+    Private*
+    d_ptr;
 
 };
 
-typedef std::shared_ptr<AbstractData> SharedData;
+typedef
+    std::shared_ptr<AbstractData>
+    SharedData;
 
 class SB_CORE_API DataSet : public AbstractObject
 {
 
 public:
+
+    class Private;
 
     DataSet
     (
@@ -88,12 +94,14 @@ public:
 
 private:
 
-    class Private;
-    Private* d_ptr;
+    Private*
+    d_ptr;
 
 };
 
-typedef std::shared_ptr<DataSet> SharedDataSet;
+typedef
+    std::shared_ptr<DataSet>
+    SharedDataSet;
 
 }
 

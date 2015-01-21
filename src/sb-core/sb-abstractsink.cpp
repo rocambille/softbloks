@@ -20,16 +20,9 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #include "sb-abstractsink-private.h"
 
 #include "sb-abstractblok-private.h"
+#include "sb-abstractdata-private.h"
 
 using namespace sb;
-
-AbstractSink::Private::Private
-(
-    AbstractSink* _q
-):
-    q_ptr(_q)
-{
-}
 
 AbstractSink::AbstractSink
 (
@@ -43,6 +36,24 @@ AbstractSink::~AbstractSink
 )
 {
     delete d_ptr;
+}
+
+void
+AbstractSink::set_wanted_steps
+(
+    size_t _input,
+    const StepList& _value
+)
+{
+    DataSet::Private::from(
+        AbstractBlok::Private::from(
+            this
+        )->inputs.at(
+            _input
+        ).get()
+    )->set_wanted_steps(
+        _value
+    );
 }
 
 void
@@ -71,4 +82,12 @@ AbstractSink::set_input_count
         _minimum,
         _maximum
     );
+}
+
+AbstractSink::Private::Private
+(
+    AbstractSink* _q
+):
+    q_ptr(_q)
+{
 }

@@ -35,6 +35,8 @@ class SB_CORE_API AbstractObject
 
 public:
 
+    class Private;
+
     AbstractObject
     (
     );
@@ -289,8 +291,8 @@ private:
 
     std::map<std::string, Property>*    properties;
 
-    class Private;
-    Private* d_ptr;
+    Private*
+    d_ptr;
 
 };
 

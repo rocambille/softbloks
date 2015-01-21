@@ -62,24 +62,18 @@ public:
     );
 
     void
-    set_step_range
+    update_outputs_step_range
     (
-        size_t _output,
-        const StepRange& _value
     );
 
     void
-    set_defined_steps
+    update_outputs_defined_steps
     (
-        size_t _output,
-        const StepList& _value
     );
 
     void
-    set_wanted_steps
+    update_inputs_wanted_steps
     (
-        size_t _input,
-        const StepList& _value
     );
 
     static
@@ -100,8 +94,11 @@ public:
     size_t
     maximum_input_count;
 
-    std::vector<SharedData>
+    std::vector<SharedDataSet>
     inputs;
+
+    std::vector<StepListConverter>
+    wanted_steps_converters;
 
     size_t
     minimum_output_count;
@@ -109,8 +106,14 @@ public:
     size_t
     maximum_output_count;
 
-    std::vector<SharedData>
+    std::vector<SharedDataSet>
     outputs;
+
+    std::vector<StepRangeConverter>
+    step_range_converters;
+
+    std::vector<StepListConverter>
+    defined_steps_converters;
 
 };
 

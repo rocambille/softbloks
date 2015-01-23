@@ -37,10 +37,6 @@ public:
 
     class Private;
 
-    AbstractObject
-    (
-    );
-
     // deletion of copy-constructor. copy-constructor for a derived class
     // won't work unless it is explicitly defined and it doesn't call this
     // constructor: by default, copy is disabled
@@ -246,6 +242,10 @@ public:
     );
 
 protected:
+
+    AbstractObject
+    (
+    );
 
     template<typename T>
     bool

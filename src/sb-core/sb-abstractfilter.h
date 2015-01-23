@@ -30,17 +30,31 @@ public:
 
     class Private;
 
-    AbstractFilter
-    (
-    );
-
     virtual
     ~AbstractFilter
     (
     );
 
+    SharedDataSet
+    get_input
+    (
+        size_t _index
+    )
+    const;
+
+    SharedDataSet
+    get_output
+    (
+        size_t _index
+    )
+    const;
+
 protected:
 
+    AbstractFilter
+    (
+    );
+
     void
     set_input_count
     (
@@ -65,6 +79,27 @@ protected:
     (
         int _minimum,
         int _maximum
+    );
+
+    void
+    set_step_range_converter
+    (
+        size_t _output,
+        const StepRangeConverter& _value
+    );
+
+    void
+    set_defined_steps_converter
+    (
+        size_t _output,
+        const StepListConverter& _value
+    );
+
+    void
+    set_wanted_steps_converter
+    (
+        size_t _input,
+        const StepListConverter& _value
     );
 
 private:

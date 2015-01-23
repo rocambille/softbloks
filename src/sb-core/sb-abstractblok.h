@@ -20,6 +20,8 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "sb-abstractobject.h"
 
+#include "sb-abstractdata.h"
+
 namespace sb
 {
 
@@ -29,10 +31,6 @@ class SB_CORE_API AbstractBlok : public AbstractObject
 public:
 
     class Private;
-
-    AbstractBlok
-    (
-    );
 
     virtual
     ~AbstractBlok
@@ -77,25 +75,8 @@ public:
 
 protected:
 
-    void
-    setStepRangeConverter
+    AbstractBlok
     (
-        size_t _output,
-        const StepRangeConverter& _value
-    );
-
-    void
-    setDefinedStepsConverter
-    (
-        size_t _output,
-        const StepListConverter& _value
-    );
-
-    void
-    setWantedStepsConverter
-    (
-        size_t _input,
-        const StepListConverter& _value
     );
 
 private:

@@ -21,24 +21,6 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace sb;
 
-AbstractObject::Private::Private
-(
-    AbstractObject* _q
-):
-    q_ptr   (_q),
-    is_ready(false)
-{
-}
-
-AbstractObject::AbstractObject
-(
-)
-{
-    this->properties = new std::map<std::string, Property>;
-
-    d_ptr = new Private(this);
-}
-
 AbstractObject::~AbstractObject
 (
 )
@@ -132,6 +114,15 @@ AbstractObject::unregister_property_for
     return unregistered;
 }
 
+AbstractObject::AbstractObject
+(
+)
+{
+    this->properties = new std::map<std::string, Property>;
+
+    d_ptr = new Private(this);
+}
+
 bool
 AbstractObject::unregister_property
 (
@@ -142,4 +133,13 @@ AbstractObject::unregister_property
         this,
         _name
     );
+}
+
+AbstractObject::Private::Private
+(
+    AbstractObject* _q
+):
+    q_ptr   (_q),
+    is_ready(false)
+{
 }

@@ -24,18 +24,23 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace sb;
 
-AbstractSink::AbstractSink
-(
-)
-{
-    d_ptr = new Private(this);
-}
-
 AbstractSink::~AbstractSink
 (
 )
 {
     delete d_ptr;
+}
+
+SharedDataSet
+AbstractSink::get_input
+(
+    size_t _index
+)
+const
+{
+    return AbstractBlok::Private::from(
+        this
+    )->inputs.at(_index);
 }
 
 void
@@ -46,14 +51,19 @@ AbstractSink::set_wanted_steps
 )
 {
     DataSet::Private::from(
-        AbstractBlok::Private::from(
-            this
-        )->inputs.at(
+        this->get_input(
             _input
         ).get()
     )->set_wanted_steps(
         _value
     );
+}
+
+AbstractSink::AbstractSink
+(
+)
+{
+    d_ptr = new Private(this);
 }
 
 void

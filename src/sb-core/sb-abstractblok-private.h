@@ -76,11 +76,25 @@ public:
     (
     );
 
+    SharedDataSet
+    get_input
+    (
+        size_t _index
+    )
+    const;
+
+    SharedDataSet
+    get_output
+    (
+        size_t _index
+    )
+    const;
+
     static
     AbstractBlok::Private*
     from
     (
-        AbstractBlok* _q
+        const AbstractBlok* _q
     );
 
 public:

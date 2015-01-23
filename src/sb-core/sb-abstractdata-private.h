@@ -74,7 +74,7 @@ public:
     DataSet::Private*
     from
     (
-        DataSet* _q
+        const DataSet* _q
     );
 
 public:

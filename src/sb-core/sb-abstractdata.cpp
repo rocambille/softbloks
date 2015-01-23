@@ -23,18 +23,18 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace sb;
 
-AbstractData::AbstractData
-(
-)
-{
-    d_ptr = new Private(this);
-}
-
 AbstractData::~AbstractData
 (
 )
 {
     delete d_ptr;
+}
+
+AbstractData::AbstractData
+(
+)
+{
+    d_ptr = new Private(this);
 }
 
 AbstractData::Private::Private
@@ -213,7 +213,7 @@ DataSet::Private::set_wanted_steps
 DataSet::Private*
 DataSet::Private::from
 (
-    DataSet* _q
+    const DataSet* _q
 )
 {
     return _q->d_ptr;

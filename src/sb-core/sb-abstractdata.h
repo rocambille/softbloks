@@ -30,12 +30,14 @@ public:
 
     class Private;
 
-    AbstractData
+    virtual
+    ~AbstractData
     (
     );
 
-    virtual
-    ~AbstractData
+protected:
+
+    AbstractData
     (
     );
 

@@ -23,12 +23,35 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace sb;
 
-AbstractFilter::Private::Private
+AbstractFilter::~AbstractFilter
 (
-    AbstractFilter* _q
-):
-    q_ptr(_q)
+)
 {
+    delete d_ptr;
+}
+
+SharedDataSet
+AbstractFilter::get_input
+(
+    size_t _index
+)
+const
+{
+    return AbstractBlok::Private::from(
+        this
+    )->inputs.at(_index);
+}
+
+SharedDataSet
+AbstractFilter::get_output
+(
+    size_t _index
+)
+const
+{
+    return AbstractBlok::Private::from(
+        this
+    )->outputs.at(_index);
 }
 
 AbstractFilter::AbstractFilter
@@ -38,13 +61,6 @@ AbstractFilter::AbstractFilter
     d_ptr = new Private(this);
 }
 
-AbstractFilter::~AbstractFilter
-(
-)
-{
-    delete d_ptr;
-}
-
 void
 AbstractFilter::set_input_count
 (
@@ -99,4 +115,48 @@ AbstractFilter::set_output_count
         _minimum,
         _maximum
     );
+}
+
+void
+AbstractFilter::set_step_range_converter
+(
+    size_t _output,
+    const StepRangeConverter& _value
+)
+{
+    AbstractBlok::Private::from(
+        this
+    )->step_range_converters.at(_output) = _value;
+}
+
+void
+AbstractFilter::set_defined_steps_converter
+(
+    size_t _output,
+    const StepListConverter& _value
+)
+{
+    AbstractBlok::Private::from(
+        this
+    )->defined_steps_converters.at(_output) = _value;
+}
+
+void
+AbstractFilter::set_wanted_steps_converter
+(
+    size_t _input,
+    const StepListConverter& _value
+)
+{
+    AbstractBlok::Private::from(
+        this
+    )->wanted_steps_converters.at(_input) = _value;
+}
+
+AbstractFilter::Private::Private
+(
+    AbstractFilter* _q
+):
+    q_ptr(_q)
+{
 }

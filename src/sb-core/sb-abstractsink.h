@@ -30,14 +30,17 @@ public:
 
     class Private;
 
-    AbstractSink
-    (
-    );
-
     virtual
     ~AbstractSink
     (
     );
+
+    SharedDataSet
+    get_input
+    (
+        size_t _index
+    )
+    const;
 
     void
     set_wanted_steps
@@ -47,6 +50,10 @@ public:
     );
 
 protected:
+
+    AbstractSink
+    (
+    );
 
     void
     set_input_count

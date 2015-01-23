@@ -77,13 +77,6 @@ namespace Global
 
 }
 
-AbstractBlok::AbstractBlok
-(
-)
-{
-    d_ptr = new Private(this);
-}
-
 AbstractBlok::~AbstractBlok
 (
 )
@@ -145,34 +138,11 @@ const
     return d_ptr->outputs.size();
 }
 
-void
-AbstractBlok::setStepRangeConverter
+AbstractBlok::AbstractBlok
 (
-    size_t _output,
-    const StepRangeConverter& _value
 )
 {
-    d_ptr->step_range_converters.at(_output) = _value;
-}
-
-void
-AbstractBlok::setDefinedStepsConverter
-(
-    size_t _output,
-    const StepListConverter& _value
-)
-{
-    d_ptr->defined_steps_converters.at(_output) = _value;
-}
-
-void
-AbstractBlok::setWantedStepsConverter
-(
-    size_t _input,
-    const StepListConverter& _value
-)
-{
-    d_ptr->wanted_steps_converters.at(_input) = _value;
+    d_ptr = new Private(this);
 }
 
 AbstractBlok::Private::Private
@@ -355,10 +325,30 @@ AbstractBlok::Private::update_inputs_wanted_steps
     }
 }
 
+SharedDataSet
+AbstractBlok::Private::get_input
+(
+    size_t _index
+)
+const
+{
+    return this->inputs.at(_index);
+}
+
+SharedDataSet
+AbstractBlok::Private::get_output
+(
+    size_t _index
+)
+const
+{
+    return this->outputs.at(_index);
+}
+
 AbstractBlok::Private*
 AbstractBlok::Private::from
 (
-    AbstractBlok* _q
+    const AbstractBlok* _q
 )
 {
     return _q->d_ptr;

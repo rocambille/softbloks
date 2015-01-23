@@ -24,18 +24,30 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace sb;
 
-AbstractSource::AbstractSource
-(
-)
-{
-    d_ptr = new Private(this);
-}
-
 AbstractSource::~AbstractSource
 (
 )
 {
     delete d_ptr;
+}
+
+SharedDataSet
+AbstractSource::get_output
+(
+    size_t _index
+)
+const
+{
+    return AbstractBlok::Private::from(
+        this
+    )->outputs.at(_index);
+}
+
+AbstractSource::AbstractSource
+(
+)
+{
+    d_ptr = new Private(this);
 }
 
 void
@@ -74,9 +86,7 @@ AbstractSource::set_step_range
 )
 {
     DataSet::Private::from(
-        AbstractBlok::Private::from(
-            this
-        )->outputs.at(
+        this->get_output(
             _output
         ).get()
     )->set_step_range(
@@ -92,9 +102,7 @@ AbstractSource::set_defined_steps
 )
 {
     DataSet::Private::from(
-        AbstractBlok::Private::from(
-            this
-        )->outputs.at(
+        this->get_output(
             _output
         ).get()
     )->set_defined_steps(

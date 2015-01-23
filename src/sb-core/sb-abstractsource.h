@@ -30,16 +30,23 @@ public:
 
     class Private;
 
-    AbstractSource
-    (
-    );
-
     virtual
     ~AbstractSource
     (
     );
 
+    SharedDataSet
+    get_output
+    (
+        size_t _index
+    )
+    const;
+
 protected:
+
+    AbstractSource
+    (
+    );
 
     void
     set_output_count

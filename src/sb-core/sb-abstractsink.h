@@ -43,6 +43,13 @@ public:
     const;
 
     void
+    set_input
+    (
+        size_t _index,
+        const SharedDataSet& _value
+    );
+
+    void
     set_wanted_steps
     (
         size_t _input,

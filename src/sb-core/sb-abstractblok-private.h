@@ -83,6 +83,13 @@ public:
     )
     const;
 
+    void
+    set_input
+    (
+        size_t _index,
+        const SharedDataSet& _value
+    );
+
     SharedDataSet
     get_output
     (

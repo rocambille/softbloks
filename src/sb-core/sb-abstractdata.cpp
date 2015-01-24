@@ -77,6 +77,15 @@ const
     return d_ptr->defined_steps;
 }
 
+StepList
+DataSet::get_wanted_steps
+(
+)
+const
+{
+    return d_ptr->wanted_steps;
+}
+
 SharedData
 DataSet::get_step
 (
@@ -160,7 +169,7 @@ DataSet::Private::set_defined_steps
             step_range_changed = true;
         }
 
-        if(back_step < this->step_range[1])
+        if(back_step > this->step_range[1])
         {
             this->step_range[1] = back_step;
 

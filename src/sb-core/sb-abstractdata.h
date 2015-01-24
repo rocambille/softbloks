@@ -52,6 +52,25 @@ typedef
     std::shared_ptr<AbstractData>
     SharedData;
 
+template<typename T, typename... Args>
+SharedData
+make_shared_data
+(
+    const Args&... _args
+)
+{
+    return SharedData(
+        new T(_args...),
+        []
+        (
+            T* _ptr
+        )
+        {
+            delete _ptr;
+        }
+    );
+}
+
 class SB_CORE_API DataSet : public AbstractObject
 {
 
@@ -76,6 +95,12 @@ public:
 
     StepList
     get_defined_steps
+    (
+    )
+    const;
+
+    StepList
+    get_wanted_steps
     (
     )
     const;

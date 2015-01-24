@@ -29,8 +29,10 @@ using namespace sb;
 namespace Global
 {
 
-    const StepRangeConverter default_step_range_converter =
-        [](const std::vector<StepRange>& _sources)
+    const StepRangeConverter default_step_range_converter = []
+        (
+            const std::vector<StepRange>& _sources
+        )
         {
             StepRange result = {{0, 0}};
 
@@ -48,8 +50,10 @@ namespace Global
             return result;
         };
 
-    const StepListConverter default_step_list_converter =
-        [](const std::vector<StepList>& _sources)
+    const StepListConverter default_step_list_converter = []
+        (
+            const std::vector<StepList>& _sources
+        )
         {
             StepList result;
 
@@ -81,6 +85,13 @@ AbstractBlok::~AbstractBlok
 (
 )
 {
+    for(SharedDataSet output : d_ptr->outputs)
+    {
+        DataSet::Private::from(
+            output.get()
+        )->source_blok = nullptr;
+    }
+
     delete d_ptr;
 }
 
@@ -151,9 +162,9 @@ AbstractBlok::Private::Private
 ):
     q_ptr               (_q),
     minimum_input_count (0),
-    maximum_input_count (-1),
+    maximum_input_count (sb::infinity),
     minimum_output_count(0),
-    maximum_output_count(-1)
+    maximum_output_count(sb::infinity)
 {
 }
 
@@ -163,11 +174,10 @@ AbstractBlok::Private::set_input_count
     size_t _value
 )
 {
-    this->minimum_input_count =
-    this->maximum_input_count =
-        _value;
-
-    this->inputs.resize(_value);
+    this->set_input_count(
+        _value,
+        _value
+    );
 }
 
 void
@@ -180,7 +190,12 @@ AbstractBlok::Private::set_input_count
     this->minimum_input_count = _minimum;
     this->maximum_input_count = _maximum;
 
-    this->inputs.resize(_minimum);
+    this->inputs.resize(_minimum, nullptr);
+
+    this->wanted_steps_converters.resize(
+        this->inputs.size(),
+        Global::default_step_list_converter
+    );
 }
 
 void
@@ -189,11 +204,10 @@ AbstractBlok::Private::set_output_count
     size_t _value
 )
 {
-    this->minimum_output_count =
-    this->maximum_output_count =
-        _value;
-
-    this->outputs.resize(_value);
+    this->set_output_count(
+        _value,
+        _value
+    );
 }
 
 void
@@ -203,10 +217,46 @@ AbstractBlok::Private::set_output_count
     size_t _maximum
 )
 {
+    size_t previous_output_count =
+        this->outputs.size();
+
     this->minimum_output_count = _minimum;
     this->maximum_output_count = _maximum;
 
     this->outputs.resize(_minimum);
+
+    for(size_t i(previous_output_count); i < this->outputs.size(); ++i)
+    {
+        SharedDataSet data_set = SharedDataSet(
+            new DataSet,
+            []
+            (
+                DataSet* _ptr
+            )
+            {
+                delete _ptr;
+            }
+        );
+
+        auto data_set_d_ptr = DataSet::Private::from(
+            data_set.get()
+        );
+
+        data_set_d_ptr->source_blok = q_ptr;
+        data_set_d_ptr->source_index = i;
+
+        this->outputs[i] = data_set;
+    }
+
+    this->step_range_converters.resize(
+        this->outputs.size(),
+        Global::default_step_range_converter
+    );
+
+    this->defined_steps_converters.resize(
+        this->outputs.size(),
+        Global::default_step_list_converter
+    );
 }
 
 void
@@ -224,26 +274,29 @@ AbstractBlok::Private::update_outputs_step_range
                 input->get_step_range()
             );
         }
+        else
+        {
+            step_ranges.push_back(
+                StepRange({{0, 0}})
+            );
+        }
     }
 
     for(SharedDataSet output : this->outputs)
     {
-        if(output)
-        {
-            auto converter = this->step_range_converters.at(
-                DataSet::Private::from(
-                    output.get()
-                )->source_index
-            );
-
+        auto converter = this->step_range_converters.at(
             DataSet::Private::from(
                 output.get()
-            )->set_step_range(
-                converter(
-                    step_ranges
-                )
-            );
-        }
+            )->source_index
+        );
+
+        DataSet::Private::from(
+            output.get()
+        )->set_step_range(
+            converter(
+                step_ranges
+            )
+        );
     }
 }
 
@@ -262,26 +315,29 @@ AbstractBlok::Private::update_outputs_defined_steps
                 input->get_defined_steps()
             );
         }
+        else
+        {
+            step_lists.push_back(
+                StepList()
+            );
+        }
     }
 
     for(SharedDataSet output : this->outputs)
     {
-        if(output)
-        {
-            auto converter = this->defined_steps_converters.at(
-                DataSet::Private::from(
-                    output.get()
-                )->source_index
-            );
-
+        auto converter = this->defined_steps_converters.at(
             DataSet::Private::from(
                 output.get()
-            )->set_defined_steps(
-                converter(
-                    step_lists
-                )
-            );
-        }
+            )->source_index
+        );
+
+        DataSet::Private::from(
+            output.get()
+        )->set_defined_steps(
+            converter(
+                step_lists
+            )
+        );
     }
 }
 
@@ -294,14 +350,11 @@ AbstractBlok::Private::update_inputs_wanted_steps
 
     for(SharedDataSet output : this->outputs)
     {
-        if(output)
-        {
-            step_lists.push_back(
-                DataSet::Private::from(
-                    output.get()
-                )->wanted_steps
-            );
-        }
+        step_lists.push_back(
+            DataSet::Private::from(
+                output.get()
+            )->wanted_steps
+        );
     }
 
     for(SharedDataSet input : this->inputs)
@@ -333,6 +386,33 @@ AbstractBlok::Private::get_input
 const
 {
     return this->inputs.at(_index);
+}
+
+void
+AbstractBlok::Private::set_input
+(
+    size_t _index,
+    const SharedDataSet& _value
+)
+{
+    if(_index >= this->maximum_input_count)
+    {
+        throw std::out_of_range(
+            "sb::AbstractBlok::Private::set_input(): check range"
+        );
+    }
+
+    if(_index >= this->inputs.size())
+    {
+        this->inputs.resize(_index+1, nullptr);
+    }
+
+    this->inputs[_index] = _value;
+
+    this->update_outputs_step_range();
+    this->update_outputs_defined_steps();
+
+    this->update_inputs_wanted_steps();
 }
 
 SharedDataSet

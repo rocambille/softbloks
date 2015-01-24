@@ -56,6 +56,8 @@ typedef
     std::function<StepList(const std::vector<StepList>&)>
     StepListConverter;
 
+const size_t infinity = std::numeric_limits<size_t>::max();
+
 }
 
 #endif // SB_COREDEFINE_H

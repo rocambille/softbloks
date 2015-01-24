@@ -216,7 +216,11 @@ public:
                     reinterpret_cast<void*>(
                         new_property_values
                     ),
-                    [] (void* _ptr) {
+                    []
+                    (
+                        void* _ptr
+                    )
+                    {
                         delete reinterpret_cast<PropertyValues<T>*>(
                             _ptr
                         );

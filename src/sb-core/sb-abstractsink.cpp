@@ -44,6 +44,21 @@ const
 }
 
 void
+AbstractSink::set_input
+(
+    size_t _index,
+    const SharedDataSet& _value
+)
+{
+    AbstractBlok::Private::from(
+        this
+    )->set_input(
+        _index,
+        _value
+    );
+}
+
+void
 AbstractSink::set_wanted_steps
 (
     size_t _input,

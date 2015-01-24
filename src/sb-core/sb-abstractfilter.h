@@ -42,6 +42,13 @@ public:
     )
     const;
 
+    void
+    set_input
+    (
+        size_t _index,
+        const SharedDataSet& _value
+    );
+
     SharedDataSet
     get_output
     (
@@ -58,27 +65,27 @@ protected:
     void
     set_input_count
     (
-        int _value
+        size_t _value
     );
 
     void
     set_input_count
     (
-        int _minimum,
-        int _maximum
+        size_t _minimum,
+        size_t _maximum
     );
 
     void
     set_output_count
     (
-        int _value
+        size_t _value
     );
 
     void
     set_output_count
     (
-        int _minimum,
-        int _maximum
+        size_t _minimum,
+        size_t _maximum
     );
 
     void

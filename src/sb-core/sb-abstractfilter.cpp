@@ -42,6 +42,21 @@ const
     )->inputs.at(_index);
 }
 
+void
+AbstractFilter::set_input
+(
+    size_t _index,
+    const SharedDataSet& _value
+)
+{
+    AbstractBlok::Private::from(
+        this
+    )->set_input(
+        _index,
+        _value
+    );
+}
+
 SharedDataSet
 AbstractFilter::get_output
 (
@@ -64,7 +79,7 @@ AbstractFilter::AbstractFilter
 void
 AbstractFilter::set_input_count
 (
-    int _value
+    size_t _value
 )
 {
     AbstractBlok::Private::from(
@@ -77,8 +92,8 @@ AbstractFilter::set_input_count
 void
 AbstractFilter::set_input_count
 (
-    int _minimum,
-    int _maximum
+    size_t _minimum,
+    size_t _maximum
 )
 {
     AbstractBlok::Private::from(
@@ -92,7 +107,7 @@ AbstractFilter::set_input_count
 void
 AbstractFilter::set_output_count
 (
-    int _value
+    size_t _value
 )
 {
     AbstractBlok::Private::from(
@@ -105,8 +120,8 @@ AbstractFilter::set_output_count
 void
 AbstractFilter::set_output_count
 (
-    int _minimum,
-    int _maximum
+    size_t _minimum,
+    size_t _maximum
 )
 {
     AbstractBlok::Private::from(

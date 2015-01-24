@@ -86,6 +86,29 @@ private:
 
 };
 
+typedef
+    std::shared_ptr<AbstractBlok>
+    SharedBlok;
+
+template<typename T, typename... Args>
+std::shared_ptr<T>
+make_shared_blok
+(
+    const Args&... _args
+)
+{
+    return std::shared_ptr<T>(
+        new T(_args...),
+        []
+        (
+            T* _ptr
+        )
+        {
+            delete _ptr;
+        }
+    );
+}
+
 }
 
 #endif // SB_ABSTRACTBLOK_H

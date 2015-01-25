@@ -50,10 +50,10 @@ public:
     );
 
     void
-    set_wanted_steps
+    set_wanted_indices
     (
         size_t _input,
-        const StepList& _value
+        const IndexList& _value
     );
 
 protected:

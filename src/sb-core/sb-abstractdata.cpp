@@ -59,51 +59,51 @@ DataSet::~DataSet
     delete d_ptr;
 }
 
-StepRange
-DataSet::get_step_range
+IndexRange
+DataSet::get_index_range
 (
 )
 const
 {
-    return d_ptr->step_range;
+    return d_ptr->index_range;
 }
 
-StepList
-DataSet::get_defined_steps
+IndexList
+DataSet::get_defined_indices
 (
 )
 const
 {
-    return d_ptr->defined_steps;
+    return d_ptr->defined_indices;
 }
 
-StepList
-DataSet::get_wanted_steps
+IndexList
+DataSet::get_wanted_indices
 (
 )
 const
 {
-    return d_ptr->wanted_steps;
+    return d_ptr->wanted_indices;
 }
 
 SharedData
-DataSet::get_step
+DataSet::get_data
 (
-    double _key
+    double _index
 )
 const
 {
-    return d_ptr->data_map.at(_key);
+    return d_ptr->data_map.at(_index);
 }
 
 void
-DataSet::set_step
+DataSet::set_data
 (
-    double _key,
+    double _index,
     const SharedData& _value
 )
 {
-    d_ptr->data_map.at(_key) = _value;
+    d_ptr->data_map.at(_index) = _value;
 }
 
 DataSet::Private::Private
@@ -113,110 +113,110 @@ DataSet::Private::Private
     q_ptr       (_q),
     source_blok (nullptr)
 {
-    this->set_step_range({{0, 0}});
+    this->set_index_range({{0, 0}});
 }
 
 void
-DataSet::Private::set_step_range
+DataSet::Private::set_index_range
 (
-    const StepRange& _value
+    const IndexRange& _value
 )
 {
-    this->step_range = _value;
+    this->index_range = _value;
 
     for(auto follower : this->followers)
     {
         AbstractBlok::Private::from(
             follower
-        )->update_outputs_step_range();
+        )->update_outputs_index_range();
     }
 
-    this->defined_steps.clear();
+    this->defined_indices.clear();
 
-    this->defined_steps.push_back(
-        this->step_range[0]
+    this->defined_indices.push_back(
+        this->index_range[0]
     );
 
-    if(this->step_range[0] != this->step_range[1])
+    if(this->index_range[0] != this->index_range[1])
     {
-        this->defined_steps.push_back(
-            this->step_range[1]
+        this->defined_indices.push_back(
+            this->index_range[1]
         );
     }
 
-    this->set_defined_steps(this->defined_steps);
+    this->set_defined_indices(this->defined_indices);
 }
 
 void
-DataSet::Private::set_defined_steps
+DataSet::Private::set_defined_indices
 (
-    const StepList& _value
+    const IndexList& _value
 )
 {
-    this->defined_steps = _value;
+    this->defined_indices = _value;
 
-    if(this->defined_steps.size() > 0)
+    if(this->defined_indices.size() > 0)
     {
-        double front_step = this->defined_steps.front();
-        double back_step = this->defined_steps.back();
+        double front_index = this->defined_indices.front();
+        double back_index = this->defined_indices.back();
 
-        bool step_range_changed = false;
+        bool index_range_changed = false;
 
-        if(front_step < this->step_range[0])
+        if(front_index < this->index_range[0])
         {
-            this->step_range[0] = front_step;
+            this->index_range[0] = front_index;
 
-            step_range_changed = true;
+            index_range_changed = true;
         }
 
-        if(back_step > this->step_range[1])
+        if(back_index > this->index_range[1])
         {
-            this->step_range[1] = back_step;
+            this->index_range[1] = back_index;
 
-            step_range_changed = true;
+            index_range_changed = true;
         }
 
-        if(step_range_changed)
+        if(index_range_changed)
         {
             for(auto follower : this->followers)
             {
                 AbstractBlok::Private::from(
                     follower
-                )->update_outputs_step_range();
+                )->update_outputs_index_range();
             }
         }
     }
 
-    this->wanted_steps.clear();
-    this->available_steps.clear();
+    this->wanted_indices.clear();
+    this->available_indices.clear();
     this->data_map.clear();
 
-    for(double step : this->defined_steps)
+    for(double index : this->defined_indices)
     {
-        this->data_map[step] = nullptr;
+        this->data_map[index] = nullptr;
     }
 
     for(auto follower : this->followers)
     {
         AbstractBlok::Private::from(
             follower
-        )->update_outputs_defined_steps();
+        )->update_outputs_defined_indices();
     }
 }
 
 void
-DataSet::Private::set_wanted_steps
+DataSet::Private::set_wanted_indices
 (
-    const StepList& _value
+    const IndexList& _value
 )
 {
-    this->wanted_steps = _value;
+    this->wanted_indices = _value;
 
     // TODO
 
     AbstractBlok::Private::from(
         this->source_blok
-    )->update_inputs_wanted_steps();
+    )->update_inputs_wanted_indices();
 }
 
 DataSet::Private*

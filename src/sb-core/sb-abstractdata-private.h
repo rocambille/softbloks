@@ -53,21 +53,21 @@ public:
     );
 
     void
-    set_step_range
+    set_index_range
     (
-        const StepRange& _value
+        const IndexRange& _value
     );
 
     void
-    set_defined_steps
+    set_defined_indices
     (
-        const StepList& _value
+        const IndexList& _value
     );
 
     void
-    set_wanted_steps
+    set_wanted_indices
     (
-        const StepList& _value
+        const IndexList& _value
     );
 
     static
@@ -91,17 +91,17 @@ public:
     std::list<sb::AbstractBlok*>
     followers;
 
-    StepRange
-    step_range;
+    IndexRange
+    index_range;
 
-    StepList
-    defined_steps;
+    IndexList
+    defined_indices;
 
-    StepList
-    wanted_steps;
+    IndexList
+    wanted_indices;
 
-    StepList
-    available_steps;
+    IndexList
+    available_indices;
 
     std::map<double, SharedData>
     data_map;

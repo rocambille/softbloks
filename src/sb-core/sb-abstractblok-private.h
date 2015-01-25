@@ -62,17 +62,17 @@ public:
     );
 
     void
-    update_outputs_step_range
+    update_outputs_index_range
     (
     );
 
     void
-    update_outputs_defined_steps
+    update_outputs_defined_indices
     (
     );
 
     void
-    update_inputs_wanted_steps
+    update_inputs_wanted_indices
     (
     );
 
@@ -118,8 +118,8 @@ public:
     std::vector<SharedDataSet>
     inputs;
 
-    std::vector<StepListConverter>
-    wanted_steps_converters;
+    std::vector<IndexListConverter>
+    wanted_indices_converters;
 
     size_t
     minimum_output_count;
@@ -130,11 +130,11 @@ public:
     std::vector<SharedDataSet>
     outputs;
 
-    std::vector<StepRangeConverter>
-    step_range_converters;
+    std::vector<IndexRangeConverter>
+    index_range_converters;
 
-    std::vector<StepListConverter>
-    defined_steps_converters;
+    std::vector<IndexListConverter>
+    defined_indices_converters;
 
 };
 

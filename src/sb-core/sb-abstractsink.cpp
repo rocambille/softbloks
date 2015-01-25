@@ -59,17 +59,17 @@ AbstractSink::set_input
 }
 
 void
-AbstractSink::set_wanted_steps
+AbstractSink::set_wanted_indices
 (
     size_t _input,
-    const StepList& _value
+    const IndexList& _value
 )
 {
     DataSet::Private::from(
         this->get_input(
             _input
         ).get()
-    )->set_wanted_steps(
+    )->set_wanted_indices(
         _value
     );
 }

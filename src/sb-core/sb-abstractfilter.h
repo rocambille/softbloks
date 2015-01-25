@@ -89,24 +89,24 @@ protected:
     );
 
     void
-    set_step_range_converter
+    set_index_range_converter
     (
         size_t _output,
-        const StepRangeConverter& _value
+        const IndexRangeConverter& _value
     );
 
     void
-    set_defined_steps_converter
+    set_defined_indices_converter
     (
         size_t _output,
-        const StepListConverter& _value
+        const IndexListConverter& _value
     );
 
     void
-    set_wanted_steps_converter
+    set_wanted_indices_converter
     (
         size_t _input,
-        const StepListConverter& _value
+        const IndexListConverter& _value
     );
 
 private:

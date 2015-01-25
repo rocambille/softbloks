@@ -62,17 +62,17 @@ protected:
     );
 
     void
-    set_step_range
+    set_index_range
     (
         size_t _output,
-        const StepRange& _value
+        const IndexRange& _value
     );
 
     void
-    set_defined_steps
+    set_defined_indices
     (
         size_t _output,
-        const StepList& _value
+        const IndexList& _value
     );
 
 private:

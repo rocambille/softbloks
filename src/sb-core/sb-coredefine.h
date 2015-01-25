@@ -42,19 +42,19 @@ enum Mode
 
 typedef
     std::array<double, 2>
-    StepRange;
+    IndexRange;
 
 typedef
-    std::function<StepRange(const std::vector<StepRange>&)>
-    StepRangeConverter;
+    std::function<IndexRange(const std::vector<IndexRange>&)>
+    IndexRangeConverter;
 
 typedef
     std::vector<double>
-    StepList;
+    IndexList;
 
 typedef
-    std::function<StepList(const std::vector<StepList>&)>
-    StepListConverter;
+    std::function<IndexList(const std::vector<IndexList>&)>
+    IndexListConverter;
 
 const size_t infinity = std::numeric_limits<size_t>::max();
 

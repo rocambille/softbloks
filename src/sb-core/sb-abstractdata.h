@@ -87,35 +87,35 @@ public:
     (
     );
 
-    StepRange
-    get_step_range
+    IndexRange
+    get_index_range
     (
     )
     const;
 
-    StepList
-    get_defined_steps
+    IndexList
+    get_defined_indices
     (
     )
     const;
 
-    StepList
-    get_wanted_steps
+    IndexList
+    get_wanted_indices
     (
     )
     const;
 
     SharedData
-    get_step
+    get_data
     (
-        double _key
+        double _index
     )
     const;
 
     void
-    set_step
+    set_data
     (
-        double _key,
+        double _index,
         const SharedData& _value
     );
 

@@ -29,12 +29,12 @@ using namespace sb;
 namespace Global
 {
 
-    const StepRangeConverter default_step_range_converter = []
+    const IndexRangeConverter default_index_range_converter = []
         (
-            const std::vector<StepRange>& _sources
+            const std::vector<IndexRange>& _sources
         )
         {
-            StepRange result = {{0, 0}};
+            IndexRange result = {{0, 0}};
 
             if(_sources.size() > 0)
             {
@@ -50,12 +50,12 @@ namespace Global
             return result;
         };
 
-    const StepListConverter default_step_list_converter = []
+    const IndexListConverter default_index_list_converter = []
         (
-            const std::vector<StepList>& _sources
+            const std::vector<IndexList>& _sources
         )
         {
-            StepList result;
+            IndexList result;
 
             if(_sources.size() > 0)
             {
@@ -192,9 +192,9 @@ AbstractBlok::Private::set_input_count
 
     this->inputs.resize(_minimum, nullptr);
 
-    this->wanted_steps_converters.resize(
+    this->wanted_indices_converters.resize(
         this->inputs.size(),
-        Global::default_step_list_converter
+        Global::default_index_list_converter
     );
 }
 
@@ -248,43 +248,43 @@ AbstractBlok::Private::set_output_count
         this->outputs[i] = data_set;
     }
 
-    this->step_range_converters.resize(
+    this->index_range_converters.resize(
         this->outputs.size(),
-        Global::default_step_range_converter
+        Global::default_index_range_converter
     );
 
-    this->defined_steps_converters.resize(
+    this->defined_indices_converters.resize(
         this->outputs.size(),
-        Global::default_step_list_converter
+        Global::default_index_list_converter
     );
 }
 
 void
-AbstractBlok::Private::update_outputs_step_range
+AbstractBlok::Private::update_outputs_index_range
 (
 )
 {
-    std::vector<StepRange> step_ranges;
+    std::vector<IndexRange> index_ranges;
 
     for(SharedDataSet input : this->inputs)
     {
         if(input)
         {
-            step_ranges.push_back(
-                input->get_step_range()
+            index_ranges.push_back(
+                input->get_index_range()
             );
         }
         else
         {
-            step_ranges.push_back(
-                StepRange({{0, 0}})
+            index_ranges.push_back(
+                IndexRange({{0, 0}})
             );
         }
     }
 
     for(SharedDataSet output : this->outputs)
     {
-        auto converter = this->step_range_converters.at(
+        auto converter = this->index_range_converters.at(
             DataSet::Private::from(
                 output.get()
             )->source_index
@@ -292,40 +292,40 @@ AbstractBlok::Private::update_outputs_step_range
 
         DataSet::Private::from(
             output.get()
-        )->set_step_range(
+        )->set_index_range(
             converter(
-                step_ranges
+                index_ranges
             )
         );
     }
 }
 
 void
-AbstractBlok::Private::update_outputs_defined_steps
+AbstractBlok::Private::update_outputs_defined_indices
 (
 )
 {
-    std::vector<StepList> step_lists;
+    std::vector<IndexList> index_lists;
 
     for(SharedDataSet input : this->inputs)
     {
         if(input)
         {
-            step_lists.push_back(
-                input->get_defined_steps()
+            index_lists.push_back(
+                input->get_defined_indices()
             );
         }
         else
         {
-            step_lists.push_back(
-                StepList()
+            index_lists.push_back(
+                IndexList()
             );
         }
     }
 
     for(SharedDataSet output : this->outputs)
     {
-        auto converter = this->defined_steps_converters.at(
+        auto converter = this->defined_indices_converters.at(
             DataSet::Private::from(
                 output.get()
             )->source_index
@@ -333,27 +333,27 @@ AbstractBlok::Private::update_outputs_defined_steps
 
         DataSet::Private::from(
             output.get()
-        )->set_defined_steps(
+        )->set_defined_indices(
             converter(
-                step_lists
+                index_lists
             )
         );
     }
 }
 
 void
-AbstractBlok::Private::update_inputs_wanted_steps
+AbstractBlok::Private::update_inputs_wanted_indices
 (
 )
 {
-    std::vector<StepList> step_lists;
+    std::vector<IndexList> index_lists;
 
     for(SharedDataSet output : this->outputs)
     {
-        step_lists.push_back(
+        index_lists.push_back(
             DataSet::Private::from(
                 output.get()
-            )->wanted_steps
+            )->wanted_indices
         );
     }
 
@@ -361,7 +361,7 @@ AbstractBlok::Private::update_inputs_wanted_steps
     {
         if(input)
         {
-            auto converter = this->wanted_steps_converters.at(
+            auto converter = this->wanted_indices_converters.at(
                 DataSet::Private::from(
                     input.get()
                 )->source_index
@@ -369,9 +369,9 @@ AbstractBlok::Private::update_inputs_wanted_steps
 
             DataSet::Private::from(
                 input.get()
-            )->set_wanted_steps(
+            )->set_wanted_indices(
                 converter(
-                    step_lists
+                    index_lists
                 )
             );
         }
@@ -409,10 +409,10 @@ AbstractBlok::Private::set_input
 
     this->inputs[_index] = _value;
 
-    this->update_outputs_step_range();
-    this->update_outputs_defined_steps();
+    this->update_outputs_index_range();
+    this->update_outputs_defined_indices();
 
-    this->update_inputs_wanted_steps();
+    this->update_inputs_wanted_indices();
 }
 
 SharedDataSet

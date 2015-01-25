@@ -133,39 +133,39 @@ AbstractFilter::set_output_count
 }
 
 void
-AbstractFilter::set_step_range_converter
+AbstractFilter::set_index_range_converter
 (
     size_t _output,
-    const StepRangeConverter& _value
+    const IndexRangeConverter& _value
 )
 {
     AbstractBlok::Private::from(
         this
-    )->step_range_converters.at(_output) = _value;
+    )->index_range_converters.at(_output) = _value;
 }
 
 void
-AbstractFilter::set_defined_steps_converter
+AbstractFilter::set_defined_indices_converter
 (
     size_t _output,
-    const StepListConverter& _value
+    const IndexListConverter& _value
 )
 {
     AbstractBlok::Private::from(
         this
-    )->defined_steps_converters.at(_output) = _value;
+    )->defined_indices_converters.at(_output) = _value;
 }
 
 void
-AbstractFilter::set_wanted_steps_converter
+AbstractFilter::set_wanted_indices_converter
 (
     size_t _input,
-    const StepListConverter& _value
+    const IndexListConverter& _value
 )
 {
     AbstractBlok::Private::from(
         this
-    )->wanted_steps_converters.at(_input) = _value;
+    )->wanted_indices_converters.at(_input) = _value;
 }
 
 AbstractFilter::Private::Private

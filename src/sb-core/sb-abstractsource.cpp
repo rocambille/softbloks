@@ -79,6 +79,21 @@ AbstractSource::set_output_count
 }
 
 void
+AbstractSource::set_output_format
+(
+    size_t _index,
+    const ObjectInformation& _format
+)
+{
+    AbstractBlok::Private::from(
+        this
+    )->set_output_format(
+        _index,
+        _format
+    );
+}
+
+void
 AbstractSource::set_index_range
 (
     size_t _output,
@@ -98,7 +113,7 @@ void
 AbstractSource::set_defined_indices
 (
     size_t _output,
-    const IndexList& _value
+    const IndexCollection& _value
 )
 {
     DataSet::Private::from(

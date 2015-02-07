@@ -105,6 +105,21 @@ AbstractFilter::set_input_count
 }
 
 void
+AbstractFilter::set_input_format
+(
+    size_t _index,
+    const ObjectInformation& _format
+)
+{
+    AbstractBlok::Private::from(
+        this
+    )->set_input_format(
+        _index,
+        _format
+    );
+}
+
+void
 AbstractFilter::set_output_count
 (
     size_t _value
@@ -133,6 +148,21 @@ AbstractFilter::set_output_count
 }
 
 void
+AbstractFilter::set_output_format
+(
+    size_t _index,
+    const ObjectInformation& _format
+)
+{
+    AbstractBlok::Private::from(
+        this
+    )->set_output_format(
+        _index,
+        _format
+    );
+}
+
+void
 AbstractFilter::set_index_range_converter
 (
     size_t _output,
@@ -148,24 +178,32 @@ void
 AbstractFilter::set_defined_indices_converter
 (
     size_t _output,
-    const IndexListConverter& _value
+    const IndexCollectionConverter& _value
 )
 {
     AbstractBlok::Private::from(
         this
-    )->defined_indices_converters.at(_output) = _value;
+    )->defined_indices_converters.at(
+        _output
+    ) = (
+        _value
+    );
 }
 
 void
 AbstractFilter::set_wanted_indices_converter
 (
     size_t _input,
-    const IndexListConverter& _value
+    const IndexCollectionConverter& _value
 )
 {
     AbstractBlok::Private::from(
         this
-    )->wanted_indices_converters.at(_input) = _value;
+    )->wanted_indices_converters.at(
+        _input
+    ) = (
+        _value
+    );
 }
 
 AbstractFilter::Private::Private

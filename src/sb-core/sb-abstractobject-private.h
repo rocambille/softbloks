@@ -38,6 +38,9 @@ public:
     AbstractObject*
     q_ptr;
 
+    std::string
+    object_name;
+
     bool
     is_ready;
 

@@ -61,13 +61,13 @@ public:
     void
     set_defined_indices
     (
-        const IndexList& _value
+        const IndexCollection& _value
     );
 
     void
     set_wanted_indices
     (
-        const IndexList& _value
+        const IndexCollection& _value
     );
 
     static
@@ -88,19 +88,19 @@ public:
     size_t
     source_index;
 
-    std::list<sb::AbstractBlok*>
+    std::vector<sb::AbstractBlok*>
     followers;
 
     IndexRange
     index_range;
 
-    IndexList
+    IndexCollection
     defined_indices;
 
-    IndexList
+    IndexCollection
     wanted_indices;
 
-    IndexList
+    IndexCollection
     available_indices;
 
     std::map<double, SharedData>

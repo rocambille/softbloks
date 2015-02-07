@@ -21,7 +21,6 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #include "sb-coredefine.h"
 
 #include <functional>
-#include <list>
 #include <map>
 #include <memory>
 #include <string>
@@ -30,10 +29,72 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
+struct PropertyInformation
+{
+    std::type_index
+    type;
+
+    sb::Mode
+    mode;
+};
+
+struct ObjectInformation
+{
+    std::string
+    object_name;
+
+    std::map<std::string, PropertyInformation>
+    properties;
+};
+
+class AbstractObject;
+
+typedef
+    std::shared_ptr<AbstractObject>
+    SharedObject;
+
+typedef
+    std::function<SharedObject(void)>
+    ObjectFactory;
+
 class SB_CORE_API AbstractObject
 {
 
 public:
+
+    template<typename T>
+    struct Accessors
+    {
+        typedef
+            std::function<T(void)>
+            Get;
+
+        Get
+        get;
+
+        typedef
+            std::function<void(const T&)>
+            Set;
+
+        Set
+        set;
+    };
+
+    struct Property
+    {
+        void*
+        owner;
+
+        PropertyInformation
+        information;
+
+        std::shared_ptr<void>
+        accessors;
+    };
+
+    typedef
+        std::map<std::string, Property>
+        PropertyMap;
 
     class Private;
 
@@ -61,6 +122,12 @@ public:
     )
     = delete;
 
+    ObjectInformation
+    get_information
+    (
+    )
+    const;
+
     bool
     is_ready
     (
@@ -72,26 +139,6 @@ public:
     (
         bool _is_ready
     );
-
-    std::list<std::string>
-    get_property_names
-    (
-    )
-    const;
-
-    std::type_index
-    get_property_type
-    (
-        const std::string& _name
-    )
-    const;
-
-    sb::Mode
-    get_property_mode
-    (
-        const std::string& _name
-    )
-    const;
 
     template<typename T>
     T
@@ -107,14 +154,14 @@ public:
 
         std::type_index wanted_result_type = typeid(T);
 
-        if(wanted_result_type != wanted_property.type)
+        if(wanted_result_type != wanted_property.information.type)
         {
             throw std::invalid_argument(
                 std::string() +
                 "sb::AbstractBlok::get: property " +
                 _name +
                 " registered as " +
-                wanted_property.type.name() +
+                wanted_property.information.type.name() +
                 " is accessed as " +
                 wanted_result_type.name()
             );
@@ -122,7 +169,7 @@ public:
 
         // check mode
 
-        if((wanted_property.mode & READ_ONLY) == 0)
+        if((wanted_property.information.mode & READ_ONLY) == 0)
         {
             throw std::invalid_argument(
                 std::string() +
@@ -135,8 +182,8 @@ public:
 
         // call is valid
 
-        return reinterpret_cast<PropertyValues<T>*>(
-            wanted_property.values.get()
+        return std::static_pointer_cast< Accessors<T> >(
+            wanted_property.accessors
         )->get();
     }
 
@@ -154,14 +201,14 @@ public:
 
         std::type_index wanted_argument_type = typeid(T);
 
-        if(wanted_argument_type != wanted_property.type)
+        if(wanted_argument_type != wanted_property.information.type)
         {
             throw std::invalid_argument(
                 std::string() +
                 "sb::AbstractBlok::set: property " +
                 _name +
                 " registered as " +
-                wanted_property.type.name() +
+                wanted_property.information.type.name() +
                 " is accessed as " +
                 wanted_argument_type.name()
             );
@@ -169,7 +216,7 @@ public:
 
         // check mode
 
-        if((wanted_property.mode & WRITE_ONLY) == 0)
+        if((wanted_property.information.mode & WRITE_ONLY) == 0)
         {
             throw std::invalid_argument(
                 std::string() +
@@ -182,49 +229,38 @@ public:
 
         // call is valid
 
-        reinterpret_cast<PropertyValues<T>*>(
-            wanted_property.values.get()
+        std::static_pointer_cast< Accessors<T> >(
+            wanted_property.accessors
         )->set(_value);
     }
 
     template<typename T>
     bool
-    register_property_for
+    register_property
     (
-        void* _caller,
+        void* _owner,
         const std::string& _name,
         Mode _mode,
-        const std::function<T(void)>& _get,
-        const std::function<void(const T&)>& _set
+        const typename Accessors<T>::Get& _get,
+        const typename Accessors<T>::Set& _set
     )
     {
         bool registered = false;
 
-        if(this->properties.count(_name) == 0)
+        if(this->properties->count(_name) == 0)
         {
             // initialize the new property
 
-            PropertyValues<T>* new_property_values = new PropertyValues<T>;
-            new_property_values->get = _get;
-            new_property_values->set = _set;
+            auto accessors = std::make_shared< Accessors<T> >();
+            accessors->get = _get;
+            accessors->set = _set;
 
             Property new_property = {
-                _caller,
-                std::type_index(typeid(T)),
+                _owner,
+                typeid(T),
                 _mode,
-                std::shared_ptr<void>(
-                    reinterpret_cast<void*>(
-                        new_property_values
-                    ),
-                    []
-                    (
-                        void* _ptr
-                    )
-                    {
-                        delete reinterpret_cast<PropertyValues<T>*>(
-                            _ptr
-                        );
-                    }
+                std::static_pointer_cast<void>(
+                    accessors
                 )
             };
 
@@ -239,9 +275,9 @@ public:
     }
 
     bool
-    unregister_property_for
+    unregister_property
     (
-        void* _caller,
+        void* _owner,
         const std::string& _name
     );
 
@@ -257,11 +293,11 @@ protected:
     (
         const std::string& _name,
         Mode _mode,
-        const std::function<T(void)>& _get,
-        const std::function<void(const T&)>& _set
+        const typename Accessors<T>::Get& _get,
+        const typename Accessors<T>::Set& _set
     )
     {
-        return this->register_property_for(
+        return this->register_property<T>(
             this,
             _name,
             _mode,
@@ -278,27 +314,89 @@ protected:
 
 private:
 
+    void
+    init
+    (
+        std::string _object_name
+    );
+
+    static
+    bool
+    register_object
+    (
+        const std::string& _name,
+        const ObjectFactory& _factory
+    );
+
     template<typename T>
-    struct PropertyValues
-    {
-        std::function<T(void)>          get;
-        std::function<void(const T&)>   set;
-    };
+    friend
+    bool
+    register_object
+    (
+    );
 
-    struct Property
-    {
-        void*                           register_caller;
-        std::type_index                 type;
-        sb::Mode                        mode;
-        std::shared_ptr<void>           values;
-    };
-
-    std::map<std::string, Property>*    properties;
+    PropertyMap*
+    properties;
 
     Private*
     d_ptr;
 
 };
+
+template<typename T>
+bool
+register_object
+(
+)
+{
+    return AbstractObject::register_object(
+        T::get_name(),
+        []
+        (
+        )
+        {
+            auto instance = SharedObject(
+                new T,
+                []
+                (
+                    T* _ptr
+                )
+                {
+                    delete _ptr;
+                }
+            );
+
+            instance->init(T::get_name());
+
+            return instance;
+        }
+    );
+}
+
+SB_CORE_API
+std::vector<std::string>
+get_registered_objects
+(
+);
+
+SB_CORE_API
+SharedObject
+create_object
+(
+    const std::string& _name
+);
+
+template<typename T>
+std::shared_ptr<T>
+create
+(
+    const std::string& _name
+)
+{
+    return std::static_pointer_cast<T>(
+        create_object(_name)
+    );
+}
 
 }
 

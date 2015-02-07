@@ -50,11 +50,11 @@ typedef
 
 typedef
     std::vector<double>
-    IndexList;
+    IndexCollection;
 
 typedef
-    std::function<IndexList(const std::vector<IndexList>&)>
-    IndexListConverter;
+    std::function<IndexCollection(const std::vector<IndexCollection>&)>
+    IndexCollectionConverter;
 
 const size_t infinity = std::numeric_limits<size_t>::max();
 

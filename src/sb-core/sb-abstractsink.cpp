@@ -62,7 +62,7 @@ void
 AbstractSink::set_wanted_indices
 (
     size_t _input,
-    const IndexList& _value
+    const IndexCollection& _value
 )
 {
     DataSet::Private::from(
@@ -106,6 +106,21 @@ AbstractSink::set_input_count
     )->set_input_count(
         _minimum,
         _maximum
+    );
+}
+
+void
+AbstractSink::set_input_format
+(
+    size_t _index,
+    const ObjectInformation& _format
+)
+{
+    AbstractBlok::Private::from(
+        this
+    )->set_input_format(
+        _index,
+        _format
     );
 }
 

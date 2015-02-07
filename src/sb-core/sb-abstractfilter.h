@@ -76,6 +76,13 @@ protected:
     );
 
     void
+    set_input_format
+    (
+        size_t _index,
+        const ObjectInformation& _format
+    );
+
+    void
     set_output_count
     (
         size_t _value
@@ -89,6 +96,13 @@ protected:
     );
 
     void
+    set_output_format
+    (
+        size_t _index,
+        const ObjectInformation& _format
+    );
+
+    void
     set_index_range_converter
     (
         size_t _output,
@@ -99,14 +113,14 @@ protected:
     set_defined_indices_converter
     (
         size_t _output,
-        const IndexListConverter& _value
+        const IndexCollectionConverter& _value
     );
 
     void
     set_wanted_indices_converter
     (
         size_t _input,
-        const IndexListConverter& _value
+        const IndexCollectionConverter& _value
     );
 
 private:

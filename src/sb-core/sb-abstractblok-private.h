@@ -49,6 +49,13 @@ public:
     );
 
     void
+    set_input_format
+    (
+        size_t _index,
+        const ObjectInformation& _format
+    );
+
+    void
     set_output_count
     (
         size_t _value
@@ -59,6 +66,13 @@ public:
     (
         size_t _minimum,
         size_t _maximum
+    );
+
+    void
+    set_output_format
+    (
+        size_t _index,
+        const ObjectInformation& _format
     );
 
     void
@@ -118,7 +132,7 @@ public:
     std::vector<SharedDataSet>
     inputs;
 
-    std::vector<IndexListConverter>
+    std::vector<IndexCollectionConverter>
     wanted_indices_converters;
 
     size_t
@@ -133,7 +147,7 @@ public:
     std::vector<IndexRangeConverter>
     index_range_converters;
 
-    std::vector<IndexListConverter>
+    std::vector<IndexCollectionConverter>
     defined_indices_converters;
 
 };

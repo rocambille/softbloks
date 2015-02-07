@@ -53,7 +53,7 @@ public:
     set_wanted_indices
     (
         size_t _input,
-        const IndexList& _value
+        const IndexCollection& _value
     );
 
 protected:
@@ -73,6 +73,13 @@ protected:
     (
         size_t _minimum,
         size_t _maximum
+    );
+
+    void
+    set_input_format
+    (
+        size_t _index,
+        const ObjectInformation& _format
     );
 
 private:

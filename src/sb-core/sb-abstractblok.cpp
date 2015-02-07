@@ -50,12 +50,12 @@ namespace Global
             return result;
         };
 
-    const IndexListConverter default_index_list_converter = []
+    const IndexCollectionConverter default_index_collection_converter = []
         (
-            const std::vector<IndexList>& _sources
+            const std::vector<IndexCollection>& _sources
         )
         {
-            IndexList result;
+            IndexCollection result;
 
             if(_sources.size() > 0)
             {
@@ -194,8 +194,17 @@ AbstractBlok::Private::set_input_count
 
     this->wanted_indices_converters.resize(
         this->inputs.size(),
-        Global::default_index_list_converter
+        Global::default_index_collection_converter
     );
+}
+
+void
+AbstractBlok::Private::set_input_format
+(
+    size_t _index,
+    const ObjectInformation& _format
+)
+{
 }
 
 void
@@ -255,8 +264,17 @@ AbstractBlok::Private::set_output_count
 
     this->defined_indices_converters.resize(
         this->outputs.size(),
-        Global::default_index_list_converter
+        Global::default_index_collection_converter
     );
+}
+
+void
+AbstractBlok::Private::set_output_format
+(
+    size_t _index,
+    const ObjectInformation& _format
+)
+{
 }
 
 void
@@ -305,20 +323,20 @@ AbstractBlok::Private::update_outputs_defined_indices
 (
 )
 {
-    std::vector<IndexList> index_lists;
+    std::vector<IndexCollection> index_collections;
 
     for(SharedDataSet input : this->inputs)
     {
         if(input)
         {
-            index_lists.push_back(
+            index_collections.push_back(
                 input->get_defined_indices()
             );
         }
         else
         {
-            index_lists.push_back(
-                IndexList()
+            index_collections.push_back(
+                IndexCollection()
             );
         }
     }
@@ -335,7 +353,7 @@ AbstractBlok::Private::update_outputs_defined_indices
             output.get()
         )->set_defined_indices(
             converter(
-                index_lists
+                index_collections
             )
         );
     }
@@ -346,11 +364,11 @@ AbstractBlok::Private::update_inputs_wanted_indices
 (
 )
 {
-    std::vector<IndexList> index_lists;
+    std::vector<IndexCollection> index_collections;
 
     for(SharedDataSet output : this->outputs)
     {
-        index_lists.push_back(
+        index_collections.push_back(
             DataSet::Private::from(
                 output.get()
             )->wanted_indices
@@ -371,7 +389,7 @@ AbstractBlok::Private::update_inputs_wanted_indices
                 input.get()
             )->set_wanted_indices(
                 converter(
-                    index_lists
+                    index_collections
                 )
             );
         }

@@ -62,6 +62,13 @@ protected:
     );
 
     void
+    set_output_format
+    (
+        size_t _index,
+        const ObjectInformation& _format
+    );
+
+    void
     set_index_range
     (
         size_t _output,
@@ -72,7 +79,7 @@ protected:
     set_defined_indices
     (
         size_t _output,
-        const IndexList& _value
+        const IndexCollection& _value
     );
 
 private:

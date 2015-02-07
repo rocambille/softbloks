@@ -68,7 +68,7 @@ const
     return d_ptr->index_range;
 }
 
-IndexList
+IndexCollection
 DataSet::get_defined_indices
 (
 )
@@ -77,7 +77,7 @@ const
     return d_ptr->defined_indices;
 }
 
-IndexList
+IndexCollection
 DataSet::get_wanted_indices
 (
 )
@@ -144,21 +144,26 @@ DataSet::Private::set_index_range
         );
     }
 
-    this->set_defined_indices(this->defined_indices);
+    this->set_defined_indices(
+        this->defined_indices
+    );
 }
 
 void
 DataSet::Private::set_defined_indices
 (
-    const IndexList& _value
+    const IndexCollection& _value
 )
 {
     this->defined_indices = _value;
 
     if(this->defined_indices.size() > 0)
     {
-        double front_index = this->defined_indices.front();
-        double back_index = this->defined_indices.back();
+        double front_index =
+            this->defined_indices.front();
+
+        double back_index =
+            this->defined_indices.back();
 
         bool index_range_changed = false;
 
@@ -207,7 +212,7 @@ DataSet::Private::set_defined_indices
 void
 DataSet::Private::set_wanted_indices
 (
-    const IndexList& _value
+    const IndexCollection& _value
 )
 {
     this->wanted_indices = _value;

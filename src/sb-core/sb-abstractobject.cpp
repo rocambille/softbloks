@@ -19,6 +19,68 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "sb-abstractobject-private.h"
 
+namespace sb
+{
+
+typedef
+    std::map<std::string, ObjectFactory>
+    ObjectNameToFactoryMap;
+
+namespace Global
+{
+
+ObjectNameToFactoryMap
+registered_objects;
+
+}
+
+namespace Unmapper
+{
+
+inline
+std::string
+name
+(
+    const AbstractObject::PropertyMap::value_type& _value
+)
+{
+    return _value.first;
+}
+
+inline
+AbstractObject::Property
+data
+(
+    const AbstractObject::PropertyMap::value_type& _value
+)
+{
+    return _value.second;
+}
+
+inline
+std::string
+name
+(
+    const ObjectNameToFactoryMap::value_type& _value
+)
+{
+    return _value.first;
+}
+
+inline
+ObjectFactory
+factory
+(
+    const ObjectNameToFactoryMap::value_type& _value
+)
+{
+    return _value.second;
+}
+
+}
+
+}
+
 using namespace sb;
 
 AbstractObject::~AbstractObject
@@ -28,6 +90,30 @@ AbstractObject::~AbstractObject
     delete d_ptr;
 
     delete this->properties;
+}
+
+ObjectInformation
+AbstractObject::get_information
+(
+)
+const
+{
+    std::map<std::string, PropertyInformation> property_information;
+
+    for(auto property : *(this->properties))
+    {
+        property_information.emplace(
+            Unmapper::name(property),
+            Unmapper::data(property).information
+        );
+    }
+
+    ObjectInformation information = {
+        d_ptr->object_name,
+        property_information
+    };
+
+    return information;
 }
 
 bool
@@ -48,60 +134,22 @@ AbstractObject::set_ready
     d_ptr->is_ready = _is_ready;
 }
 
-std::list<std::string>
-AbstractObject::get_property_names
-(
-)
-const
-{
-    std::list<std::string> names;
-
-    for(auto property : *(this->properties))
-    {
-        names.push_back(
-            property.first
-        );
-    }
-
-    return names;
-}
-
-std::type_index
-AbstractObject::get_property_type
-(
-    const std::string& _name
-)
-const
-{
-    return this->properties->at(_name).type;
-}
-
-sb::Mode
-AbstractObject::get_property_mode
-(
-    const std::string& _name
-)
-const
-{
-    return this->properties->at(_name).mode;
-}
-
 bool
-AbstractObject::unregister_property_for
+AbstractObject::unregister_property
 (
-    void* _caller,
+    void* _owner,
     const std::string& _name
 )
 {
     bool unregistered = false;
 
-    // check if _name is known and if _caller matches
+    // check if _name is known and if _owner matches
 
     auto find_result = this->properties->find(_name);
 
     if(
         find_result != this->properties->end() &&
-        find_result->second.register_caller == _caller
+        Unmapper::data(*find_result).owner == _owner
     )
     {
         // erase property
@@ -129,10 +177,41 @@ AbstractObject::unregister_property
     const std::string& _name
 )
 {
-    return this->unregister_property_for(
+    return this->unregister_property(
         this,
         _name
     );
+}
+
+void
+AbstractObject::init
+(
+    std::string _object_name
+)
+{
+    d_ptr->object_name = _object_name;
+}
+
+bool
+AbstractObject::register_object
+(
+    const std::string& _name,
+    const ObjectFactory& _factory
+)
+{
+    bool registered = false;
+
+    if(Global::registered_objects.count(_name) == 0)
+    {
+        Global::registered_objects.emplace(
+            _name,
+            _factory
+        );
+
+        registered = true;
+    }
+
+    return registered;
 }
 
 AbstractObject::Private::Private
@@ -142,4 +221,43 @@ AbstractObject::Private::Private
     q_ptr   (_q),
     is_ready(false)
 {
+}
+
+std::vector<std::string>
+sb::get_registered_objects
+(
+)
+{
+    std::vector<std::string> registered_objects;
+    registered_objects.reserve(
+        Global::registered_objects.size()
+    );
+
+    for(auto registration : Global::registered_objects)
+    {
+        registered_objects.push_back(
+            Unmapper::name(registration)
+        );
+    }
+
+    return registered_objects;
+}
+
+SharedObject
+sb::create_object
+(
+    const std::string& _name
+)
+{
+    SharedObject instance;
+
+    auto registration =
+        Global::registered_objects.find(_name);
+
+    if(registration != Global::registered_objects.end())
+    {
+        instance = Unmapper::factory(*registration)();
+    }
+
+    return instance;
 }

@@ -192,6 +192,13 @@ AbstractObject::init
     d_ptr->object_name = _object_name;
 }
 
+void
+AbstractObject::destroy
+(
+)
+{
+}
+
 bool
 AbstractObject::register_object
 (

@@ -320,6 +320,11 @@ private:
         std::string _object_name
     );
 
+    void
+    destroy
+    (
+    );
+
     static
     bool
     register_object
@@ -359,9 +364,11 @@ register_object
                 new T,
                 []
                 (
-                    T* _ptr
+                    AbstractObject* _ptr
                 )
                 {
+                    _ptr->destroy();
+
                     delete _ptr;
                 }
             );

@@ -79,6 +79,8 @@ AbstractSink::AbstractSink
 )
 {
     d_ptr = new Private(this);
+
+    AbstractObject::construct(this, "sb::AbstractSink");
 }
 
 void

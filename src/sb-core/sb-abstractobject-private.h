@@ -33,13 +33,20 @@ public:
         AbstractObject* _q
     );
 
+    static
+    AbstractObject::Private*
+    from
+    (
+        const AbstractObject* _q
+    );
+
 public:
 
     AbstractObject*
     q_ptr;
 
-    std::string
-    object_name;
+    std::vector<std::string>
+    type_names;
 
     bool
     is_ready;

@@ -109,7 +109,7 @@ const
     }
 
     ObjectInformation information = {
-        d_ptr->object_name,
+        d_ptr->type_names,
         property_information
     };
 
@@ -169,6 +169,8 @@ AbstractObject::AbstractObject
     this->properties = new std::map<std::string, Property>;
 
     d_ptr = new Private(this);
+
+    AbstractObject::construct(this, "sb::AbstractObject");
 }
 
 bool
@@ -184,17 +186,31 @@ AbstractObject::unregister_property
 }
 
 void
-AbstractObject::init
+AbstractObject::construct
 (
-    std::string _object_name
+    AbstractObject* _this,
+    std::string _type_name
 )
 {
-    d_ptr->object_name = _object_name;
+    AbstractObject::Private::from(
+        _this
+    )->type_names.push_back(
+        _type_name
+    );
 }
 
 void
-AbstractObject::destroy
+AbstractObject::init
 (
+    AbstractObject* _this
+)
+{
+}
+
+void
+AbstractObject::forget
+(
+    AbstractObject* _this
 )
 {
 }
@@ -228,6 +244,15 @@ AbstractObject::Private::Private
     q_ptr   (_q),
     is_ready(false)
 {
+}
+
+AbstractObject::Private*
+AbstractObject::Private::from
+(
+    const AbstractObject* _q
+)
+{
+    return _q->d_ptr;
 }
 
 std::vector<std::string>

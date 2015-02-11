@@ -35,6 +35,8 @@ AbstractData::AbstractData
 )
 {
     d_ptr = new Private(this);
+
+    AbstractObject::construct(this, "sb::AbstractData");
 }
 
 AbstractData::Private::Private
@@ -50,6 +52,8 @@ DataSet::DataSet
 )
 {
     d_ptr = new Private(this);
+
+    AbstractObject::construct(this, "sb::DataSet");
 }
 
 DataSet::~DataSet

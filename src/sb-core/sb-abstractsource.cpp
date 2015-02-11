@@ -48,6 +48,8 @@ AbstractSource::AbstractSource
 )
 {
     d_ptr = new Private(this);
+
+    AbstractObject::construct(this, "sb::AbstractSource");
 }
 
 void

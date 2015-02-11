@@ -40,8 +40,8 @@ struct PropertyInformation
 
 struct ObjectInformation
 {
-    std::string
-    object_name;
+    std::vector<std::string>
+    type_names;
 
     std::map<std::string, PropertyInformation>
     properties;
@@ -312,19 +312,36 @@ protected:
         const std::string& _name
     );
 
+protected:
+
+    SB_DECL_HIDDEN
+    static
+    void
+    construct
+    (
+        AbstractObject* _this,
+        std::string _type_name
+    );
+
 private:
 
+    SB_DECL_HIDDEN
+    static
     void
     init
     (
-        std::string _object_name
+        AbstractObject* _this
     );
 
+    SB_DECL_HIDDEN
+    static
     void
-    destroy
+    forget
     (
+        AbstractObject* _this
     );
 
+    SB_DECL_HIDDEN
     static
     bool
     register_object
@@ -367,13 +384,13 @@ register_object
                     AbstractObject* _ptr
                 )
                 {
-                    _ptr->destroy();
-
                     delete _ptr;
+
+                    AbstractObject::forget(_ptr);
                 }
             );
 
-            instance->init(T::get_name());
+            AbstractObject::init(instance.get());
 
             return instance;
         }
@@ -406,5 +423,35 @@ create
 }
 
 }
+
+#define SB_DECLARE_OBJECT(_type, _type_name)\
+\
+    public:\
+\
+        static\
+        std::string\
+        get_name\
+        (\
+        )\
+        {\
+            return _type_name;\
+        }\
+\
+    protected:\
+\
+        _type\
+        (\
+        )\
+        {\
+            sb::AbstractObject::construct(this, _type_name);\
+            _type::construct(this);\
+        }\
+\
+        template<typename T>\
+        friend\
+        bool\
+        sb::register_object\
+        (\
+        );
 
 #endif // SB_ABSTRACTOBJECT_H

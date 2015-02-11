@@ -154,6 +154,8 @@ AbstractBlok::AbstractBlok
 )
 {
     d_ptr = new Private(this);
+
+    AbstractObject::construct(this, "sb::AbstractBlok");
 }
 
 AbstractBlok::Private::Private

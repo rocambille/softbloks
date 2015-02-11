@@ -74,6 +74,8 @@ AbstractFilter::AbstractFilter
 )
 {
     d_ptr = new Private(this);
+
+    AbstractObject::construct(this, "sb::AbstractFilter");
 }
 
 void

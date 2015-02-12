@@ -38,12 +38,39 @@ struct PropertyInformation
     mode;
 };
 
+typedef
+    std::map<std::string, PropertyInformation>
+    PropertyInformationMap;
+
+namespace Unmapper
+{
+    inline
+    std::string
+    name
+    (
+        const PropertyInformationMap::value_type& _value
+    )
+    {
+        return _value.first;
+    }
+
+    inline
+    PropertyInformation
+    information
+    (
+        const PropertyInformationMap::value_type& _value
+    )
+    {
+        return _value.second;
+    }
+}
+
 struct ObjectInformation
 {
     std::vector<std::string>
     type_names;
 
-    std::map<std::string, PropertyInformation>
+    PropertyInformationMap
     properties;
 };
 
@@ -453,5 +480,85 @@ create
         sb::register_object\
         (\
         );
+
+inline
+bool
+operator>>
+(
+    const sb::ObjectInformation& _a,
+    const sb::ObjectInformation& _b
+)
+{
+    return std::all_of(
+        _b.type_names.begin(),
+        _b.type_names.end(),
+        [&_a]
+        (
+            const std::string& _type_name
+        )
+        {
+            return std::find(
+                _a.type_names.begin(),
+                _a.type_names.end(),
+                _type_name
+            ) != _a.type_names.end();
+        }
+    ) && std::all_of(
+        _b.properties.begin(),
+        _b.properties.end(),
+        [&_a]
+        (
+            const sb::PropertyInformationMap::value_type& _b_value
+        )
+        {
+            return std::find_if(
+                _a.properties.begin(),
+                _a.properties.end(),
+                [&_b_value]
+                (
+                    const sb::PropertyInformationMap::value_type& _a_value
+                )
+                {
+                    return (
+                        sb::Unmapper::name(
+                            _b_value
+                        ) ==
+                        sb::Unmapper::name(
+                            _a_value
+                        )
+                    ) && (
+                        sb::Unmapper::information(
+                            _b_value
+                        ).type ==
+                        sb::Unmapper::information(
+                            _a_value
+                        ).type
+                    ) && (
+                        (
+                            sb::Unmapper::information(
+                                _b_value
+                            ).mode &
+                            sb::Unmapper::information(
+                                _a_value
+                            ).mode
+                        ) ==
+                        sb::Unmapper::information(_b_value).mode
+                    );
+                }
+            ) != _a.properties.end();
+        }
+    );
+}
+
+inline
+bool
+operator<<
+(
+    const sb::ObjectInformation& _a,
+    const sb::ObjectInformation& _b
+)
+{
+    return _b >> _a;
+}
 
 #endif // SB_ABSTRACTOBJECT_H

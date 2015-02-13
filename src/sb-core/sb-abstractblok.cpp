@@ -149,13 +149,13 @@ const
     return d_ptr->outputs.size();
 }
 
-AbstractBlok::AbstractBlok
+void
+AbstractBlok::construct
 (
+    AbstractBlok* _this
 )
 {
-    d_ptr = new Private(this);
-
-    AbstractObject::construct(this, "sb::AbstractBlok");
+    _this->d_ptr = new Private(_this);
 }
 
 AbstractBlok::Private::Private
@@ -168,6 +168,7 @@ AbstractBlok::Private::Private
     minimum_output_count(0),
     maximum_output_count(sb::infinity)
 {
+    sb::register_object<DataSet>();
 }
 
 void
@@ -238,15 +239,8 @@ AbstractBlok::Private::set_output_count
 
     for(size_t i(previous_output_count); i < this->outputs.size(); ++i)
     {
-        SharedDataSet data_set = SharedDataSet(
-            new DataSet,
-            []
-            (
-                DataSet* _ptr
-            )
-            {
-                delete _ptr;
-            }
+        SharedDataSet data_set = sb::create<DataSet>(
+            DataSet::get_name()
         );
 
         auto data_set_d_ptr = DataSet::Private::from(

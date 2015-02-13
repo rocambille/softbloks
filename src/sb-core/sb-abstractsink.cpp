@@ -74,15 +74,6 @@ AbstractSink::set_wanted_indices
     );
 }
 
-AbstractSink::AbstractSink
-(
-)
-{
-    d_ptr = new Private(this);
-
-    AbstractObject::construct(this, "sb::AbstractSink");
-}
-
 void
 AbstractSink::set_input_count
 (
@@ -124,6 +115,15 @@ AbstractSink::set_input_format
         _index,
         _format
     );
+}
+
+void
+AbstractSink::construct
+(
+    AbstractSink* _this
+)
+{
+    _this->d_ptr = new Private(_this);
 }
 
 AbstractSink::Private::Private

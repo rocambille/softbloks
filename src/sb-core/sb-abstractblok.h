@@ -28,6 +28,8 @@ namespace sb
 class SB_CORE_API AbstractBlok : public AbstractObject
 {
 
+    SB_DECLARE_OBJECT(AbstractBlok, "sb::AbstractBlok")
+
 public:
 
     class Private;
@@ -73,13 +75,15 @@ public:
     )
     const;
 
-protected:
-
-    AbstractBlok
-    (
-    );
-
 private:
+
+    SB_DECL_HIDDEN
+    static
+    void
+    construct
+    (
+        AbstractBlok* _this
+    );
 
     Private*
     d_ptr;

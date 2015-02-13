@@ -26,6 +26,8 @@ namespace sb
 class SB_CORE_API AbstractSource : public AbstractBlok
 {
 
+    SB_DECLARE_OBJECT(AbstractSource, "sb::AbstractSource")
+
 public:
 
     class Private;
@@ -43,10 +45,6 @@ public:
     const;
 
 protected:
-
-    AbstractSource
-    (
-    );
 
     void
     set_output_count
@@ -83,6 +81,14 @@ protected:
     );
 
 private:
+
+    SB_DECL_HIDDEN
+    static
+    void
+    construct
+    (
+        AbstractSource* _this
+    );
 
     Private*
     d_ptr;

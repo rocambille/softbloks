@@ -26,6 +26,8 @@ namespace sb
 class SB_CORE_API AbstractFilter : public AbstractBlok
 {
 
+    SB_DECLARE_OBJECT(AbstractFilter, "sb::AbstractFilter")
+
 public:
 
     class Private;
@@ -57,10 +59,6 @@ public:
     const;
 
 protected:
-
-    AbstractFilter
-    (
-    );
 
     void
     set_input_count
@@ -124,6 +122,14 @@ protected:
     );
 
 private:
+
+    SB_DECL_HIDDEN
+    static
+    void
+    construct
+    (
+        AbstractFilter* _this
+    );
 
     Private*
     d_ptr;

@@ -24,64 +24,130 @@ namespace sb
 
 typedef
     std::map<std::string, ObjectFactory>
-    ObjectNameToFactoryMap;
+    ObjectFactoryMap;
+
+typedef
+    std::map<std::type_index, ObjectInformation>
+    ObjectInformationMap;
 
 namespace Global
 {
 
-ObjectNameToFactoryMap
-registered_objects;
+ObjectFactoryMap
+object_factory_map;
+
+ObjectInformationMap
+object_information_map;
 
 }
 
 namespace Unmapper
 {
 
-inline
-std::string
-name
-(
-    const AbstractObject::PropertyMap::value_type& _value
-)
-{
-    return _value.first;
-}
+    inline
+    std::string
+    name
+    (
+        const AbstractObject::PropertyMap::value_type& _value
+    )
+    {
+        return _value.first;
+    }
 
-inline
-AbstractObject::Property
-data
-(
-    const AbstractObject::PropertyMap::value_type& _value
-)
-{
-    return _value.second;
-}
+    inline
+    AbstractObject::Property
+    data
+    (
+        const AbstractObject::PropertyMap::value_type& _value
+    )
+    {
+        return _value.second;
+    }
 
-inline
-std::string
-name
-(
-    const ObjectNameToFactoryMap::value_type& _value
-)
-{
-    return _value.first;
-}
+    inline
+    std::string
+    name
+    (
+        const ObjectFactoryMap::value_type& _value
+    )
+    {
+        return _value.first;
+    }
 
-inline
-ObjectFactory
-factory
-(
-    const ObjectNameToFactoryMap::value_type& _value
-)
-{
-    return _value.second;
-}
+    inline
+    ObjectFactory
+    factory
+    (
+        const ObjectFactoryMap::value_type& _value
+    )
+    {
+        return _value.second;
+    }
+
+    inline
+    std::type_index
+    type_index
+    (
+        const ObjectInformationMap::value_type& _value
+    )
+    {
+        return _value.first;
+    }
+
+    inline
+    ObjectInformation
+    information
+    (
+        const ObjectInformationMap::value_type& _value
+    )
+    {
+        return _value.second;
+    }
 
 }
 
 }
 
 using namespace sb;
+
+std::vector<std::string>
+sb::get_registered_objects
+(
+)
+{
+    std::vector<std::string> registered_objects;
+    registered_objects.reserve(
+        Global::object_factory_map.size()
+    );
+
+    for(auto object_factory : Global::object_factory_map)
+    {
+        registered_objects.push_back(
+            Unmapper::name(object_factory)
+        );
+    }
+
+    return registered_objects;
+}
+
+SharedObject
+sb::create_object
+(
+    const std::string& _name
+)
+{
+    SharedObject instance;
+
+    auto object_factory =
+        Global::object_factory_map.find(_name);
+
+    if(object_factory != Global::object_factory_map.end())
+    {
+        instance = Unmapper::factory(*object_factory)();
+    }
+
+    return instance;
+}
 
 AbstractObject::~AbstractObject
 (
@@ -93,7 +159,7 @@ AbstractObject::~AbstractObject
 }
 
 ObjectInformation
-AbstractObject::get_information
+AbstractObject::get_instance_information
 (
 )
 const
@@ -162,17 +228,6 @@ AbstractObject::unregister_property
     return unregistered;
 }
 
-AbstractObject::AbstractObject
-(
-)
-{
-    this->properties = new std::map<std::string, Property>;
-
-    d_ptr = new Private(this);
-
-    AbstractObject::construct(this, "sb::AbstractObject");
-}
-
 bool
 AbstractObject::unregister_property
 (
@@ -186,7 +241,7 @@ AbstractObject::unregister_property
 }
 
 void
-AbstractObject::construct
+AbstractObject::add_type_name
 (
     AbstractObject* _this,
     std::string _type_name
@@ -197,6 +252,17 @@ AbstractObject::construct
     )->type_names.push_back(
         _type_name
     );
+}
+
+void
+AbstractObject::construct
+(
+    AbstractObject* _this
+)
+{
+    _this->properties = new std::map<std::string, Property>;
+
+    _this->d_ptr = new Private(_this);
 }
 
 void
@@ -215,6 +281,15 @@ AbstractObject::forget
 {
 }
 
+ObjectInformation
+AbstractObject::get_object_information
+(
+    const std::type_index& _type_index
+)
+{
+    return Global::object_information_map.at(_type_index);
+}
+
 bool
 AbstractObject::register_object
 (
@@ -224,11 +299,18 @@ AbstractObject::register_object
 {
     bool registered = false;
 
-    if(Global::registered_objects.count(_name) == 0)
+    if(Global::object_factory_map.count(_name) == 0)
     {
-        Global::registered_objects.emplace(
+        Global::object_factory_map.emplace(
             _name,
             _factory
+        );
+
+        auto instance = _factory();
+
+        Global::object_information_map.emplace(
+            typeid(*instance),
+            instance->get_instance_information()
         );
 
         registered = true;
@@ -253,43 +335,4 @@ AbstractObject::Private::from
 )
 {
     return _q->d_ptr;
-}
-
-std::vector<std::string>
-sb::get_registered_objects
-(
-)
-{
-    std::vector<std::string> registered_objects;
-    registered_objects.reserve(
-        Global::registered_objects.size()
-    );
-
-    for(auto registration : Global::registered_objects)
-    {
-        registered_objects.push_back(
-            Unmapper::name(registration)
-        );
-    }
-
-    return registered_objects;
-}
-
-SharedObject
-sb::create_object
-(
-    const std::string& _name
-)
-{
-    SharedObject instance;
-
-    auto registration =
-        Global::registered_objects.find(_name);
-
-    if(registration != Global::registered_objects.end())
-    {
-        instance = Unmapper::factory(*registration)();
-    }
-
-    return instance;
 }

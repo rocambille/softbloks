@@ -30,13 +30,13 @@ AbstractData::~AbstractData
     delete d_ptr;
 }
 
-AbstractData::AbstractData
+void
+AbstractData::construct
 (
+    AbstractData* _this
 )
 {
-    d_ptr = new Private(this);
-
-    AbstractObject::construct(this, "sb::AbstractData");
+    _this->d_ptr = new Private(_this);
 }
 
 AbstractData::Private::Private
@@ -45,15 +45,6 @@ AbstractData::Private::Private
 ):
     q_ptr(_q)
 {
-}
-
-DataSet::DataSet
-(
-)
-{
-    d_ptr = new Private(this);
-
-    AbstractObject::construct(this, "sb::DataSet");
 }
 
 DataSet::~DataSet
@@ -108,6 +99,15 @@ DataSet::set_data
 )
 {
     d_ptr->data_map.at(_index) = _value;
+}
+
+void
+DataSet::construct
+(
+    DataSet* _this
+)
+{
+    _this->d_ptr = new Private(_this);
 }
 
 DataSet::Private::Private

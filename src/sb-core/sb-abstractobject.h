@@ -84,8 +84,81 @@ typedef
     std::function<SharedObject(void)>
     ObjectFactory;
 
+template<typename T>
+inline
+bool
+register_object
+(
+)
+{
+    return AbstractObject::register_object(
+        T::get_name(),
+        []
+        (
+        )
+        {
+            auto instance = SharedObject(
+                new T,
+                []
+                (
+                    AbstractObject* _ptr
+                )
+                {
+                    delete _ptr;
+
+                    AbstractObject::forget(_ptr);
+                }
+            );
+
+            AbstractObject::init(instance.get());
+
+            return instance;
+        }
+    );
+}
+
+SB_CORE_API
+std::vector<std::string>
+get_registered_objects
+(
+);
+
+SB_CORE_API
+SharedObject
+create_object
+(
+    const std::string& _name
+);
+
+template<typename T>
+inline
+std::shared_ptr<T>
+create
+(
+    const std::string& _name
+)
+{
+    return std::static_pointer_cast<T>(
+        create_object(_name)
+    );
+}
+
+template<typename T>
+inline
+ObjectInformation
+get_object_information
+(
+)
+{
+    return AbstractObject::get_object_information(
+        typeid(T)
+    );
+}
+
 class SB_CORE_API AbstractObject
 {
+
+    SB_DECLARE_OBJECT(AbstractObject, "sb::AbstractObject")
 
 public:
 
@@ -150,7 +223,7 @@ public:
     = delete;
 
     ObjectInformation
-    get_information
+    get_instance_information
     (
     )
     const;
@@ -168,6 +241,7 @@ public:
     );
 
     template<typename T>
+    inline
     T
     get
     (
@@ -215,6 +289,7 @@ public:
     }
 
     template<typename T>
+    inline
     void
     set
     (
@@ -262,6 +337,7 @@ public:
     }
 
     template<typename T>
+    inline
     bool
     register_property
     (
@@ -310,11 +386,8 @@ public:
 
 protected:
 
-    AbstractObject
-    (
-    );
-
     template<typename T>
+    inline
     bool
     register_property
     (
@@ -344,13 +417,21 @@ protected:
     SB_DECL_HIDDEN
     static
     void
-    construct
+    add_type_name
     (
         AbstractObject* _this,
         std::string _type_name
     );
 
 private:
+
+    SB_DECL_HIDDEN
+    static
+    void
+    construct
+    (
+        AbstractObject* _this
+    );
 
     SB_DECL_HIDDEN
     static
@@ -370,6 +451,14 @@ private:
 
     SB_DECL_HIDDEN
     static
+    ObjectInformation
+    get_object_information
+    (
+        const std::type_index& _type_index
+    );
+
+    SB_DECL_HIDDEN
+    static
     bool
     register_object
     (
@@ -384,6 +473,13 @@ private:
     (
     );
 
+    template<typename T>
+    friend
+    ObjectInformation
+    get_object_information
+    (
+    );
+
     PropertyMap*
     properties;
 
@@ -392,94 +488,7 @@ private:
 
 };
 
-template<typename T>
-bool
-register_object
-(
-)
-{
-    return AbstractObject::register_object(
-        T::get_name(),
-        []
-        (
-        )
-        {
-            auto instance = SharedObject(
-                new T,
-                []
-                (
-                    AbstractObject* _ptr
-                )
-                {
-                    delete _ptr;
-
-                    AbstractObject::forget(_ptr);
-                }
-            );
-
-            AbstractObject::init(instance.get());
-
-            return instance;
-        }
-    );
 }
-
-SB_CORE_API
-std::vector<std::string>
-get_registered_objects
-(
-);
-
-SB_CORE_API
-SharedObject
-create_object
-(
-    const std::string& _name
-);
-
-template<typename T>
-std::shared_ptr<T>
-create
-(
-    const std::string& _name
-)
-{
-    return std::static_pointer_cast<T>(
-        create_object(_name)
-    );
-}
-
-}
-
-#define SB_DECLARE_OBJECT(_type, _type_name)\
-\
-    public:\
-\
-        static\
-        std::string\
-        get_name\
-        (\
-        )\
-        {\
-            return _type_name;\
-        }\
-\
-    protected:\
-\
-        _type\
-        (\
-        )\
-        {\
-            sb::AbstractObject::construct(this, _type_name);\
-            _type::construct(this);\
-        }\
-\
-        template<typename T>\
-        friend\
-        bool\
-        sb::register_object\
-        (\
-        );
 
 inline
 bool

@@ -26,6 +26,8 @@ namespace sb
 class SB_CORE_API AbstractSink : public AbstractBlok
 {
 
+    SB_DECLARE_OBJECT(AbstractSink, "sb::AbstractSink")
+
 public:
 
     class Private;
@@ -58,10 +60,6 @@ public:
 
 protected:
 
-    AbstractSink
-    (
-    );
-
     void
     set_input_count
     (
@@ -83,6 +81,14 @@ protected:
     );
 
 private:
+
+    SB_DECL_HIDDEN
+    static
+    void
+    construct
+    (
+        AbstractSink* _this
+    );
 
     Private*
     d_ptr;

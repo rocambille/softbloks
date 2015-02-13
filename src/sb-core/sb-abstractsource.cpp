@@ -43,15 +43,6 @@ const
     )->outputs.at(_index);
 }
 
-AbstractSource::AbstractSource
-(
-)
-{
-    d_ptr = new Private(this);
-
-    AbstractObject::construct(this, "sb::AbstractSource");
-}
-
 void
 AbstractSource::set_output_count
 (
@@ -125,6 +116,15 @@ AbstractSource::set_defined_indices
     )->set_defined_indices(
         _value
     );
+}
+
+void
+AbstractSource::construct
+(
+    AbstractSource* _this
+)
+{
+    _this->d_ptr = new Private(_this);
 }
 
 AbstractSource::Private::Private

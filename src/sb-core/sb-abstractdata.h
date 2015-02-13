@@ -26,6 +26,8 @@ namespace sb
 class SB_CORE_API AbstractData : public AbstractObject
 {
 
+    SB_DECLARE_OBJECT(AbstractData, "sb::AbstractData")
+
 public:
 
     class Private;
@@ -35,10 +37,14 @@ public:
     (
     );
 
-protected:
+private:
 
-    AbstractData
+    SB_DECL_HIDDEN
+    static
+    void
+    construct
     (
+        AbstractData* _this
     );
 
 private:
@@ -55,13 +61,11 @@ typedef
 class SB_CORE_API DataSet : public AbstractObject
 {
 
+    SB_DECLARE_OBJECT(DataSet, "sb::DataSet")
+
 public:
 
     class Private;
-
-    DataSet
-    (
-    );
 
     virtual
     ~DataSet
@@ -101,6 +105,14 @@ public:
     );
 
 private:
+
+    SB_DECL_HIDDEN
+    static
+    void
+    construct
+    (
+        DataSet* _this
+    );
 
     Private*
     d_ptr;

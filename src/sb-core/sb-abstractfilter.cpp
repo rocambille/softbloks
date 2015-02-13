@@ -69,15 +69,6 @@ const
     )->outputs.at(_index);
 }
 
-AbstractFilter::AbstractFilter
-(
-)
-{
-    d_ptr = new Private(this);
-
-    AbstractObject::construct(this, "sb::AbstractFilter");
-}
-
 void
 AbstractFilter::set_input_count
 (
@@ -206,6 +197,15 @@ AbstractFilter::set_wanted_indices_converter
     ) = (
         _value
     );
+}
+
+void
+AbstractFilter::construct
+(
+    AbstractFilter* _this
+)
+{
+    _this->d_ptr = new Private(_this);
 }
 
 AbstractFilter::Private::Private

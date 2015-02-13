@@ -60,4 +60,38 @@ const size_t infinity = std::numeric_limits<size_t>::max();
 
 }
 
+#define SB_DECLARE_OBJECT(_type, _type_name)\
+\
+    public:\
+\
+        static\
+        std::string\
+        get_name\
+        (\
+        )\
+        {\
+            return _type_name;\
+        }\
+\
+    protected:\
+\
+        _type\
+        (\
+        )\
+        {\
+            _type::construct(this);\
+\
+            sb::AbstractObject::add_type_name(\
+                this,\
+                _type_name\
+            );\
+        }\
+\
+        template<typename T>\
+        friend\
+        bool\
+        sb::register_object\
+        (\
+        );
+
 #endif // SB_COREDEFINE_H

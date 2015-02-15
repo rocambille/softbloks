@@ -74,6 +74,9 @@ struct ObjectInformation
     properties;
 };
 
+const ObjectInformation
+undefined_object = { { "sb::UndefinedObject" } };
+
 class AbstractObject;
 
 typedef
@@ -92,7 +95,7 @@ register_object
 )
 {
     return AbstractObject::register_object(
-        T::get_name(),
+        T::get_object_name(),
         []
         (
         )
@@ -143,17 +146,12 @@ create
     );
 }
 
-template<typename T>
-inline
+SB_CORE_API
 ObjectInformation
 get_object_information
 (
-)
-{
-    return AbstractObject::get_object_information(
-        typeid(T)
-    );
-}
+    const std::string& _name
+);
 
 class SB_CORE_API AbstractObject
 {
@@ -451,14 +449,6 @@ private:
 
     SB_DECL_HIDDEN
     static
-    ObjectInformation
-    get_object_information
-    (
-        const std::type_index& _type_index
-    );
-
-    SB_DECL_HIDDEN
-    static
     bool
     register_object
     (
@@ -470,13 +460,6 @@ private:
     friend
     bool
     register_object
-    (
-    );
-
-    template<typename T>
-    friend
-    ObjectInformation
-    get_object_information
     (
     );
 

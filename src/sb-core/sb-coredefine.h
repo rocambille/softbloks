@@ -66,7 +66,7 @@ const size_t infinity = std::numeric_limits<size_t>::max();
 \
         static\
         std::string\
-        get_name\
+        get_object_name\
         (\
         )\
         {\

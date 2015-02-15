@@ -195,6 +195,11 @@ AbstractBlok::Private::set_input_count
 
     this->inputs.resize(_minimum, nullptr);
 
+    this->inputs_format.resize(
+        this->inputs.size(),
+        undefined_object
+    );
+
     this->wanted_indices_converters.resize(
         this->inputs.size(),
         Global::default_index_collection_converter
@@ -208,6 +213,7 @@ AbstractBlok::Private::set_input_format
     const ObjectInformation& _format
 )
 {
+    this->inputs_format[_index] = _format;
 }
 
 void
@@ -240,7 +246,7 @@ AbstractBlok::Private::set_output_count
     for(size_t i(previous_output_count); i < this->outputs.size(); ++i)
     {
         SharedDataSet data_set = sb::create<DataSet>(
-            DataSet::get_name()
+            DataSet::get_object_name()
         );
 
         auto data_set_d_ptr = DataSet::Private::from(
@@ -402,31 +408,56 @@ const
     return this->inputs.at(_index);
 }
 
-void
+bool
 AbstractBlok::Private::set_input
 (
     size_t _index,
     const SharedDataSet& _value
 )
 {
-    if(_index >= this->maximum_input_count)
+    bool ok = false;
+
+    if(
+        _index >= this->inputs.size() &&
+        _index < this->maximum_input_count
+    )
     {
-        throw std::out_of_range(
-            "sb::AbstractBlok::Private::set_input(): check range"
+        this->inputs.resize(_index+1, nullptr);
+
+        this->inputs_format.resize(
+            this->inputs.size(),
+            undefined_object
+        );
+
+        this->wanted_indices_converters.resize(
+            this->inputs.size(),
+            Global::default_index_collection_converter
         );
     }
 
-    if(_index >= this->inputs.size())
+    ObjectInformation input_format = undefined_object;
+
+    if(_index < this->inputs_format.size())
     {
-        this->inputs.resize(_index+1, nullptr);
+        input_format = this->inputs_format.at(_index);
     }
 
-    this->inputs[_index] = _value;
+    if(
+        _value == nullptr ||
+        _value->get_instance_information() >> input_format
+    )
+    {
+        ok = true;
 
-    this->update_outputs_index_range();
-    this->update_outputs_defined_indices();
+        this->inputs[_index] = _value;
 
-    this->update_inputs_wanted_indices();
+        this->update_outputs_index_range();
+        this->update_outputs_defined_indices();
+
+        this->update_inputs_wanted_indices();
+    }
+
+    return ok;
 }
 
 SharedDataSet

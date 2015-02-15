@@ -27,7 +27,7 @@ typedef
     ObjectFactoryMap;
 
 typedef
-    std::map<std::type_index, ObjectInformation>
+    std::map<std::string, ObjectInformation>
     ObjectInformationMap;
 
 namespace Global
@@ -85,8 +85,8 @@ namespace Unmapper
     }
 
     inline
-    std::type_index
-    type_index
+    std::string
+    name
     (
         const ObjectInformationMap::value_type& _value
     )
@@ -149,6 +149,15 @@ sb::create_object
     return instance;
 }
 
+ObjectInformation
+sb::get_object_information
+(
+    const std::string& _name
+)
+{
+    return Global::object_information_map.at(_name);
+}
+
 AbstractObject::~AbstractObject
 (
 )
@@ -164,7 +173,7 @@ AbstractObject::get_instance_information
 )
 const
 {
-    std::map<std::string, PropertyInformation> property_information;
+    PropertyInformationMap property_information;
 
     for(auto property : *(this->properties))
     {
@@ -247,9 +256,12 @@ AbstractObject::add_type_name
     std::string _type_name
 )
 {
-    AbstractObject::Private::from(
+    auto& type_names = AbstractObject::Private::from(
         _this
-    )->type_names.push_back(
+    )->type_names;
+
+    type_names.insert(
+        type_names.begin(),
         _type_name
     );
 }
@@ -281,15 +293,6 @@ AbstractObject::forget
 {
 }
 
-ObjectInformation
-AbstractObject::get_object_information
-(
-    const std::type_index& _type_index
-)
-{
-    return Global::object_information_map.at(_type_index);
-}
-
 bool
 AbstractObject::register_object
 (
@@ -309,7 +312,7 @@ AbstractObject::register_object
         auto instance = _factory();
 
         Global::object_information_map.emplace(
-            typeid(*instance),
+            _name,
             instance->get_instance_information()
         );
 

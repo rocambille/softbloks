@@ -97,7 +97,7 @@ public:
     )
     const;
 
-    void
+    bool
     set_input
     (
         size_t _index,
@@ -131,6 +131,9 @@ public:
 
     std::vector<SharedDataSet>
     inputs;
+
+    std::vector<ObjectInformation>
+    inputs_format;
 
     std::vector<IndexCollectionConverter>
     wanted_indices_converters;

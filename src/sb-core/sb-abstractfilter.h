@@ -44,7 +44,7 @@ public:
     )
     const;
 
-    void
+    bool
     set_input
     (
         size_t _index,

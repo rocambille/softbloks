@@ -42,14 +42,14 @@ const
     )->inputs.at(_index);
 }
 
-void
+bool
 AbstractFilter::set_input
 (
     size_t _index,
     const SharedDataSet& _value
 )
 {
-    AbstractBlok::Private::from(
+    return AbstractBlok::Private::from(
         this
     )->set_input(
         _index,

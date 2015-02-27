@@ -30,7 +30,7 @@ public:
 
     AbstractSink::Private
     (
-        AbstractSink* _q
+        AbstractSink* q_ptr_
     );
 
 public:

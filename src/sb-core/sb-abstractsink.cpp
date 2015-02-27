@@ -34,102 +34,102 @@ AbstractSink::~AbstractSink
 SharedDataSet
 AbstractSink::get_input
 (
-    size_t _index
+    size_t index_
 )
 const
 {
     return AbstractBlok::Private::from(
         this
-    )->inputs.at(_index);
+    )->inputs.at(index_);
 }
 
 bool
 AbstractSink::set_input
 (
-    size_t _index,
-    const SharedDataSet& _value
+    size_t index_,
+    const SharedDataSet& value_
 )
 {
     return AbstractBlok::Private::from(
         this
     )->set_input(
-        _index,
-        _value
+        index_,
+        value_
     );
 }
 
 void
 AbstractSink::set_wanted_indices
 (
-    size_t _input,
-    const IndexCollection& _value
+    size_t input_,
+    const IndexCollection& value_
 )
 {
     DataSet::Private::from(
         this->get_input(
-            _input
-        ).get()
+            input_
+        )
     )->set_wanted_indices(
-        _value
+        value_
     );
 }
 
 void
 AbstractSink::set_input_count
 (
-    size_t _value
+    size_t value_
 )
 {
     AbstractBlok::Private::from(
         this
     )->set_input_count(
-        _value
+        value_
     );
 }
 
 void
 AbstractSink::set_input_count
 (
-    size_t _minimum,
-    size_t _maximum
+    size_t minimum_,
+    size_t maximum_
 )
 {
     AbstractBlok::Private::from(
         this
     )->set_input_count(
-        _minimum,
-        _maximum
+        minimum_,
+        maximum_
     );
 }
 
 void
 AbstractSink::set_input_format
 (
-    size_t _index,
-    const ObjectInformation& _format
+    size_t index_,
+    const ObjectInformation& format_
 )
 {
     AbstractBlok::Private::from(
         this
     )->set_input_format(
-        _index,
-        _format
+        index_,
+        format_
     );
 }
 
 void
 AbstractSink::construct
 (
-    AbstractSink* _this
+    AbstractSink* this_
 )
 {
-    _this->d_ptr = new Private(_this);
+    this_->d_ptr = new Private(this_);
 }
 
 AbstractSink::Private::Private
 (
-    AbstractSink* _q
+    AbstractSink* q_ptr_
 ):
-    q_ptr(_q)
+    q_ptr(q_ptr_)
 {
 }

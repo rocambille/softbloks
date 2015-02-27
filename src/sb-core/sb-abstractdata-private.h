@@ -32,7 +32,7 @@ public:
 
     AbstractData::Private
     (
-        AbstractData* _q
+        AbstractData* q_ptr_
     );
 
 public:
@@ -49,32 +49,39 @@ public:
 
     DataSet::Private
     (
-        DataSet* _q
+        DataSet* q_ptr_
     );
 
     void
     set_index_range
     (
-        const IndexRange& _value
+        const IndexRange& value_
     );
 
     void
     set_defined_indices
     (
-        const IndexCollection& _value
+        const IndexCollection& value_
     );
 
     void
     set_wanted_indices
     (
-        const IndexCollection& _value
+        const IndexCollection& value_
     );
 
     static
     DataSet::Private*
     from
     (
-        const DataSet* _q
+        const DataSet* this_
+    );
+
+    static
+    DataSet::Private*
+    from
+    (
+        const SharedDataSet& this_
     );
 
 public:

@@ -20,16 +20,16 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 // version
 
-#define SB_VERSION_(_major, _minor)\
-    ((_major<<8)|(_minor))
+#define SB_VERSION_(major_, minor_)\
+    ((major_<<8)|(minor_))
 
 #define SB_VERSION_MAJOR    @SOFTBLOKS_VERSION_MAJOR@
 #define SB_VERSION_MINOR    @SOFTBLOKS_VERSION_MINOR@
 
 #define SB_VERSION SB_VERSION_(SB_VERSION_MAJOR, SB_VERSION_MINOR)
 
-#define SB_BUILD_(_year, _month, _day)\
-    ((_year<<16)|(_month<<8)|(_day))
+#define SB_BUILD_(year_, month_, day_)\
+    ((year_<<16)|(month_<<8)|(day_))
 
 #define SB_BUILD_YEAR       @SOFTBLOKS_BUILD_YEAR@
 #define SB_BUILD_MONTH      @SOFTBLOKS_BUILD_MONTH@

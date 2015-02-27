@@ -30,7 +30,7 @@ public:
 
     AbstractFilter::Private
     (
-        AbstractFilter* _q
+        AbstractFilter* q_ptr_
     );
 
 public:

@@ -32,47 +32,47 @@ public:
 
     AbstractBlok::Private
     (
-        AbstractBlok* _q
+        AbstractBlok* q_ptr_
     );
 
     void
     set_input_count
     (
-        size_t _value
+        size_t value_
     );
 
     void
     set_input_count
     (
-        size_t _minimum,
-        size_t _maximum
+        size_t minimum_,
+        size_t maximum_
     );
 
     void
     set_input_format
     (
-        size_t _index,
-        const ObjectInformation& _format
+        size_t index_,
+        const ObjectInformation& format_
     );
 
     void
     set_output_count
     (
-        size_t _value
+        size_t value_
     );
 
     void
     set_output_count
     (
-        size_t _minimum,
-        size_t _maximum
+        size_t minimum_,
+        size_t maximum_
     );
 
     void
     set_output_format
     (
-        size_t _index,
-        const ObjectInformation& _format
+        size_t index_,
+        const ObjectInformation& format_
     );
 
     void
@@ -93,21 +93,21 @@ public:
     SharedDataSet
     get_input
     (
-        size_t _index
+        size_t index_
     )
     const;
 
     bool
     set_input
     (
-        size_t _index,
-        const SharedDataSet& _value
+        size_t index_,
+        const SharedDataSet& value_
     );
 
     SharedDataSet
     get_output
     (
-        size_t _index
+        size_t index_
     )
     const;
 
@@ -115,7 +115,14 @@ public:
     AbstractBlok::Private*
     from
     (
-        const AbstractBlok* _q
+        const AbstractBlok* this_
+    );
+
+    static
+    AbstractBlok::Private*
+    from
+    (
+        const SharedBlok& this_
     );
 
 public:

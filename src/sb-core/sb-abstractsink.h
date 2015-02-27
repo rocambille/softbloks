@@ -40,22 +40,22 @@ public:
     SharedDataSet
     get_input
     (
-        size_t _index
+        size_t index_
     )
     const;
 
     bool
     set_input
     (
-        size_t _index,
-        const SharedDataSet& _value
+        size_t index_,
+        const SharedDataSet& value_
     );
 
     void
     set_wanted_indices
     (
-        size_t _input,
-        const IndexCollection& _value
+        size_t input_,
+        const IndexCollection& value_
     );
 
 protected:
@@ -63,21 +63,21 @@ protected:
     void
     set_input_count
     (
-        size_t _value
+        size_t value_
     );
 
     void
     set_input_count
     (
-        size_t _minimum,
-        size_t _maximum
+        size_t minimum_,
+        size_t maximum_
     );
 
     void
     set_input_format
     (
-        size_t _index,
-        const ObjectInformation& _format
+        size_t index_,
+        const ObjectInformation& format_
     );
 
 private:
@@ -87,7 +87,7 @@ private:
     void
     construct
     (
-        AbstractSink* _this
+        AbstractSink* this_
     );
 
     Private*

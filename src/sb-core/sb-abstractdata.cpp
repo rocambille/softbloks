@@ -33,17 +33,17 @@ AbstractData::~AbstractData
 void
 AbstractData::construct
 (
-    AbstractData* _this
+    AbstractData* this_
 )
 {
-    _this->d_ptr = new Private(_this);
+    this_->d_ptr = new Private(this_);
 }
 
 AbstractData::Private::Private
 (
-    AbstractData* _q
+    AbstractData* q_ptr_
 ):
-    q_ptr(_q)
+    q_ptr(q_ptr_)
 {
 }
 
@@ -84,37 +84,37 @@ const
 SharedData
 DataSet::get_data
 (
-    double _index
+    double index_
 )
 const
 {
-    return d_ptr->data_map.at(_index);
+    return d_ptr->data_map.at(index_);
 }
 
 void
 DataSet::set_data
 (
-    double _index,
-    const SharedData& _value
+    double index_,
+    const SharedData& value_
 )
 {
-    d_ptr->data_map.at(_index) = _value;
+    d_ptr->data_map.at(index_) = value_;
 }
 
 void
 DataSet::construct
 (
-    DataSet* _this
+    DataSet* this_
 )
 {
-    _this->d_ptr = new Private(_this);
+    this_->d_ptr = new Private(this_);
 }
 
 DataSet::Private::Private
 (
-    DataSet* _q
+    DataSet* q_ptr_
 ):
-    q_ptr       (_q),
+    q_ptr       (q_ptr_),
     source_blok (nullptr)
 {
     this->set_index_range({{0, 0}});
@@ -123,10 +123,10 @@ DataSet::Private::Private
 void
 DataSet::Private::set_index_range
 (
-    const IndexRange& _value
+    const IndexRange& value_
 )
 {
-    this->index_range = _value;
+    this->index_range = value_;
 
     for(auto follower : this->followers)
     {
@@ -156,10 +156,10 @@ DataSet::Private::set_index_range
 void
 DataSet::Private::set_defined_indices
 (
-    const IndexCollection& _value
+    const IndexCollection& value_
 )
 {
-    this->defined_indices = _value;
+    this->defined_indices = value_;
 
     if(this->defined_indices.size() > 0)
     {
@@ -216,10 +216,10 @@ DataSet::Private::set_defined_indices
 void
 DataSet::Private::set_wanted_indices
 (
-    const IndexCollection& _value
+    const IndexCollection& value_
 )
 {
-    this->wanted_indices = _value;
+    this->wanted_indices = value_;
 
     // TODO
 
@@ -231,8 +231,17 @@ DataSet::Private::set_wanted_indices
 DataSet::Private*
 DataSet::Private::from
 (
-    const DataSet* _q
+    const DataSet* this_
 )
 {
-    return _q->d_ptr;
+    return this_->d_ptr;
+}
+
+DataSet::Private*
+DataSet::Private::from
+(
+    const SharedDataSet& this_
+)
+{
+    return this_->d_ptr;
 }

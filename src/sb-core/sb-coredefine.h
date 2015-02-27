@@ -60,7 +60,7 @@ const size_t infinity = std::numeric_limits<size_t>::max();
 
 }
 
-#define SB_DECLARE_OBJECT(_type, _type_name)\
+#define SB_DECLARE_OBJECT(type_, type_name_)\
 \
     public:\
 \
@@ -70,20 +70,20 @@ const size_t infinity = std::numeric_limits<size_t>::max();
         (\
         )\
         {\
-            return _type_name;\
+            return type_name_;\
         }\
 \
     protected:\
 \
-        _type\
+        type_\
         (\
         )\
         {\
-            _type::construct(this);\
+            type_::construct(this);\
 \
             sb::AbstractObject::add_type_name(\
                 this,\
-                _type_name\
+                type_name_\
             );\
         }\
 \

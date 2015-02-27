@@ -48,20 +48,20 @@ namespace Unmapper
     std::string
     name
     (
-        const PropertyInformationMap::value_type& _value
+        const PropertyInformationMap::value_type& value_
     )
     {
-        return _value.first;
+        return value_.first;
     }
 
     inline
     PropertyInformation
     information
     (
-        const PropertyInformationMap::value_type& _value
+        const PropertyInformationMap::value_type& value_
     )
     {
-        return _value.second;
+        return value_.second;
     }
 }
 
@@ -104,12 +104,12 @@ register_object
                 new T,
                 []
                 (
-                    AbstractObject* _ptr
+                    AbstractObject* ptr_
                 )
                 {
-                    delete _ptr;
+                    delete ptr_;
 
-                    AbstractObject::forget(_ptr);
+                    AbstractObject::forget(ptr_);
                 }
             );
 
@@ -130,7 +130,7 @@ SB_CORE_API
 SharedObject
 create_object
 (
-    const std::string& _name
+    const std::string& name_
 );
 
 template<typename T>
@@ -138,11 +138,11 @@ inline
 std::shared_ptr<T>
 create
 (
-    const std::string& _name
+    const std::string& name_
 )
 {
     return std::static_pointer_cast<T>(
-        create_object(_name)
+        create_object(name_)
     );
 }
 
@@ -150,7 +150,7 @@ SB_CORE_API
 ObjectInformation
 get_object_information
 (
-    const std::string& _name
+    const std::string& name_
 );
 
 class SB_CORE_API AbstractObject
@@ -167,12 +167,12 @@ public:
             std::function<T(void)>
             Get;
 
-        Get
-        get;
-
         typedef
             std::function<void(const T&)>
             Set;
+
+        Get
+        get;
 
         Set
         set;
@@ -201,7 +201,7 @@ public:
     // constructor: by default, copy is disabled
     AbstractObject
     (
-        const AbstractObject& _other
+        const AbstractObject& other_
     )
     = delete;
 
@@ -216,7 +216,7 @@ public:
     AbstractObject&
     operator=
     (
-        const AbstractObject& _other
+        const AbstractObject& other_
     )
     = delete;
 
@@ -235,7 +235,7 @@ public:
     void
     set_ready
     (
-        bool _is_ready
+        bool is_ready_
     );
 
     template<typename T>
@@ -243,11 +243,11 @@ public:
     T
     get
     (
-        const std::string& _name
+        const std::string& name_
     )
     const
     {
-        Property wanted_property = this->properties->at(_name);
+        Property wanted_property = this->properties->at(name_);
 
         // check type
 
@@ -258,7 +258,7 @@ public:
             throw std::invalid_argument(
                 std::string() +
                 "sb::AbstractBlok::get: property " +
-                _name +
+                name_ +
                 " registered as " +
                 wanted_property.information.type.name() +
                 " is accessed as " +
@@ -274,7 +274,7 @@ public:
                 std::string() +
                 "sb::AbstractBlok::get: " +
                 "calling on property " +
-                _name +
+                name_ +
                 " which is write-only"
             );
         }
@@ -291,11 +291,11 @@ public:
     void
     set
     (
-        const std::string& _name,
-        const T& _value
+        const std::string& name_,
+        const T& value_
     )
     {
-        Property wanted_property = this->properties->at(_name);
+        Property wanted_property = this->properties->at(name_);
 
         // check type
 
@@ -306,7 +306,7 @@ public:
             throw std::invalid_argument(
                 std::string() +
                 "sb::AbstractBlok::set: property " +
-                _name +
+                name_ +
                 " registered as " +
                 wanted_property.information.type.name() +
                 " is accessed as " +
@@ -322,7 +322,7 @@ public:
                 std::string() +
                 "sb::AbstractBlok::set: " +
                 "calling on property " +
-                _name +
+                name_ +
                 " which is read-only"
             );
         }
@@ -339,27 +339,27 @@ public:
     bool
     register_property
     (
-        void* _owner,
-        const std::string& _name,
-        Mode _mode,
-        const typename Accessors<T>::Get& _get,
-        const typename Accessors<T>::Set& _set
+        void* owner_,
+        const std::string& name_,
+        Mode mode_,
+        const typename Accessors<T>::Get& get_,
+        const typename Accessors<T>::Set& set_
     )
     {
         bool registered = false;
 
-        if(this->properties->count(_name) == 0)
+        if(this->properties->count(name_) == 0)
         {
             // initialize the new property
 
             auto accessors = std::make_shared< Accessors<T> >();
-            accessors->get = _get;
-            accessors->set = _set;
+            accessors->get = get_;
+            accessors->set = set_;
 
             Property new_property = {
-                _owner,
+                owner_,
                 typeid(T),
-                _mode,
+                mode_,
                 std::static_pointer_cast<void>(
                     accessors
                 )
@@ -367,7 +367,7 @@ public:
 
             // store the property
 
-            this->properties->emplace(_name, new_property);
+            this->properties->emplace(name_, new_property);
 
             registered = true;
         }
@@ -378,8 +378,8 @@ public:
     bool
     unregister_property
     (
-        void* _owner,
-        const std::string& _name
+        void* owner_,
+        const std::string& name_
     );
 
 protected:
@@ -389,25 +389,25 @@ protected:
     bool
     register_property
     (
-        const std::string& _name,
-        Mode _mode,
-        const typename Accessors<T>::Get& _get,
-        const typename Accessors<T>::Set& _set
+        const std::string& name_,
+        Mode mode_,
+        const typename Accessors<T>::Get& get_,
+        const typename Accessors<T>::Set& set_
     )
     {
         return this->register_property<T>(
             this,
-            _name,
-            _mode,
-            _get,
-            _set
+            name_,
+            mode_,
+            get_,
+            set_
         );
     }
 
     bool
     unregister_property
     (
-        const std::string& _name
+        const std::string& name_
     );
 
 protected:
@@ -417,8 +417,8 @@ protected:
     void
     add_type_name
     (
-        AbstractObject* _this,
-        std::string _type_name
+        AbstractObject* this_,
+        std::string type_name_
     );
 
 private:
@@ -428,7 +428,7 @@ private:
     void
     construct
     (
-        AbstractObject* _this
+        AbstractObject* this_
     );
 
     SB_DECL_HIDDEN
@@ -436,7 +436,7 @@ private:
     void
     init
     (
-        AbstractObject* _this
+        AbstractObject* this_
     );
 
     SB_DECL_HIDDEN
@@ -444,7 +444,7 @@ private:
     void
     forget
     (
-        AbstractObject* _this
+        AbstractObject* this_
     );
 
     SB_DECL_HIDDEN
@@ -452,8 +452,8 @@ private:
     bool
     register_object
     (
-        const std::string& _name,
-        const ObjectFactory& _factory
+        const std::string& name_,
+        const ObjectFactory& factory_
     );
 
     template<typename T>
@@ -477,67 +477,67 @@ inline
 bool
 operator>>
 (
-    const sb::ObjectInformation& _a,
-    const sb::ObjectInformation& _b
+    const sb::ObjectInformation& a_,
+    const sb::ObjectInformation& b_
 )
 {
     return std::all_of(
-        _b.type_names.begin(),
-        _b.type_names.end(),
-        [&_a]
+        b_.type_names.begin(),
+        b_.type_names.end(),
+        [&a_]
         (
-            const std::string& _type_name
+            const std::string& type_name_
         )
         {
             return std::find(
-                _a.type_names.begin(),
-                _a.type_names.end(),
-                _type_name
-            ) != _a.type_names.end();
+                a_.type_names.begin(),
+                a_.type_names.end(),
+                type_name_
+            ) != a_.type_names.end();
         }
     ) && std::all_of(
-        _b.properties.begin(),
-        _b.properties.end(),
-        [&_a]
+        b_.properties.begin(),
+        b_.properties.end(),
+        [&a_]
         (
-            const sb::PropertyInformationMap::value_type& _b_value
+            const sb::PropertyInformationMap::value_type& b_value_
         )
         {
             return std::find_if(
-                _a.properties.begin(),
-                _a.properties.end(),
-                [&_b_value]
+                a_.properties.begin(),
+                a_.properties.end(),
+                [&b_value_]
                 (
-                    const sb::PropertyInformationMap::value_type& _a_value
+                    const sb::PropertyInformationMap::value_type& a_value_
                 )
                 {
                     return (
                         sb::Unmapper::name(
-                            _b_value
+                            b_value_
                         ) ==
                         sb::Unmapper::name(
-                            _a_value
+                            a_value_
                         )
                     ) && (
                         sb::Unmapper::information(
-                            _b_value
+                            b_value_
                         ).type ==
                         sb::Unmapper::information(
-                            _a_value
+                            a_value_
                         ).type
                     ) && (
                         (
                             sb::Unmapper::information(
-                                _b_value
+                                b_value_
                             ).mode &
                             sb::Unmapper::information(
-                                _a_value
+                                a_value_
                             ).mode
                         ) ==
-                        sb::Unmapper::information(_b_value).mode
+                        sb::Unmapper::information(b_value_).mode
                     );
                 }
-            ) != _a.properties.end();
+            ) != a_.properties.end();
         }
     );
 }
@@ -546,11 +546,11 @@ inline
 bool
 operator<<
 (
-    const sb::ObjectInformation& _a,
-    const sb::ObjectInformation& _b
+    const sb::ObjectInformation& a_,
+    const sb::ObjectInformation& b_
 )
 {
-    return _b >> _a;
+    return b_ >> a_;
 }
 
 #endif // SB_ABSTRACTOBJECT_H

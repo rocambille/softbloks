@@ -44,7 +44,7 @@ private:
     void
     construct
     (
-        AbstractData* _this
+        AbstractData* this_
     );
 
 private:
@@ -93,15 +93,15 @@ public:
     SharedData
     get_data
     (
-        double _index
+        double index_
     )
     const;
 
     void
     set_data
     (
-        double _index,
-        const SharedData& _value
+        double index_,
+        const SharedData& value_
     );
 
 private:
@@ -111,7 +111,7 @@ private:
     void
     construct
     (
-        DataSet* _this
+        DataSet* this_
     );
 
     Private*

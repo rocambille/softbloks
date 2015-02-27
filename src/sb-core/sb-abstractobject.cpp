@@ -48,60 +48,60 @@ namespace Unmapper
     std::string
     name
     (
-        const AbstractObject::PropertyMap::value_type& _value
+        const AbstractObject::PropertyMap::value_type& value_
     )
     {
-        return _value.first;
+        return value_.first;
     }
 
     inline
     AbstractObject::Property
     data
     (
-        const AbstractObject::PropertyMap::value_type& _value
+        const AbstractObject::PropertyMap::value_type& value_
     )
     {
-        return _value.second;
+        return value_.second;
     }
 
     inline
     std::string
     name
     (
-        const ObjectFactoryMap::value_type& _value
+        const ObjectFactoryMap::value_type& value_
     )
     {
-        return _value.first;
+        return value_.first;
     }
 
     inline
     ObjectFactory
     factory
     (
-        const ObjectFactoryMap::value_type& _value
+        const ObjectFactoryMap::value_type& value_
     )
     {
-        return _value.second;
+        return value_.second;
     }
 
     inline
     std::string
     name
     (
-        const ObjectInformationMap::value_type& _value
+        const ObjectInformationMap::value_type& value_
     )
     {
-        return _value.first;
+        return value_.first;
     }
 
     inline
     ObjectInformation
     information
     (
-        const ObjectInformationMap::value_type& _value
+        const ObjectInformationMap::value_type& value_
     )
     {
-        return _value.second;
+        return value_.second;
     }
 
 }
@@ -133,13 +133,13 @@ sb::get_registered_objects
 SharedObject
 sb::create_object
 (
-    const std::string& _name
+    const std::string& name_
 )
 {
     SharedObject instance;
 
     auto object_factory =
-        Global::object_factory_map.find(_name);
+        Global::object_factory_map.find(name_);
 
     if(object_factory != Global::object_factory_map.end())
     {
@@ -152,10 +152,10 @@ sb::create_object
 ObjectInformation
 sb::get_object_information
 (
-    const std::string& _name
+    const std::string& name_
 )
 {
-    return Global::object_information_map.at(_name);
+    return Global::object_information_map.at(name_);
 }
 
 AbstractObject::~AbstractObject
@@ -203,28 +203,28 @@ const
 void
 AbstractObject::set_ready
 (
-    bool _is_ready
+    bool is_ready_
 )
 {
-    d_ptr->is_ready = _is_ready;
+    d_ptr->is_ready = is_ready_;
 }
 
 bool
 AbstractObject::unregister_property
 (
-    void* _owner,
-    const std::string& _name
+    void* owner_,
+    const std::string& name_
 )
 {
     bool unregistered = false;
 
-    // check if _name is known and if _owner matches
+    // check if name_ is known and if owner_ matches
 
-    auto find_result = this->properties->find(_name);
+    auto find_result = this->properties->find(name_);
 
     if(
         find_result != this->properties->end() &&
-        Unmapper::data(*find_result).owner == _owner
+        Unmapper::data(*find_result).owner == owner_
     )
     {
         // erase property
@@ -240,47 +240,47 @@ AbstractObject::unregister_property
 bool
 AbstractObject::unregister_property
 (
-    const std::string& _name
+    const std::string& name_
 )
 {
     return this->unregister_property(
         this,
-        _name
+        name_
     );
 }
 
 void
 AbstractObject::add_type_name
 (
-    AbstractObject* _this,
-    std::string _type_name
+    AbstractObject* this_,
+    std::string type_name_
 )
 {
     auto& type_names = AbstractObject::Private::from(
-        _this
+        this_
     )->type_names;
 
     type_names.insert(
         type_names.begin(),
-        _type_name
+        type_name_
     );
 }
 
 void
 AbstractObject::construct
 (
-    AbstractObject* _this
+    AbstractObject* this_
 )
 {
-    _this->properties = new std::map<std::string, Property>;
+    this_->properties = new std::map<std::string, Property>;
 
-    _this->d_ptr = new Private(_this);
+    this_->d_ptr = new Private(this_);
 }
 
 void
 AbstractObject::init
 (
-    AbstractObject* _this
+    AbstractObject* this_
 )
 {
 }
@@ -288,7 +288,7 @@ AbstractObject::init
 void
 AbstractObject::forget
 (
-    AbstractObject* _this
+    AbstractObject* this_
 )
 {
 }
@@ -296,23 +296,23 @@ AbstractObject::forget
 bool
 AbstractObject::register_object
 (
-    const std::string& _name,
-    const ObjectFactory& _factory
+    const std::string& name_,
+    const ObjectFactory& factory_
 )
 {
     bool registered = false;
 
-    if(Global::object_factory_map.count(_name) == 0)
+    if(Global::object_factory_map.count(name_) == 0)
     {
         Global::object_factory_map.emplace(
-            _name,
-            _factory
+            name_,
+            factory_
         );
 
-        auto instance = _factory();
+        auto instance = factory_();
 
         Global::object_information_map.emplace(
-            _name,
+            name_,
             instance->get_instance_information()
         );
 
@@ -324,9 +324,9 @@ AbstractObject::register_object
 
 AbstractObject::Private::Private
 (
-    AbstractObject* _q
+    AbstractObject* q_ptr_
 ):
-    q_ptr   (_q),
+    q_ptr   (q_ptr_),
     is_ready(false)
 {
 }
@@ -334,8 +334,17 @@ AbstractObject::Private::Private
 AbstractObject::Private*
 AbstractObject::Private::from
 (
-    const AbstractObject* _q
+    const AbstractObject* this_
 )
 {
-    return _q->d_ptr;
+    return this_->d_ptr;
+}
+
+AbstractObject::Private*
+AbstractObject::Private::from
+(
+    const SharedObject& this_
+)
+{
+    return this_->d_ptr;
 }

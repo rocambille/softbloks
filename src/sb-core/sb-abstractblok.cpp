@@ -19,65 +19,68 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "sb-abstractblok-private.h"
 
+#include <algorithm>
+
 #include "sb-abstractdata-private.h"
 
 using namespace sb;
 
-#define SB_MIN(_a, _b) ((_a) < (_b)) ? (_a) : (_b)
-#define SB_MAX(_a, _b) ((_a) > (_b)) ? (_a) : (_b)
-
 namespace Global
 {
 
-    const IndexRangeConverter default_index_range_converter = []
-        (
-            const std::vector<IndexRange>& _sources
-        )
+const IndexRangeConverter
+default_index_range_converter =
+    []
+    (
+        const std::vector<IndexRange>& sources_
+    )
+    {
+        IndexRange result = {{0, 0}};
+
+        if(sources_.size() > 0)
         {
-            IndexRange result = {{0, 0}};
+            result = sources_[0];
 
-            if(_sources.size() > 0)
+            for(size_t i(1); i < sources_.size(); ++i)
             {
-                result = _sources[0];
-
-                for(size_t i(1); i < _sources.size(); ++i)
-                {
-                    result[0] = SB_MIN(result[0], _sources[i][0]);
-                    result[1] = SB_MAX(result[1], _sources[i][1]);
-                }
+                result[0] = std::min(result[0], sources_[i][0]);
+                result[1] = std::max(result[1], sources_[i][1]);
             }
+        }
 
-            return result;
-        };
+        return result;
+    };
 
-    const IndexCollectionConverter default_index_collection_converter = []
-        (
-            const std::vector<IndexCollection>& _sources
-        )
+const IndexCollectionConverter
+default_index_collection_converter =
+    []
+    (
+        const std::vector<IndexCollection>& sources_
+    )
+    {
+        IndexCollection result;
+
+        if(sources_.size() > 0)
         {
-            IndexCollection result;
+            result = sources_[0];
 
-            if(_sources.size() > 0)
+            for(size_t i(1); i < sources_.size(); ++i)
             {
-                result = _sources[0];
+                result.insert(
+                    result.begin(),
+                    sources_[i].begin(),
+                    sources_[i].end()
+                );
 
-                for(size_t i(1); i < _sources.size(); ++i)
-                {
-                    result.insert(
-                        result.begin(),
-                        _sources[i].begin(),
-                        _sources[i].end()
-                    );
-
-                    std::unique(
-                        result.begin(),
-                        result.end()
-                    );
-                }
+                std::unique(
+                    result.begin(),
+                    result.end()
+                );
             }
+        }
 
-            return result;
-        };
+        return result;
+    };
 
 }
 
@@ -88,7 +91,7 @@ AbstractBlok::~AbstractBlok
     for(SharedDataSet output : d_ptr->outputs)
     {
         DataSet::Private::from(
-            output.get()
+            output
         )->source_blok = nullptr;
     }
 
@@ -152,17 +155,17 @@ const
 void
 AbstractBlok::construct
 (
-    AbstractBlok* _this
+    AbstractBlok* this_
 )
 {
-    _this->d_ptr = new Private(_this);
+    this_->d_ptr = new Private(this_);
 }
 
 AbstractBlok::Private::Private
 (
-    AbstractBlok* _q
+    AbstractBlok* q_ptr_
 ):
-    q_ptr               (_q),
+    q_ptr               (q_ptr_),
     minimum_input_count (0),
     maximum_input_count (sb::infinity),
     minimum_output_count(0),
@@ -174,26 +177,26 @@ AbstractBlok::Private::Private
 void
 AbstractBlok::Private::set_input_count
 (
-    size_t _value
+    size_t value_
 )
 {
     this->set_input_count(
-        _value,
-        _value
+        value_,
+        value_
     );
 }
 
 void
 AbstractBlok::Private::set_input_count
 (
-    size_t _minimum,
-    size_t _maximum
+    size_t minimum_,
+    size_t maximum_
 )
 {
-    this->minimum_input_count = _minimum;
-    this->maximum_input_count = _maximum;
+    this->minimum_input_count = minimum_;
+    this->maximum_input_count = maximum_;
 
-    this->inputs.resize(_minimum, nullptr);
+    this->inputs.resize(minimum_, nullptr);
 
     this->inputs_format.resize(
         this->inputs.size(),
@@ -209,39 +212,39 @@ AbstractBlok::Private::set_input_count
 void
 AbstractBlok::Private::set_input_format
 (
-    size_t _index,
-    const ObjectInformation& _format
+    size_t index_,
+    const ObjectInformation& format_
 )
 {
-    this->inputs_format[_index] = _format;
+    this->inputs_format[index_] = format_;
 }
 
 void
 AbstractBlok::Private::set_output_count
 (
-    size_t _value
+    size_t value_
 )
 {
     this->set_output_count(
-        _value,
-        _value
+        value_,
+        value_
     );
 }
 
 void
 AbstractBlok::Private::set_output_count
 (
-    size_t _minimum,
-    size_t _maximum
+    size_t minimum_,
+    size_t maximum_
 )
 {
     size_t previous_output_count =
         this->outputs.size();
 
-    this->minimum_output_count = _minimum;
-    this->maximum_output_count = _maximum;
+    this->minimum_output_count = minimum_;
+    this->maximum_output_count = maximum_;
 
-    this->outputs.resize(_minimum);
+    this->outputs.resize(minimum_);
 
     for(size_t i(previous_output_count); i < this->outputs.size(); ++i)
     {
@@ -250,7 +253,7 @@ AbstractBlok::Private::set_output_count
         );
 
         auto data_set_d_ptr = DataSet::Private::from(
-            data_set.get()
+            data_set
         );
 
         data_set_d_ptr->source_blok = q_ptr;
@@ -273,8 +276,8 @@ AbstractBlok::Private::set_output_count
 void
 AbstractBlok::Private::set_output_format
 (
-    size_t _index,
-    const ObjectInformation& _format
+    size_t index_,
+    const ObjectInformation& format_
 )
 {
 }
@@ -306,12 +309,12 @@ AbstractBlok::Private::update_outputs_index_range
     {
         auto converter = this->index_range_converters.at(
             DataSet::Private::from(
-                output.get()
+                output
             )->source_index
         );
 
         DataSet::Private::from(
-            output.get()
+            output
         )->set_index_range(
             converter(
                 index_ranges
@@ -347,12 +350,12 @@ AbstractBlok::Private::update_outputs_defined_indices
     {
         auto converter = this->defined_indices_converters.at(
             DataSet::Private::from(
-                output.get()
+                output
             )->source_index
         );
 
         DataSet::Private::from(
-            output.get()
+            output
         )->set_defined_indices(
             converter(
                 index_collections
@@ -372,7 +375,7 @@ AbstractBlok::Private::update_inputs_wanted_indices
     {
         index_collections.push_back(
             DataSet::Private::from(
-                output.get()
+                output
             )->wanted_indices
         );
     }
@@ -383,12 +386,12 @@ AbstractBlok::Private::update_inputs_wanted_indices
         {
             auto converter = this->wanted_indices_converters.at(
                 DataSet::Private::from(
-                    input.get()
+                    input
                 )->source_index
             );
 
             DataSet::Private::from(
-                input.get()
+                input
             )->set_wanted_indices(
                 converter(
                     index_collections
@@ -401,28 +404,28 @@ AbstractBlok::Private::update_inputs_wanted_indices
 SharedDataSet
 AbstractBlok::Private::get_input
 (
-    size_t _index
+    size_t index_
 )
 const
 {
-    return this->inputs.at(_index);
+    return this->inputs.at(index_);
 }
 
 bool
 AbstractBlok::Private::set_input
 (
-    size_t _index,
-    const SharedDataSet& _value
+    size_t index_,
+    const SharedDataSet& value_
 )
 {
     bool ok = false;
 
     if(
-        _index >= this->inputs.size() &&
-        _index < this->maximum_input_count
+        index_ >= this->inputs.size() &&
+        index_ < this->maximum_input_count
     )
     {
-        this->inputs.resize(_index+1, nullptr);
+        this->inputs.resize(index_+1, nullptr);
 
         this->inputs_format.resize(
             this->inputs.size(),
@@ -437,19 +440,19 @@ AbstractBlok::Private::set_input
 
     ObjectInformation input_format = undefined_object;
 
-    if(_index < this->inputs_format.size())
+    if(index_ < this->inputs_format.size())
     {
-        input_format = this->inputs_format.at(_index);
+        input_format = this->inputs_format.at(index_);
     }
 
     if(
-        _value == nullptr ||
-        _value->get_instance_information() >> input_format
+        value_ == nullptr ||
+        value_->get_instance_information() >> input_format
     )
     {
         ok = true;
 
-        this->inputs[_index] = _value;
+        this->inputs[index_] = value_;
 
         this->update_outputs_index_range();
         this->update_outputs_defined_indices();
@@ -463,18 +466,27 @@ AbstractBlok::Private::set_input
 SharedDataSet
 AbstractBlok::Private::get_output
 (
-    size_t _index
+    size_t index_
 )
 const
 {
-    return this->outputs.at(_index);
+    return this->outputs.at(index_);
 }
 
 AbstractBlok::Private*
 AbstractBlok::Private::from
 (
-    const AbstractBlok* _q
+    const AbstractBlok* this_
 )
 {
-    return _q->d_ptr;
+    return this_->d_ptr;
+}
+
+AbstractBlok::Private*
+AbstractBlok::Private::from
+(
+    const SharedBlok& this_
+)
+{
+    return this_->d_ptr;
 }

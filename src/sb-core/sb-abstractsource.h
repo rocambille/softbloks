@@ -40,7 +40,7 @@ public:
     SharedDataSet
     get_output
     (
-        size_t _index
+        size_t index_
     )
     const;
 
@@ -49,35 +49,35 @@ protected:
     void
     set_output_count
     (
-        size_t _value
+        size_t value_
     );
 
     void
     set_output_count
     (
-        size_t _minimum,
-        size_t _maximum
+        size_t minimum_,
+        size_t maximum_
     );
 
     void
     set_output_format
     (
-        size_t _index,
-        const ObjectInformation& _format
+        size_t index_,
+        const ObjectInformation& format
     );
 
     void
     set_index_range
     (
-        size_t _output,
-        const IndexRange& _value
+        size_t output_,
+        const IndexRange& value_
     );
 
     void
     set_defined_indices
     (
-        size_t _output,
-        const IndexCollection& _value
+        size_t output_,
+        const IndexCollection& value_
     );
 
 private:
@@ -87,7 +87,7 @@ private:
     void
     construct
     (
-        AbstractSource* _this
+        AbstractSource* this_
     );
 
     Private*

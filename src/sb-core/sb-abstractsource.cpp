@@ -34,103 +34,103 @@ AbstractSource::~AbstractSource
 SharedDataSet
 AbstractSource::get_output
 (
-    size_t _index
+    size_t index_
 )
 const
 {
     return AbstractBlok::Private::from(
         this
-    )->outputs.at(_index);
+    )->outputs.at(index_);
 }
 
 void
 AbstractSource::set_output_count
 (
-    size_t _value
+    size_t value_
 )
 {
     AbstractBlok::Private::from(
         this
     )->set_output_count(
-        _value
+        value_
     );
 }
 
 void
 AbstractSource::set_output_count
 (
-    size_t _minimum,
-    size_t _maximum
+    size_t minimum_,
+    size_t maximum_
 )
 {
     AbstractBlok::Private::from(
         this
     )->set_output_count(
-        _minimum,
-        _maximum
+        minimum_,
+        maximum_
     );
 }
 
 void
 AbstractSource::set_output_format
 (
-    size_t _index,
-    const ObjectInformation& _format
+    size_t index_,
+    const ObjectInformation& format_
 )
 {
     AbstractBlok::Private::from(
         this
     )->set_output_format(
-        _index,
-        _format
+        index_,
+        format_
     );
 }
 
 void
 AbstractSource::set_index_range
 (
-    size_t _output,
-    const IndexRange& _value
+    size_t output_,
+    const IndexRange& value_
 )
 {
     DataSet::Private::from(
         this->get_output(
-            _output
-        ).get()
+            output_
+        )
     )->set_index_range(
-        _value
+        value_
     );
 }
 
 void
 AbstractSource::set_defined_indices
 (
-    size_t _output,
-    const IndexCollection& _value
+    size_t output_,
+    const IndexCollection& value_
 )
 {
     DataSet::Private::from(
         this->get_output(
-            _output
-        ).get()
+            output_
+        )
     )->set_defined_indices(
-        _value
+        value_
     );
 }
 
 void
 AbstractSource::construct
 (
-    AbstractSource* _this
+    AbstractSource* this_
 )
 {
-    _this->d_ptr = new Private(_this);
+    this_->d_ptr = new Private(this_);
 }
 
 AbstractSource::Private::Private
 (
-    AbstractSource* _q
+    AbstractSource* q_ptr_
 ):
-    q_ptr(_q)
+    q_ptr(q_ptr_)
 {
 }

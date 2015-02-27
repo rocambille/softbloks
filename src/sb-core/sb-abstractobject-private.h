@@ -30,14 +30,21 @@ public:
 
     AbstractObject::Private
     (
-        AbstractObject* _q
+        AbstractObject* q_ptr_
     );
 
     static
     AbstractObject::Private*
     from
     (
-        const AbstractObject* _q
+        const AbstractObject* this_
+    );
+
+    static
+    AbstractObject::Private*
+    from
+    (
+        const SharedObject& this_
     );
 
 public:

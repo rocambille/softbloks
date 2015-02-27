@@ -30,7 +30,7 @@ public:
 
     AbstractSource::Private
     (
-        AbstractSource* _q
+        AbstractSource* q_ptr_
     );
 
 public:

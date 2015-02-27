@@ -82,7 +82,7 @@ private:
     void
     construct
     (
-        AbstractBlok* _this
+        AbstractBlok* this_
     );
 
     Private*

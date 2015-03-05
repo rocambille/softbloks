@@ -331,7 +331,7 @@ public:
 
         std::static_pointer_cast< Accessors<T> >(
             wanted_property.accessors
-        )->set(_value);
+        )->set(value_);
     }
 
     template<typename T>

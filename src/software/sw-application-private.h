@@ -20,6 +20,10 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "sw-application.h"
 
+#include <QtWidgets>
+
+#include "sw-mainwidget.h"
+
 namespace sw
 {
 
@@ -37,10 +41,26 @@ public:
         Application* q_ptr_
     );
 
+    void
+    read_settings
+    (
+    );
+
+    void
+    write_settings
+    (
+    );
+
 public:
 
     Application*
     q_ptr;
+
+    QSettings
+    settings;
+
+    MainWidget*
+    main_widget;
 
 };
 

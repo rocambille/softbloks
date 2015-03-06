@@ -22,6 +22,8 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <QTabWidget>
 
+#include <QSettings>
+
 namespace sw
 {
 
@@ -37,6 +39,19 @@ public:
     MainWidget
     (
     );
+
+    void
+    read_settings
+    (
+        const QSettings& settings_
+    );
+
+    void
+    write_settings
+    (
+        QSettings& settings_
+    )
+    const;
 
 private:
 

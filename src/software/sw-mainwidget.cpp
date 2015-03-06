@@ -33,7 +33,11 @@ MainWidget::MainWidget
     // add home tab
 
     this->addTab(
-        new QWidget,
+        new QLabel(
+            QString("%1 v%2").
+                arg(QApplication::applicationName()).
+                arg(QApplication::applicationVersion())
+        ),
         tr("H")
     );
 
@@ -78,6 +82,32 @@ MainWidget::MainWidget
     connect(
         this, &QTabWidget           :: tabCloseRequested,
         d   , &MainWidgetPrivate    :: on_tab_close_requested
+    );
+}
+
+void
+MainWidget::read_settings
+(
+    const QSettings& settings_
+)
+{
+    this->restoreGeometry(
+        settings_.value(
+            "MainWidget/geometry"
+        ).toByteArray()
+    );
+}
+
+void
+MainWidget::write_settings
+(
+    QSettings& settings_
+)
+const
+{
+    settings_.setValue(
+        "MainWidget/geometry",
+        this->saveGeometry()
     );
 }
 

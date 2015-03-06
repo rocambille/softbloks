@@ -18,8 +18,6 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #include "sw-application.h"
 #include "sw-application-private.h"
 
-#include "sw-mainwidget.h"
-
 using namespace sw;
 
 Application::Application
@@ -29,12 +27,37 @@ Application::Application
 ):
     QApplication(argc_, argv_)
 {
+    this->setApplicationName(
+        "Software"
+    );
+    this->setApplicationVersion(
+        QString("%1.%2 20%3.%4.%5").
+            arg(SB_VERSION_MAJOR).
+            arg(SB_VERSION_MINOR).
+            arg(SB_BUILD_YEAR).
+            arg(SB_BUILD_MONTH).
+            arg(SB_BUILD_DAY)
+    );
+
     d_ptr = new ApplicationPrivate(this);
 
-    MainWidget* main_widget = new MainWidget;
-    main_widget->setAttribute(Qt::WA_DeleteOnClose);
+    Q_D(Application);
 
-    main_widget->show();
+    d->read_settings();
+
+    connect(
+        this, &QApplication :: lastWindowClosed,
+        [d]
+        (
+        )
+        {
+            d->write_settings();
+
+            delete d->main_widget;
+        }
+    );
+
+    d->main_widget->show();
 }
 
 ApplicationPrivate::ApplicationPrivate
@@ -42,6 +65,28 @@ ApplicationPrivate::ApplicationPrivate
     Application* q_ptr_
 ):
     QObject (q_ptr_),
-    q_ptr   (q_ptr_)
+    q_ptr   (q_ptr_),
+    settings("software.ini", QSettings::IniFormat)
 {
+    this->main_widget = new MainWidget;
+}
+
+void
+ApplicationPrivate::read_settings
+(
+)
+{
+    this->main_widget->read_settings(
+        this->settings
+    );
+}
+
+void
+ApplicationPrivate::write_settings
+(
+)
+{
+    this->main_widget->write_settings(
+        this->settings
+    );
 }

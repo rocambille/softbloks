@@ -33,7 +33,9 @@ set(SOFTBLOKS_VERSION
 
 # set cmake options
 
+set(CMAKE_AUTOMOC ON)
 set(CMAKE_DEBUG_POSTFIX d)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # set OS options
 
@@ -66,7 +68,7 @@ function(sb_add_library _name)
         VERSION ${SOFTBLOKS_VERSION}
     )
 
-    target_include_directories(${_name} PUBLIC  
+    target_include_directories(${_name} PUBLIC
         $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/sb-global>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
         $<INSTALL_INTERFACE:include/sb-global>
@@ -93,6 +95,24 @@ function(sb_add_library _name)
     )
 endfunction()
 
+# declare custom add_executable function
+
+function(sb_add_executable _name)
+    add_executable(${_name} ${ARGN})
+
+    target_link_libraries(${_name} sb-core)
+
+    set_target_properties(${_name} PROPERTIES
+        DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX}
+        VERSION ${SOFTBLOKS_VERSION}
+    )
+
+    install(
+        TARGETS ${_name}
+        RUNTIME DESTINATION bin
+    )
+endfunction()
+
 # add cmake config files
 
 add_subdirectory(cmake)
@@ -104,6 +124,27 @@ add_subdirectory(sb-global)
 # add core module
 
 add_subdirectory(sb-core)
+
+# add software
+
+find_package(Qt5 COMPONENTS
+    Widgets
+)
+
+option(BUILD_SOFTWARE
+    "build software"
+    ${Qt5Widgets_FOUND}
+)
+
+if(BUILD_SOFTWARE)
+    if(Qt5Widgets_FOUND)
+        add_subdirectory(software)
+    else()
+        message(FATAL_ERROR
+            "Qt5Widgets is not found."
+        )
+    endif()
+endif()
 
 # add documentation
 

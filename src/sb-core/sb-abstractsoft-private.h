@@ -15,11 +15,31 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef SW_DEFINE_H
-#define SW_DEFINE_H
+#ifndef SB_ABSTRACTSOFT_PRIVATE_H
+#define SB_ABSTRACTSOFT_PRIVATE_H
 
-#include "sb-core.h"
+#include "sb-abstractsoft.h"
 
-#define SB_STRINGIFY(a_) "" # a_
+namespace sb
+{
 
-#endif // SW_DEFINE_H
+class AbstractSoft::Private
+{
+
+public:
+
+    AbstractSoft::Private
+    (
+        AbstractSoft* q_ptr_
+    );
+
+public:
+
+    AbstractSoft*
+    q_ptr;
+
+};
+
+}
+
+#endif // SB_ABSTRACTSOFT_PRIVATE_H

@@ -59,7 +59,7 @@ public:
     QSettings
     settings;
 
-    MainWidget*
+    MainWidget
     main_widget;
 
 };

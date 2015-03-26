@@ -14,23 +14,22 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
-qt5_add_resources(rcc_files
-    sw-resources.qrc
+install(
+    FILES softbloks-config.cmake
+    DESTINATION lib/cmake/softbloks
 )
 
-sb_add_executable(software
-    sw-application.cpp
-    sw-application.h
-    sw-application-private.h
-    sw-define.h
-    sw-main.cpp
-    sw-mainwidget.cpp
-    sw-mainwidget.h
-    sw-mainwidget-private.h
-    ${rcc_files}
+configure_file(config-version.cmake.in
+    "${CMAKE_CURRENT_BINARY_DIR}/config-version.cmake"
+    @ONLY
 )
-
-target_link_libraries(software
-    Qt5::Widgets
-    Qt5::Svg
+install(
+    FILES "${CMAKE_CURRENT_BINARY_DIR}/config-version.cmake"
+    DESTINATION lib/cmake/softbloks
+    RENAME softbloks-config-version.cmake
+)
+install(
+    FILES "${CMAKE_CURRENT_BINARY_DIR}/config-version.cmake"
+    DESTINATION lib/cmake/sb-core
+    RENAME sb-core-config-version.cmake
 )

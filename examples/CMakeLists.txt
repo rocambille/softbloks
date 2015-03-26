@@ -14,23 +14,11 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
-qt5_add_resources(rcc_files
-    sw-resources.qrc
+option(BUILD_EXAMPLES
+    "build examples"
+    OFF
 )
 
-sb_add_executable(software
-    sw-application.cpp
-    sw-application.h
-    sw-application-private.h
-    sw-define.h
-    sw-main.cpp
-    sw-mainwidget.cpp
-    sw-mainwidget.h
-    sw-mainwidget-private.h
-    ${rcc_files}
-)
-
-target_link_libraries(software
-    Qt5::Widgets
-    Qt5::Svg
-)
+if(BUILD_EXAMPLES)
+    add_subdirectory(helloworld)
+endif()

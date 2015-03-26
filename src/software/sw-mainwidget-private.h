@@ -20,6 +20,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "sw-mainwidget.h"
 
+#include <QtSvg>
 #include <QtWidgets>
 
 namespace sw
@@ -51,10 +52,41 @@ public:
         int index_
     );
 
+    QWidget*
+    create_home_widget
+    (
+    );
+
+    QWidget*
+    create_get_started_widget
+    (
+    );
+
+    QWidget*
+    create_options_widget
+    (
+    );
+
+    QWidget*
+    create_about_widget
+    (
+    );
+
+    QWidget*
+    create_chooser
+    (
+    );
+
 public:
 
     MainWidget*
     q_ptr;
+
+    QWidget*
+    home_widget;
+
+    QListWidget*
+    module_list_widget;
 
 };
 

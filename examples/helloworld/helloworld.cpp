@@ -15,11 +15,42 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef SW_DEFINE_H
-#define SW_DEFINE_H
-
 #include "sb-core.h"
 
-#define SB_STRINGIFY(a_) "" # a_
+class Soft1 : public sb::AbstractSoft
+{
 
-#endif // SW_DEFINE_H
+    SB_DECLARE_OBJECT(Soft1, "Soft1")
+
+    static
+    void
+    construct
+    (
+        Soft1* this_
+    )
+    {
+    }
+
+};
+
+class Soft2 : public sb::AbstractSoft
+{
+
+    SB_DECLARE_OBJECT(Soft2, "Soft2")
+
+    static
+    void
+    construct
+    (
+        Soft2* this_
+    )
+    {
+    }
+
+};
+
+SB_DECLARE_MODULE(helloworld)
+{
+    sb::register_object<Soft1>();
+    sb::register_object<Soft2>();
+}

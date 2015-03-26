@@ -94,4 +94,7 @@ const size_t infinity = std::numeric_limits<size_t>::max();
         (\
         );
 
+#define SB_DECLARE_MODULE(name_) \
+    extern "C" SB_DECL_EXPORT void sb_init_module()
+
 #endif // SB_COREDEFINE_H

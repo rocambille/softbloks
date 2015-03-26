@@ -23,6 +23,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #include "sb-abstractfilter.h"
 #include "sb-abstractobject.h"
 #include "sb-abstractsink.h"
+#include "sb-abstractsoft.h"
 #include "sb-abstractsource.h"
 
 #endif // SB_CORE_H

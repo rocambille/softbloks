@@ -14,32 +14,35 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
-# add global module
+find_package(Doxygen)
 
-add_subdirectory(sb-global)
-
-# add core module
-
-add_subdirectory(sb-core)
-
-# add software
-
-find_package(Qt5 COMPONENTS
-    Widgets
-    Svg
+option(BUILD_DOCUMENTATION
+    "build HTML documentation with Doxygen"
+    ${DOXYGEN_FOUND}
 )
 
-option(BUILD_SOFTWARE
-    "build software"
-    ${Qt5_FOUND}
-)
+if(BUILD_DOCUMENTATION)
+    if(DOXYGEN_FOUND)
+        configure_file(
+            softbloks.doxyfile.in
+            "${CMAKE_CURRENT_BINARY_DIR}/softbloks.doxyfile"
+            @ONLY
+        )
 
-if(BUILD_SOFTWARE)
-    if(Qt5_FOUND)
-        add_subdirectory(software)
+        add_custom_target(doxygen ALL
+            COMMAND ${DOXYGEN_EXECUTABLE} "${CMAKE_CURRENT_BINARY_DIR}/softbloks.doxyfile"
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+            COMMENT "Generating API documentation with Doxygen"
+            VERBATIM
+        )
+
+        install(
+            DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html/
+            DESTINATION doc
+        )
     else()
         message(FATAL_ERROR
-            "Qt5Widgets is not found."
+            "Doxygen is required to build documentation."
         )
     endif()
 endif()

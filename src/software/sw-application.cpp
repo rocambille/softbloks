@@ -38,6 +38,9 @@ Application::Application
             arg(SB_BUILD_MONTH).
             arg(SB_BUILD_DAY)
     );
+    this->setWindowIcon(
+        QIcon(":/software.svg")
+    );
 
     d_ptr = new ApplicationPrivate(this);
 
@@ -52,12 +55,10 @@ Application::Application
         )
         {
             d->write_settings();
-
-            delete d->main_widget;
         }
     );
 
-    d->main_widget->show();
+    d->main_widget.show();
 }
 
 ApplicationPrivate::ApplicationPrivate
@@ -68,7 +69,6 @@ ApplicationPrivate::ApplicationPrivate
     q_ptr   (q_ptr_),
     settings("software.ini", QSettings::IniFormat)
 {
-    this->main_widget = new MainWidget;
 }
 
 void
@@ -76,7 +76,30 @@ ApplicationPrivate::read_settings
 (
 )
 {
-    this->main_widget->read_settings(
+    QStringList module_paths = this->settings.value(
+        "Global/module_paths"
+    ).toStringList();
+
+    foreach(QString module_path, module_paths)
+    {
+        QDir dir(module_path);
+
+        foreach(QString entry, dir.entryList(QDir::Files))
+        {
+            QLibrary library(dir.filePath(entry));
+
+            QFunctionPointer sb_init_module = (
+                library.resolve("sb_init_module")
+            );
+
+            if(sb_init_module)
+            {
+                sb_init_module();
+            }
+        }
+    }
+
+    this->main_widget.read_settings(
         this->settings
     );
 }
@@ -86,7 +109,7 @@ ApplicationPrivate::write_settings
 (
 )
 {
-    this->main_widget->write_settings(
+    this->main_widget.write_settings(
         this->settings
     );
 }

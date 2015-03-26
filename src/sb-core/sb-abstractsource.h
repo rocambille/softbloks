@@ -63,7 +63,7 @@ protected:
     set_output_format
     (
         size_t index_,
-        const ObjectInformation& format
+        const ObjectFormat& format
     );
 
     void

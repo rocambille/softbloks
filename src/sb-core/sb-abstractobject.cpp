@@ -27,8 +27,8 @@ typedef
     ObjectFactoryMap;
 
 typedef
-    std::map<std::string, ObjectInformation>
-    ObjectInformationMap;
+    std::map<std::string, ObjectFormat>
+    ObjectFormatMap;
 
 namespace Global
 {
@@ -36,8 +36,8 @@ namespace Global
 ObjectFactoryMap
 object_factory_map;
 
-ObjectInformationMap
-object_information_map;
+ObjectFormatMap
+object_format_map;
 
 }
 
@@ -88,17 +88,17 @@ namespace Unmapper
     std::string
     name
     (
-        const ObjectInformationMap::value_type& value_
+        const ObjectFormatMap::value_type& value_
     )
     {
         return value_.first;
     }
 
     inline
-    ObjectInformation
-    information
+    ObjectFormat
+    format
     (
-        const ObjectInformationMap::value_type& value_
+        const ObjectFormatMap::value_type& value_
     )
     {
         return value_.second;
@@ -111,8 +111,9 @@ namespace Unmapper
 using namespace sb;
 
 std::vector<std::string>
-sb::get_registered_objects
+sb::get_registered_object_names
 (
+    const ObjectFormat& filter_
 )
 {
     std::vector<std::string> registered_objects;
@@ -120,11 +121,14 @@ sb::get_registered_objects
         Global::object_factory_map.size()
     );
 
-    for(auto object_factory : Global::object_factory_map)
+    for(auto object : Global::object_format_map)
     {
-        registered_objects.push_back(
-            Unmapper::name(object_factory)
-        );
+        if(Unmapper::format(object) >> filter_)
+        {
+            registered_objects.push_back(
+                Unmapper::name(object)
+            );
+        }
     }
 
     return registered_objects;
@@ -149,13 +153,13 @@ sb::create_object
     return instance;
 }
 
-ObjectInformation
-sb::get_object_information
+ObjectFormat
+sb::get_object_format
 (
     const std::string& name_
 )
 {
-    return Global::object_information_map.at(name_);
+    return Global::object_format_map.at(name_);
 }
 
 AbstractObject::~AbstractObject
@@ -167,28 +171,28 @@ AbstractObject::~AbstractObject
     delete this->properties;
 }
 
-ObjectInformation
-AbstractObject::get_instance_information
+ObjectFormat
+AbstractObject::get_instance_format
 (
 )
 const
 {
-    PropertyInformationMap property_information;
+    PropertyFormatMap property_format;
 
     for(auto property : *(this->properties))
     {
-        property_information.emplace(
+        property_format.emplace(
             Unmapper::name(property),
-            Unmapper::data(property).information
+            Unmapper::data(property).format
         );
     }
 
-    ObjectInformation information = {
+    ObjectFormat format = {
         d_ptr->type_names,
-        property_information
+        property_format
     };
 
-    return information;
+    return format;
 }
 
 bool
@@ -311,9 +315,9 @@ AbstractObject::register_object
 
         auto instance = factory_();
 
-        Global::object_information_map.emplace(
+        Global::object_format_map.emplace(
             name_,
-            instance->get_instance_information()
+            instance->get_instance_format()
         );
 
         registered = true;

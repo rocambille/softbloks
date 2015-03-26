@@ -29,53 +29,62 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
-struct PropertyInformation
+struct PropertyFormat
 {
+
     std::type_index
     type;
 
     sb::Mode
     mode;
+
 };
 
 typedef
-    std::map<std::string, PropertyInformation>
-    PropertyInformationMap;
+    std::map<std::string, PropertyFormat>
+    PropertyFormatMap;
 
 namespace Unmapper
 {
+
     inline
     std::string
     name
     (
-        const PropertyInformationMap::value_type& value_
+        const PropertyFormatMap::value_type& value_
     )
     {
         return value_.first;
     }
 
     inline
-    PropertyInformation
-    information
+    PropertyFormat
+    format
     (
-        const PropertyInformationMap::value_type& value_
+        const PropertyFormatMap::value_type& value_
     )
     {
         return value_.second;
     }
+
 }
 
-struct ObjectInformation
+struct ObjectFormat
 {
+
     std::vector<std::string>
     type_names;
 
-    PropertyInformationMap
+    PropertyFormatMap
     properties;
+
 };
 
-const ObjectInformation
-undefined_object = { { "sb::UndefinedObject" } };
+const ObjectFormat
+undefined_format = { { "sb::UndefinedObject" } };
+
+const ObjectFormat
+any_format = { { "sb::AbstractObject" } };
 
 class AbstractObject;
 
@@ -122,8 +131,9 @@ register_object
 
 SB_CORE_API
 std::vector<std::string>
-get_registered_objects
+get_registered_object_names
 (
+    const ObjectFormat& filter_ = any_format
 );
 
 SB_CORE_API
@@ -147,8 +157,8 @@ create
 }
 
 SB_CORE_API
-ObjectInformation
-get_object_information
+ObjectFormat
+get_object_format
 (
     const std::string& name_
 );
@@ -163,6 +173,7 @@ public:
     template<typename T>
     struct Accessors
     {
+
         typedef
             std::function<T(void)>
             Get;
@@ -176,18 +187,21 @@ public:
 
         Set
         set;
+
     };
 
     struct Property
     {
+
         void*
         owner;
 
-        PropertyInformation
-        information;
+        PropertyFormat
+        format;
 
         std::shared_ptr<void>
         accessors;
+
     };
 
     typedef
@@ -220,8 +234,8 @@ public:
     )
     = delete;
 
-    ObjectInformation
-    get_instance_information
+    ObjectFormat
+    get_instance_format
     (
     )
     const;
@@ -253,14 +267,14 @@ public:
 
         std::type_index wanted_result_type = typeid(T);
 
-        if(wanted_result_type != wanted_property.information.type)
+        if(wanted_result_type != wanted_property.format.type)
         {
             throw std::invalid_argument(
                 std::string() +
                 "sb::AbstractBlok::get: property " +
                 name_ +
                 " registered as " +
-                wanted_property.information.type.name() +
+                wanted_property.format.type.name() +
                 " is accessed as " +
                 wanted_result_type.name()
             );
@@ -268,7 +282,7 @@ public:
 
         // check mode
 
-        if((wanted_property.information.mode & READ_ONLY) == 0)
+        if((wanted_property.format.mode & READ_ONLY) == 0)
         {
             throw std::invalid_argument(
                 std::string() +
@@ -301,14 +315,14 @@ public:
 
         std::type_index wanted_argument_type = typeid(T);
 
-        if(wanted_argument_type != wanted_property.information.type)
+        if(wanted_argument_type != wanted_property.format.type)
         {
             throw std::invalid_argument(
                 std::string() +
                 "sb::AbstractBlok::set: property " +
                 name_ +
                 " registered as " +
-                wanted_property.information.type.name() +
+                wanted_property.format.type.name() +
                 " is accessed as " +
                 wanted_argument_type.name()
             );
@@ -316,7 +330,7 @@ public:
 
         // check mode
 
-        if((wanted_property.information.mode & WRITE_ONLY) == 0)
+        if((wanted_property.format.mode & WRITE_ONLY) == 0)
         {
             throw std::invalid_argument(
                 std::string() +
@@ -477,67 +491,67 @@ inline
 bool
 operator>>
 (
-    const sb::ObjectInformation& a_,
-    const sb::ObjectInformation& b_
+    const sb::ObjectFormat& from_,
+    const sb::ObjectFormat& to_extract_
 )
 {
     return std::all_of(
-        b_.type_names.begin(),
-        b_.type_names.end(),
-        [&a_]
+        to_extract_.type_names.begin(),
+        to_extract_.type_names.end(),
+        [&from_]
         (
             const std::string& type_name_
         )
         {
             return std::find(
-                a_.type_names.begin(),
-                a_.type_names.end(),
+                from_.type_names.begin(),
+                from_.type_names.end(),
                 type_name_
-            ) != a_.type_names.end();
+            ) != from_.type_names.end();
         }
     ) && std::all_of(
-        b_.properties.begin(),
-        b_.properties.end(),
-        [&a_]
+        to_extract_.properties.begin(),
+        to_extract_.properties.end(),
+        [&from_]
         (
-            const sb::PropertyInformationMap::value_type& b_value_
+            const sb::PropertyFormatMap::value_type& value_to_extract_
         )
         {
             return std::find_if(
-                a_.properties.begin(),
-                a_.properties.end(),
-                [&b_value_]
+                from_.properties.begin(),
+                from_.properties.end(),
+                [&value_to_extract_]
                 (
-                    const sb::PropertyInformationMap::value_type& a_value_
+                    const sb::PropertyFormatMap::value_type& from_value_
                 )
                 {
                     return (
                         sb::Unmapper::name(
-                            b_value_
+                            value_to_extract_
                         ) ==
                         sb::Unmapper::name(
-                            a_value_
+                            from_value_
                         )
                     ) && (
-                        sb::Unmapper::information(
-                            b_value_
+                        sb::Unmapper::format(
+                            value_to_extract_
                         ).type ==
-                        sb::Unmapper::information(
-                            a_value_
+                        sb::Unmapper::format(
+                            from_value_
                         ).type
                     ) && (
                         (
-                            sb::Unmapper::information(
-                                b_value_
+                            sb::Unmapper::format(
+                                value_to_extract_
                             ).mode &
-                            sb::Unmapper::information(
-                                a_value_
+                            sb::Unmapper::format(
+                                from_value_
                             ).mode
                         ) ==
-                        sb::Unmapper::information(b_value_).mode
+                        sb::Unmapper::format(value_to_extract_).mode
                     );
                 }
-            ) != a_.properties.end();
+            ) != from_.properties.end();
         }
     );
 }
@@ -546,11 +560,11 @@ inline
 bool
 operator<<
 (
-    const sb::ObjectInformation& a_,
-    const sb::ObjectInformation& b_
+    const sb::ObjectFormat& target_,
+    const sb::ObjectFormat& to_inject_
 )
 {
-    return b_ >> a_;
+    return to_inject_ >> target_;
 }
 
 #endif // SB_ABSTRACTOBJECT_H

@@ -52,7 +52,7 @@ public:
     set_input_format
     (
         size_t index_,
-        const ObjectInformation& format_
+        const ObjectFormat& format_
     );
 
     void
@@ -72,7 +72,7 @@ public:
     set_output_format
     (
         size_t index_,
-        const ObjectInformation& format_
+        const ObjectFormat& format_
     );
 
     void
@@ -139,7 +139,7 @@ public:
     std::vector<SharedDataSet>
     inputs;
 
-    std::vector<ObjectInformation>
+    std::vector<ObjectFormat>
     inputs_format;
 
     std::vector<IndexCollectionConverter>

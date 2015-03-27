@@ -15,15 +15,53 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef SB_CORE_H
-#define SB_CORE_H
+#ifndef SW_MAINWIDGET_H
+#define SW_MAINWIDGET_H
 
-#include "sb-abstractblok.h"
-#include "sb-abstractdata.h"
-#include "sb-abstractfilter.h"
-#include "sb-abstractobject.h"
-#include "sb-abstractsink.h"
-#include "sb-abstractsoft.h"
-#include "sb-abstractsource.h"
+#include "sw-define.h"
 
-#endif // SB_CORE_H
+#include <QTabWidget>
+
+#include <QSettings>
+
+namespace sw
+{
+
+class MainWidgetPrivate;
+
+class MainWidget : public QTabWidget
+{
+
+    Q_OBJECT
+
+public:
+
+    MainWidget
+    (
+    );
+
+    void
+    read_settings
+    (
+        const QSettings& settings_
+    );
+
+    void
+    write_settings
+    (
+        QSettings& settings_
+    )
+    const;
+
+private:
+
+    Q_DECLARE_PRIVATE(MainWidget)
+
+    MainWidgetPrivate*
+    d_ptr;
+
+};
+
+}
+
+#endif // SW_MAINWIDGET_H

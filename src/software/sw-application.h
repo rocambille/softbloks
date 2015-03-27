@@ -15,15 +15,40 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef SB_CORE_H
-#define SB_CORE_H
+#ifndef SW_APPLICATION_H
+#define SW_APPLICATION_H
 
-#include "sb-abstractblok.h"
-#include "sb-abstractdata.h"
-#include "sb-abstractfilter.h"
-#include "sb-abstractobject.h"
-#include "sb-abstractsink.h"
-#include "sb-abstractsoft.h"
-#include "sb-abstractsource.h"
+#include "sw-define.h"
 
-#endif // SB_CORE_H
+#include <QApplication>
+
+namespace sw
+{
+
+class ApplicationPrivate;
+
+class Application : public QApplication
+{
+
+    Q_OBJECT
+
+public:
+
+    Application
+    (
+        int& argc_,
+        char** argv_
+    );
+
+private:
+
+    Q_DECLARE_PRIVATE(Application)
+
+    ApplicationPrivate*
+    d_ptr;
+
+};
+
+}
+
+#endif // SW_APPLICATION_H

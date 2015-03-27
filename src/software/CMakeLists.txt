@@ -5,7 +5,7 @@
 # it under the terms of the GNU Lesser General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # Softbloks is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -14,20 +14,23 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
-configure_file(
-    softbloks.doxyfile.in
-    "${CMAKE_CURRENT_BINARY_DIR}/softbloks.doxyfile"
-    @ONLY
+qt5_add_resources(rcc_files
+    sw-resources.qrc
 )
 
-add_custom_target(doxygen ALL
-    COMMAND ${DOXYGEN_EXECUTABLE} "${CMAKE_CURRENT_BINARY_DIR}/softbloks.doxyfile"
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-    COMMENT "Generating API documentation with Doxygen"
-    VERBATIM
+sb_add_executable(software
+    sw-application.cpp
+    sw-application.h
+    sw-application-private.h
+    sw-define.h
+    sw-main.cpp
+    sw-mainwidget.cpp
+    sw-mainwidget.h
+    sw-mainwidget-private.h
+    ${rcc_files}
 )
 
-install(
-    DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html
-    DESTINATION docs
+target_link_libraries(software
+    Qt5::Widgets
+    Qt5::Svg
 )

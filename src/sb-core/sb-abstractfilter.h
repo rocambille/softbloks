@@ -77,7 +77,7 @@ protected:
     set_input_format
     (
         size_t index_,
-        const ObjectInformation& format_
+        const ObjectFormat& format_
     );
 
     void
@@ -97,7 +97,7 @@ protected:
     set_output_format
     (
         size_t index_,
-        const ObjectInformation& format_
+        const ObjectFormat& format_
     );
 
     void

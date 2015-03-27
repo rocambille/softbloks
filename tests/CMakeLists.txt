@@ -14,32 +14,20 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
-# add global module
+find_package(GTest)
 
-add_subdirectory(sb-global)
-
-# add core module
-
-add_subdirectory(sb-core)
-
-# add software
-
-find_package(Qt5 COMPONENTS
-    Widgets
-    Svg
+option(BUILD_TESTS
+    "build tests"
+    ${GTEST_FOUND}
 )
 
-option(BUILD_SOFTWARE
-    "build software"
-    ${Qt5_FOUND}
-)
-
-if(BUILD_SOFTWARE)
-    if(Qt5_FOUND)
-        add_subdirectory(software)
+if(BUILD_TESTS)
+    if(GTEST_FOUND)
+        enable_testing()
+        include_directories(${GTEST_INCLUDE_DIRS})
     else()
         message(FATAL_ERROR
-            "Qt5Widgets is not found."
+            "GTest is required to build tests."
         )
     endif()
 endif()

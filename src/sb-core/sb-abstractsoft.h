@@ -15,69 +15,26 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef SB_ABSTRACTSOURCE_H
-#define SB_ABSTRACTSOURCE_H
+#ifndef SB_ABSTRACTSOFT_H
+#define SB_ABSTRACTSOFT_H
 
-#include "sb-abstractblok.h"
+#include "sb-abstractobject.h"
 
 namespace sb
 {
 
-class SB_CORE_API AbstractSource : public AbstractBlok
+class SB_CORE_API AbstractSoft : public AbstractObject
 {
 
-    SB_DECLARE_OBJECT(AbstractSource, "sb::AbstractSource")
+    SB_DECLARE_OBJECT(AbstractSoft, "sb::AbstractSoft")
 
 public:
 
     class Private;
 
     virtual
-    ~AbstractSource
+    ~AbstractSoft
     (
-    );
-
-    SharedDataSet
-    get_output
-    (
-        size_t index_
-    )
-    const;
-
-protected:
-
-    void
-    set_output_count
-    (
-        size_t value_
-    );
-
-    void
-    set_output_count
-    (
-        size_t minimum_,
-        size_t maximum_
-    );
-
-    void
-    set_output_format
-    (
-        size_t index_,
-        const ObjectFormat& format
-    );
-
-    void
-    set_index_range
-    (
-        size_t output_,
-        const IndexRange& value_
-    );
-
-    void
-    set_defined_indices
-    (
-        size_t output_,
-        const IndexCollection& value_
     );
 
 private:
@@ -87,7 +44,7 @@ private:
     void
     construct
     (
-        AbstractSource* this_
+        AbstractSoft* this_
     );
 
     Private*
@@ -97,4 +54,4 @@ private:
 
 }
 
-#endif // SB_ABSTRACTSOURCE_H
+#endif // SB_ABSTRACTSOFT_H

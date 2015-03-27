@@ -14,32 +14,22 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
-# add global module
-
-add_subdirectory(sb-global)
-
-# add core module
-
-add_subdirectory(sb-core)
-
-# add software
-
-find_package(Qt5 COMPONENTS
-    Widgets
-    Svg
+install(
+    FILES softbloks-config.cmake
+    DESTINATION lib/cmake/softbloks
 )
 
-option(BUILD_SOFTWARE
-    "build software"
-    ${Qt5_FOUND}
+configure_file(config-version.cmake.in
+    "${CMAKE_CURRENT_BINARY_DIR}/config-version.cmake"
+    @ONLY
 )
-
-if(BUILD_SOFTWARE)
-    if(Qt5_FOUND)
-        add_subdirectory(software)
-    else()
-        message(FATAL_ERROR
-            "Qt5Widgets is not found."
-        )
-    endif()
-endif()
+install(
+    FILES "${CMAKE_CURRENT_BINARY_DIR}/config-version.cmake"
+    DESTINATION lib/cmake/softbloks
+    RENAME softbloks-config-version.cmake
+)
+install(
+    FILES "${CMAKE_CURRENT_BINARY_DIR}/config-version.cmake"
+    DESTINATION lib/cmake/sb-core
+    RENAME sb-core-config-version.cmake
+)

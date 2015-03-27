@@ -101,7 +101,7 @@ void
 AbstractFilter::set_input_format
 (
     size_t index_,
-    const ObjectInformation& format_
+    const ObjectFormat& format_
 )
 {
     AbstractBlok::Private::from(
@@ -144,7 +144,7 @@ void
 AbstractFilter::set_output_format
 (
     size_t index_,
-    const ObjectInformation& format_
+    const ObjectFormat& format_
 )
 {
     AbstractBlok::Private::from(

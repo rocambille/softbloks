@@ -15,15 +15,42 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef SB_CORE_H
-#define SB_CORE_H
+#include "sb-core.h"
 
-#include "sb-abstractblok.h"
-#include "sb-abstractdata.h"
-#include "sb-abstractfilter.h"
-#include "sb-abstractobject.h"
-#include "sb-abstractsink.h"
-#include "sb-abstractsoft.h"
-#include "sb-abstractsource.h"
+class Soft1 : public sb::AbstractSoft
+{
 
-#endif // SB_CORE_H
+    SB_DECLARE_OBJECT(Soft1, "Soft1")
+
+    static
+    void
+    construct
+    (
+        Soft1* this_
+    )
+    {
+    }
+
+};
+
+class Soft2 : public sb::AbstractSoft
+{
+
+    SB_DECLARE_OBJECT(Soft2, "Soft2")
+
+    static
+    void
+    construct
+    (
+        Soft2* this_
+    )
+    {
+    }
+
+};
+
+SB_DECLARE_MODULE(helloworld)
+{
+    sb::register_object<Soft1>();
+    sb::register_object<Soft2>();
+}

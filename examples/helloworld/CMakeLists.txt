@@ -14,6 +14,13 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
-sb_add_module(helloworld
-    helloworld.cpp
+sb_add_module(hellobloks
+    hellobloks.cpp
+)
+
+set(CMAKE_AUTOMOC ON)
+
+sb_add_qt5_module(hellosoft
+    hellosoft.cpp
+    Qt5::Widgets
 )

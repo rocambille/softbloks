@@ -24,11 +24,6 @@ add_subdirectory(sb-core)
 
 # add software
 
-find_package(Qt5 COMPONENTS
-    Widgets
-    Svg
-)
-
 option(BUILD_SOFTWARE
     "build software"
     ${Qt5_FOUND}
@@ -39,7 +34,7 @@ if(BUILD_SOFTWARE)
         add_subdirectory(software)
     else()
         message(FATAL_ERROR
-            "Qt5Widgets is not found."
+            "Qt5 is not found."
         )
     endif()
 endif()

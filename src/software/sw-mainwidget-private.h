@@ -88,6 +88,9 @@ public:
     QListWidget*
     module_list_widget;
 
+    QMap<QWidget*, sb::SharedObject>
+    widget_to_soft_map;
+
 };
 
 }

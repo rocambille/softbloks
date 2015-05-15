@@ -33,7 +33,6 @@ set(SOFTBLOKS_VERSION
 
 # set cmake options
 
-set(CMAKE_AUTOMOC ON)
 set(CMAKE_DEBUG_POSTFIX d)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -56,7 +55,7 @@ install(
     DESTINATION .
 )
 
-# declare custom add_library function
+# declare custom add_library functions
 
 function(sb_add_library _name)
     add_library(${_name} SHARED ${ARGN})
@@ -95,7 +94,7 @@ function(sb_add_library _name)
     )
 endfunction()
 
-# declare custom add_executable function
+# declare custom add_executable functions
 
 function(sb_add_executable _name)
     add_executable(${_name} ${ARGN})
@@ -113,7 +112,7 @@ function(sb_add_executable _name)
     )
 endfunction()
 
-# declare sb_add_module function
+# declare sb_add_module functions
 
 function(sb_add_module _name)
     add_library(${_name} MODULE ${ARGN})
@@ -129,6 +128,39 @@ function(sb_add_module _name)
         DESTINATION lib/modules
     )
 endfunction()
+
+function(sb_add_qt5_module _name)
+    if(Qt5_FOUND)
+        foreach(_arg ${ARGN})
+            string(SUBSTRING ${_arg} 0 5 _arg_prefix)
+
+            if(${_arg_prefix} STREQUAL "Qt5::")
+                list(APPEND _qt5_components ${_arg})
+            else()
+                list(APPEND _sources ${_arg})
+            endif()
+        endforeach()
+
+        sb_add_module(${_name}
+            ${_sources}
+        )
+
+        target_link_libraries(${_name}
+            ${_qt5_components}
+        )
+    else()
+        message(FATAL_ERROR
+            "Qt5 is not found."
+        )
+    endif()
+endfunction()
+
+# find packages
+
+find_package(Qt5 COMPONENTS
+    Widgets
+    Svg
+)
 
 # add subdirectories
 

@@ -20,7 +20,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #include "sb-abstractsource-private.h"
 
 #include "sb-abstractblok-private.h"
-#include "sb-abstractdata-private.h"
+#include "sb-dataset-private.h"
 
 using namespace sb;
 

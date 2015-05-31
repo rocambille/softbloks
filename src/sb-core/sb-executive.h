@@ -15,32 +15,15 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "sb-abstractdata.h"
+#ifndef SB_EXECUTIVE_H
+#define SB_EXECUTIVE_H
 
-#include "sb-abstractdata-private.h"
+#include "sb-abstractexecutive.h"
 
-using namespace sb;
-
-AbstractData::~AbstractData
-(
-)
+namespace sb
 {
-    delete d_ptr;
+
+
 }
 
-void
-AbstractData::construct
-(
-    AbstractData* this_
-)
-{
-    this_->d_ptr = new Private(this_);
-}
-
-AbstractData::Private::Private
-(
-    AbstractData* q_ptr_
-):
-    q_ptr(q_ptr_)
-{
-}
+#endif // SB_EXECUTIVE_H

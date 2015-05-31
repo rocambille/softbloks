@@ -15,71 +15,60 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef SB_ABSTRACTBLOK_H
-#define SB_ABSTRACTBLOK_H
+#ifndef SB_DATASET_H
+#define SB_DATASET_H
 
 #include "sb-abstractobject.h"
 
-#include "sb-abstractexecutive.h"
-#include "sb-dataset.h"
+#include "sb-abstractdata.h"
 
 namespace sb
 {
 
-class SB_CORE_API AbstractBlok : public AbstractObject
+class SB_CORE_API DataSet : public AbstractObject
 {
 
-    SB_DECLARE_OBJECT(AbstractBlok, "sb::AbstractBlok")
+    SB_DECLARE_OBJECT(DataSet, "sb::DataSet")
 
 public:
 
     class Private;
 
     virtual
-    ~AbstractBlok
+    ~DataSet
     (
     );
 
-    size_t
-    get_minimum_input_count
+    IndexRange
+    get_index_range
     (
     )
     const;
 
-    size_t
-    get_maximum_input_count
+    IndexCollection
+    get_defined_indices
     (
     )
     const;
 
-    size_t
-    get_input_count
+    IndexCollection
+    get_wanted_indices
     (
     )
     const;
 
-    size_t
-    get_minimum_output_count
+    SharedData
+    get_data
     (
-    )
-    const;
-
-    size_t
-    get_maximum_output_count
-    (
-    )
-    const;
-
-    size_t
-    get_output_count
-    (
+        double index_
     )
     const;
 
     void
-    set_executive
+    set_data
     (
-        UniqueExecutive&& value_
+        double index_,
+        const SharedData& value_
     );
 
 private:
@@ -89,7 +78,7 @@ private:
     void
     construct
     (
-        AbstractBlok* this_
+        DataSet* this_
     );
 
     Private*
@@ -98,9 +87,9 @@ private:
 };
 
 typedef
-    std::shared_ptr<AbstractBlok>
-    SharedBlok;
+    std::shared_ptr<DataSet>
+    SharedDataSet;
 
 }
 
-#endif // SB_ABSTRACTBLOK_H
+#endif // SB_DATASET_H

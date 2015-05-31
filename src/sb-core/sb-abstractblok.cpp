@@ -21,7 +21,8 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <algorithm>
 
-#include "sb-abstractdata-private.h"
+#include "sb-abstractexecutive-private.h"
+#include "sb-dataset-private.h"
 
 using namespace sb;
 
@@ -95,6 +96,11 @@ AbstractBlok::~AbstractBlok
         )->source_blok = nullptr;
     }
 
+    // d_ptr->executive points to this blok:
+    // ensure it is destroyed first
+
+    d_ptr->executive.reset();
+
     delete d_ptr;
 }
 
@@ -150,6 +156,19 @@ AbstractBlok::get_output_count
 const
 {
     return d_ptr->outputs.size();
+}
+
+void
+AbstractBlok::set_executive
+(
+    UniqueExecutive&& value_
+)
+{
+    d_ptr->executive = std::move(value_);
+
+    AbstractExecutive::Private::from(
+        d_ptr->executive
+    )->block = this;
 }
 
 void

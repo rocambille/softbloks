@@ -20,8 +20,6 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "sb-abstractdata.h"
 
-#include "sb-abstractblok.h"
-
 namespace sb
 {
 
@@ -39,79 +37,6 @@ public:
 
     AbstractData*
     q_ptr;
-
-};
-
-class DataSet::Private
-{
-
-public:
-
-    DataSet::Private
-    (
-        DataSet* q_ptr_
-    );
-
-    void
-    set_index_range
-    (
-        const IndexRange& value_
-    );
-
-    void
-    set_defined_indices
-    (
-        const IndexCollection& value_
-    );
-
-    void
-    set_wanted_indices
-    (
-        const IndexCollection& value_
-    );
-
-    static
-    DataSet::Private*
-    from
-    (
-        const DataSet* this_
-    );
-
-    static
-    DataSet::Private*
-    from
-    (
-        const SharedDataSet& this_
-    );
-
-public:
-
-    DataSet*
-    q_ptr;
-
-    sb::AbstractBlok*
-    source_blok;
-
-    size_t
-    source_index;
-
-    std::vector<sb::AbstractBlok*>
-    followers;
-
-    IndexRange
-    index_range;
-
-    IndexCollection
-    defined_indices;
-
-    IndexCollection
-    wanted_indices;
-
-    IndexCollection
-    available_indices;
-
-    std::map<double, SharedData>
-    data_map;
 
 };
 

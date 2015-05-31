@@ -88,13 +88,13 @@ ApplicationPrivate::read_settings
         {
             QLibrary library(dir.filePath(entry));
 
-            QFunctionPointer sb_run_module = (
-                library.resolve("sb_run_module")
+            QFunctionPointer sb_main = (
+                library.resolve("sb_main")
             );
 
-            if(sb_run_module)
+            if(sb_main)
             {
-                sb_run_module();
+                sb_main();
             }
         }
     }

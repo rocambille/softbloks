@@ -21,6 +21,9 @@ sb_add_library(sb-core
     sb-abstractdata.cpp
     sb-abstractdata.h
     sb-abstractdata-private.h
+    sb-abstractexecutive.cpp
+    sb-abstractexecutive.h
+    sb-abstractexecutive-private.h
     sb-abstractfilter.cpp
     sb-abstractfilter.h
     sb-abstractfilter-private.h
@@ -38,4 +41,10 @@ sb_add_library(sb-core
     sb-abstractsource-private.h
     sb-core.h
     sb-coredefine.h
+    sb-dataset.cpp
+    sb-dataset.h
+    sb-dataset-private.h
+    sb-executive.cpp
+    sb-executive.h
+    sb-executive-private.h
 )

@@ -18,7 +18,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SB_ABSTRACTDATA_PRIVATE_H
 #define SB_ABSTRACTDATA_PRIVATE_H
 
-#include "sb-abstractdata.h"
+#include <sb-core/sb-abstractdata.h>
 
 namespace sb
 {

@@ -18,7 +18,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SB_ABSTRACTEXECUTIVE_H
 #define SB_ABSTRACTEXECUTIVE_H
 
-#include "sb-abstractobject.h"
+#include <sb-core/sb-abstractobject.h>
 
 namespace sb
 {
@@ -53,8 +53,19 @@ private:
 };
 
 typedef
-    std::unique_ptr<AbstractExecutive>
+    std::unique_ptr<AbstractExecutive, UniqueObject::deleter_type>
     UniqueExecutive;
+
+SB_CORE_API
+inline
+UniqueExecutive
+create_unique_executive
+(
+    const std::string& name_
+)
+{
+    return create_unique<AbstractExecutive>(name_);
+}
 
 }
 

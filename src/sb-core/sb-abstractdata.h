@@ -18,7 +18,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SB_ABSTRACTDATA_H
 #define SB_ABSTRACTDATA_H
 
-#include "sb-abstractobject.h"
+#include <sb-core/sb-abstractobject.h>
 
 namespace sb
 {
@@ -57,6 +57,17 @@ private:
 typedef
     std::shared_ptr<AbstractData>
     SharedData;
+
+SB_CORE_API
+inline
+SharedData
+create_shared_data
+(
+    const std::string& name_
+)
+{
+    return create_shared<AbstractData>(name_);
+}
 
 }
 

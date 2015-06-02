@@ -541,7 +541,7 @@ MainWidgetPrivate::create_chooser
 
             // replace it with soft's widget
 
-            auto soft = sb::create<sb::AbstractSoft>(
+            auto soft = sb::create_shared_object(
                 item_->text().toStdString()
             );
 

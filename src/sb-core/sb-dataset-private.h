@@ -18,9 +18,9 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SB_DATASET_PRIVATE_H
 #define SB_DATASET_PRIVATE_H
 
-#include "sb-dataset.h"
+#include <sb-core/sb-dataset.h>
 
-#include "sb-abstractblok.h"
+#include <sb-core/sb-abstractblok.h>
 
 namespace sb
 {

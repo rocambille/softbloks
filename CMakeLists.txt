@@ -43,6 +43,7 @@ elseif(APPLE)
     set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-Wall")
 elseif(UNIX)
     set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-Wall")
+    set(SB_INSTALL_SUBDIRECTORY "/sb${SOFTBLOKS_VERSION_MAJOR}")
 endif()
 
 # install root files
@@ -52,7 +53,7 @@ install(
     "${PROJECT_SOURCE_DIR}/COPYING"
     "${PROJECT_SOURCE_DIR}/COPYING.LESSER"
     "${PROJECT_SOURCE_DIR}/README.md"
-    DESTINATION .
+    DESTINATION .${SB_INSTALL_SUBDIRECTORY}
 )
 
 # declare custom add_library functions
@@ -68,15 +69,14 @@ function(sb_add_library _name)
     )
 
     target_include_directories(${_name} PUBLIC
-        $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src/sb-global>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
-        $<INSTALL_INTERFACE:include/sb-global>
-        $<INSTALL_INTERFACE:include/${_name}>
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
+        $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src> # sb-global.h
+        $<INSTALL_INTERFACE:include${SB_INSTALL_SUBDIRECTORY}>
     )
 
     install(
         DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/"
-        DESTINATION include/${_name}
+        DESTINATION include${SB_INSTALL_SUBDIRECTORY}/${_name}
         FILES_MATCHING
         PATTERN *.h
         PATTERN *-private.h EXCLUDE
@@ -84,13 +84,13 @@ function(sb_add_library _name)
     install(
         TARGETS ${_name}
         EXPORT ${_name}-config
-        RUNTIME DESTINATION bin
-        LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib
+        RUNTIME DESTINATION bin${SB_INSTALL_SUBDIRECTORY}
+        LIBRARY DESTINATION lib${SB_INSTALL_SUBDIRECTORY}
+        ARCHIVE DESTINATION lib${SB_INSTALL_SUBDIRECTORY}
     )
     install(
         EXPORT ${_name}-config
-        DESTINATION lib/cmake/${_name}
+        DESTINATION lib${SB_INSTALL_SUBDIRECTORY}/cmake/${_name}
     )
 endfunction()
 
@@ -108,7 +108,7 @@ function(sb_add_executable _name)
 
     install(
         TARGETS ${_name}
-        RUNTIME DESTINATION bin
+        RUNTIME DESTINATION bin${SB_INSTALL_SUBDIRECTORY}
     )
 endfunction()
 
@@ -125,7 +125,7 @@ function(sb_add_module _name)
 
     install(
         TARGETS ${_name}
-        DESTINATION lib/modules
+        DESTINATION lib${SB_INSTALL_SUBDIRECTORY}/modules
     )
 endfunction()
 

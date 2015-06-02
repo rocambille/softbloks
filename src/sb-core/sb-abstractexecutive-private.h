@@ -18,9 +18,9 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SB_ABSTRACTEXECUTIVE_PRIVATE_H
 #define SB_ABSTRACTEXECUTIVE_PRIVATE_H
 
-#include "sb-abstractexecutive.h"
+#include <sb-core/sb-abstractexecutive.h>
 
-#include "sb-abstractblok.h"
+#include <sb-core/sb-abstractblok.h>
 
 namespace sb
 {

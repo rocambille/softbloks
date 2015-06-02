@@ -18,7 +18,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SB_ABSTRACTSINK_H
 #define SB_ABSTRACTSINK_H
 
-#include "sb-abstractblok.h"
+#include <sb-core/sb-abstractblok.h>
 
 namespace sb
 {

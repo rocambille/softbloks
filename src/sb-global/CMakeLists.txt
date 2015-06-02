@@ -22,5 +22,5 @@ configure_file(
 
 install(
     FILES "${CMAKE_CURRENT_BINARY_DIR}/sb-global.h"
-    DESTINATION include/sb-global
+    DESTINATION include${SB_INSTALL_SUBDIRECTORY}/sb-global
 )

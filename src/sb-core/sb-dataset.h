@@ -18,9 +18,9 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SB_DATASET_H
 #define SB_DATASET_H
 
-#include "sb-abstractobject.h"
+#include <sb-core/sb-abstractobject.h>
 
-#include "sb-abstractdata.h"
+#include <sb-core/sb-abstractdata.h>
 
 namespace sb
 {
@@ -89,6 +89,17 @@ private:
 typedef
     std::shared_ptr<DataSet>
     SharedDataSet;
+
+SB_CORE_API
+inline
+SharedDataSet
+create_shared_data_set
+(
+    const std::string& name_
+)
+{
+    return create_shared<DataSet>(name_);
+}
 
 }
 

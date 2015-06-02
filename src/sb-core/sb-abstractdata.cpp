@@ -15,9 +15,9 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "sb-abstractdata.h"
+#include <sb-core/sb-abstractdata.h>
 
-#include "sb-abstractdata-private.h"
+#include <sb-core/sb-abstractdata-private.h>
 
 using namespace sb;
 

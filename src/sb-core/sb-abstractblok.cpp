@@ -15,14 +15,14 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "sb-abstractblok.h"
+#include <sb-core/sb-abstractblok.h>
 
-#include "sb-abstractblok-private.h"
+#include <sb-core/sb-abstractblok-private.h>
 
 #include <algorithm>
 
-#include "sb-abstractexecutive-private.h"
-#include "sb-dataset-private.h"
+#include <sb-core/sb-abstractexecutive-private.h>
+#include <sb-core/sb-dataset-private.h>
 
 using namespace sb;
 
@@ -159,12 +159,12 @@ const
 }
 
 void
-AbstractBlok::set_executive
+AbstractBlok::use_executive
 (
-    UniqueExecutive&& value_
+    const std::string& name_
 )
 {
-    d_ptr->executive = std::move(value_);
+    d_ptr->executive = sb::create_unique<AbstractExecutive>(name_);
 
     AbstractExecutive::Private::from(
         d_ptr->executive
@@ -267,7 +267,7 @@ AbstractBlok::Private::set_output_count
 
     for(size_t i(previous_output_count); i < this->outputs.size(); ++i)
     {
-        SharedDataSet data_set = sb::create<DataSet>(
+        SharedDataSet data_set = sb::create_shared_data_set(
             DataSet::get_object_name()
         );
 
@@ -504,7 +504,7 @@ AbstractBlok::Private::from
 AbstractBlok::Private*
 AbstractBlok::Private::from
 (
-    const SharedBlok& this_
+    const UniqueBlok& this_
 )
 {
     return this_->d_ptr;

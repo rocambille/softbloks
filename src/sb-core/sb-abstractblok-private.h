@@ -18,9 +18,9 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SB_ABSTRACTBLOK_PRIVATE_H
 #define SB_ABSTRACTBLOK_PRIVATE_H
 
-#include "sb-abstractblok.h"
+#include <sb-core/sb-abstractblok.h>
 
-#include "sb-abstractdata.h"
+#include <sb-core/sb-abstractdata.h>
 
 namespace sb
 {
@@ -122,7 +122,7 @@ public:
     AbstractBlok::Private*
     from
     (
-        const SharedBlok& this_
+        const UniqueBlok& this_
     );
 
 public:

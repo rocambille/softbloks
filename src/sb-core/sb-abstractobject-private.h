@@ -18,7 +18,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SB_ABSTRACTOBJECT_PRIVATE_H
 #define SB_ABSTRACTOBJECT_PRIVATE_H
 
-#include "sb-abstractobject.h"
+#include <sb-core/sb-abstractobject.h>
 
 namespace sb
 {

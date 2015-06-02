@@ -18,11 +18,9 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SB_ABSTRACTOBJECT_H
 #define SB_ABSTRACTOBJECT_H
 
-#include "sb-coredefine.h"
+#include <sb-core/sb-coredefine.h>
 
-#include <functional>
 #include <map>
-#include <memory>
 #include <string>
 #include <typeindex>
 
@@ -93,7 +91,11 @@ typedef
     SharedObject;
 
 typedef
-    std::function<SharedObject(void)>
+    std::unique_ptr<AbstractObject, std::function<void(AbstractObject*)>>
+    UniqueObject;
+
+typedef
+    std::function<UniqueObject(void)>
     ObjectFactory;
 
 template<typename T>
@@ -109,7 +111,7 @@ register_object
         (
         )
         {
-            auto instance = SharedObject(
+            auto instance = UniqueObject(
                 new T,
                 []
                 (
@@ -138,7 +140,7 @@ get_registered_object_names
 
 SB_CORE_API
 SharedObject
-create_object
+create_shared_object
 (
     const std::string& name_
 );
@@ -146,13 +148,33 @@ create_object
 template<typename T>
 inline
 std::shared_ptr<T>
-create
+create_shared
 (
     const std::string& name_
 )
 {
     return std::static_pointer_cast<T>(
-        create_object(name_)
+        create_shared_object(name_)
+    );
+}
+
+SB_CORE_API
+UniqueObject
+create_unique_object
+(
+    const std::string& name_
+);
+
+template<typename T>
+inline
+std::unique_ptr<T, UniqueObject::deleter_type>
+create_unique
+(
+    const std::string& name_
+)
+{
+    return sb::static_pointer_cast<T>(
+        create_unique_object(name_)
     );
 }
 

@@ -15,8 +15,8 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "sb-executive.h"
+#include <sb-core/sb-executive.h>
 
-#include "sb-executive-private.h"
+#include <sb-core/sb-executive-private.h>
 
 using namespace sb;

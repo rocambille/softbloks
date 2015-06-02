@@ -15,7 +15,7 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "sb-core.h"
+#include <sb-core/sb-core.h>
 
 #include <QtWidgets>
 
@@ -88,13 +88,13 @@ public:
     )
     {
         this_->source =
-            sb::create<sb::AbstractBlok>("HelloSource");
+            sb::create_unique_blok("HelloSource");
 
         this_->filter =
-            sb::create<sb::AbstractBlok>("HelloFilter");
+            sb::create_unique_blok("HelloFilter");
 
         this_->sink =
-            sb::create<sb::AbstractBlok>("HelloSink");
+            sb::create_unique_blok("HelloSink");
 
         this_->register_property<QWidget*>(
             "Qt5Widgets::main_view",
@@ -106,13 +106,13 @@ public:
 
 private:
 
-    sb::SharedBlok
+    sb::UniqueBlok
     source;
 
-    sb::SharedBlok
+    sb::UniqueBlok
     filter;
 
-    sb::SharedBlok
+    sb::UniqueBlok
     sink;
 
 };

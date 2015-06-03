@@ -16,7 +16,7 @@
 
 install(
     FILES softbloks-config.cmake
-    DESTINATION lib${SB_INSTALL_SUBDIRECTORY}/cmake/softbloks
+    DESTINATION share${SB_INSTALL_SUBDIRECTORY}/cmake/softbloks
 )
 
 configure_file(config-version.cmake.in
@@ -25,11 +25,11 @@ configure_file(config-version.cmake.in
 )
 install(
     FILES "${CMAKE_CURRENT_BINARY_DIR}/config-version.cmake"
-    DESTINATION lib${SB_INSTALL_SUBDIRECTORY}/cmake/softbloks
+    DESTINATION share${SB_INSTALL_SUBDIRECTORY}/cmake/softbloks
     RENAME softbloks-config-version.cmake
 )
 install(
     FILES "${CMAKE_CURRENT_BINARY_DIR}/config-version.cmake"
-    DESTINATION lib${SB_INSTALL_SUBDIRECTORY}/cmake/sb-core
+    DESTINATION share${SB_INSTALL_SUBDIRECTORY}/cmake/sb-core
     RENAME sb-core-config-version.cmake
 )

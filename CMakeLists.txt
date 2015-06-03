@@ -53,7 +53,7 @@ install(
     "${PROJECT_SOURCE_DIR}/COPYING"
     "${PROJECT_SOURCE_DIR}/COPYING.LESSER"
     "${PROJECT_SOURCE_DIR}/README.md"
-    DESTINATION .${SB_INSTALL_SUBDIRECTORY}
+    DESTINATION share${SB_INSTALL_SUBDIRECTORY}
 )
 
 # declare custom add_library functions
@@ -90,7 +90,7 @@ function(sb_add_library _name)
     )
     install(
         EXPORT ${_name}-config
-        DESTINATION lib${SB_INSTALL_SUBDIRECTORY}/cmake/${_name}
+        DESTINATION share${SB_INSTALL_SUBDIRECTORY}/cmake/${_name}
     )
 endfunction()
 
@@ -125,7 +125,7 @@ function(sb_add_module _name)
 
     install(
         TARGETS ${_name}
-        DESTINATION lib${SB_INSTALL_SUBDIRECTORY}/modules
+        DESTINATION share${SB_INSTALL_SUBDIRECTORY}/modules
     )
 endfunction()
 

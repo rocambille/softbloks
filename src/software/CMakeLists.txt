@@ -20,7 +20,7 @@ qt5_add_resources(rcc_files
     sw-resources.qrc
 )
 
-sb_add_executable(software
+sb_add_qt5_executable(software
     sw-application.cpp
     sw-application.h
     sw-application-private.h
@@ -30,9 +30,6 @@ sb_add_executable(software
     sw-mainwidget.h
     sw-mainwidget-private.h
     ${rcc_files}
-)
-
-target_link_libraries(software
     Qt5::Widgets
     Qt5::Svg
 )

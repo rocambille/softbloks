@@ -38,7 +38,7 @@ if(BUILD_DOCUMENTATION)
 
         install(
             DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html/
-            DESTINATION share${SB_INSTALL_SUBDIRECTORY}/doc
+            DESTINATION ${SB_INSTALL_SHARE_DESTINATION}/doc
         )
     else()
         message(FATAL_ERROR

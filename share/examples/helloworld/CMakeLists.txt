@@ -18,8 +18,6 @@ sb_add_module(hellobloks
     hellobloks.cpp
 )
 
-set(CMAKE_AUTOMOC ON)
-
 sb_add_qt5_module(hellosoft
     hellosoft.cpp
     Qt5::Widgets

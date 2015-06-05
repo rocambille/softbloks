@@ -14,22 +14,23 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
-set(CMAKE_AUTOMOC ON)
-
-qt5_add_resources(rcc_files
-    sw-resources.qrc
+option(BUILD_SOFTWARE
+    "build software"
+    ${Qt5_FOUND}
 )
 
-sb_add_qt5_executable(software
-    sw-application.cpp
-    sw-application.h
-    sw-application-private.h
-    sw-define.h
-    sw-main.cpp
-    sw-mainwidget.cpp
-    sw-mainwidget.h
-    sw-mainwidget-private.h
-    ${rcc_files}
-    Qt5::Widgets
-    Qt5::Svg
-)
+if(BUILD_SOFTWARE)
+    sb_add_qt5_executable(software
+        sw-application.cpp
+        sw-application.h
+        sw-application-private.h
+        sw-define.h
+        sw-main.cpp
+        sw-mainwidget.cpp
+        sw-mainwidget.h
+        sw-mainwidget-private.h
+        rcc::sw-resources.qrc
+        Qt5::Widgets
+        Qt5::Svg
+    )
+endif()

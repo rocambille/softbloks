@@ -30,6 +30,7 @@ if(BUILD_DOCUMENTATION)
         )
 
         add_custom_target(doxygen ALL
+            COMMAND ${CMAKE_COMMAND} -E remove_directory "${CMAKE_CURRENT_BINARY_DIR}/html"
             COMMAND ${DOXYGEN_EXECUTABLE} "${CMAKE_CURRENT_BINARY_DIR}/softbloks.doxyfile"
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
             COMMENT "Generating API documentation with Doxygen"
@@ -37,7 +38,7 @@ if(BUILD_DOCUMENTATION)
         )
 
         install(
-            DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html/
+            DIRECTORY ${PROJECT_BINARY_DIR}/html/
             DESTINATION ${SB_INSTALL_SHARE_DESTINATION}/doc
         )
     else()

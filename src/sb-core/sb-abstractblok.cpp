@@ -23,6 +23,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sb-core/sb-abstractexecutive-private.h>
 #include <sb-core/sb-dataset-private.h>
+#include <sb-core/sb-executive.h>
 
 using namespace sb;
 
@@ -164,11 +165,11 @@ AbstractBlok::use_executive
     const std::string& name_
 )
 {
-    d_ptr->executive = sb::create_unique<AbstractExecutive>(name_);
+    d_ptr->executive = sb::create_unique_executive(name_);
 
     AbstractExecutive::Private::from(
         d_ptr->executive
-    )->block = this;
+    )->blok = this;
 }
 
 void
@@ -177,7 +178,13 @@ AbstractBlok::construct
     AbstractBlok* this_
 )
 {
+    sb::register_object<PushPullExecutive>();
+
     this_->d_ptr = new Private(this_);
+
+    this_->use_executive(
+        PushPullExecutive::get_object_name()
+    );
 }
 
 AbstractBlok::Private::Private

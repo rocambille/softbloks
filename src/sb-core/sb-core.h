@@ -20,10 +20,13 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sb-core/sb-abstractblok.h>
 #include <sb-core/sb-abstractdata.h>
+#include <sb-core/sb-abstractexecutive.h>
 #include <sb-core/sb-abstractfilter.h>
 #include <sb-core/sb-abstractobject.h>
 #include <sb-core/sb-abstractsink.h>
 #include <sb-core/sb-abstractsoft.h>
 #include <sb-core/sb-abstractsource.h>
+#include <sb-core/sb-dataset.h>
+#include <sb-core/sb-executive.h>
 
 #endif // SB_CORE_H

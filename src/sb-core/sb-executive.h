@@ -23,6 +23,140 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
+class SB_CORE_API PushExecutive : public AbstractExecutive
+{
+
+    SB_DECLARE_OBJECT(PushExecutive, "sb::PushExecutive")
+
+public:
+
+    class Private;
+
+    virtual
+    ~PushExecutive
+    (
+    );
+
+    virtual
+    void
+    on_input_pushed
+    (
+        size_t index_
+    )
+    override;
+
+    virtual
+    void
+    on_output_pulled
+    (
+        size_t index_
+    )
+    override;
+
+private:
+
+    SB_DECL_HIDDEN
+    static
+    void
+    construct
+    (
+        PushExecutive* this_
+    );
+
+    Private*
+    d_ptr;
+
+};
+
+class SB_CORE_API PullExecutive : public AbstractExecutive
+{
+
+    SB_DECLARE_OBJECT(PullExecutive, "sb::PullExecutive")
+
+public:
+
+    class Private;
+
+    virtual
+    ~PullExecutive
+    (
+    );
+
+    virtual
+    void
+    on_input_pushed
+    (
+        size_t index_
+    )
+    override;
+
+    virtual
+    void
+    on_output_pulled
+    (
+        size_t index_
+    )
+    override;
+
+private:
+
+    SB_DECL_HIDDEN
+    static
+    void
+    construct
+    (
+        PullExecutive* this_
+    );
+
+    Private*
+    d_ptr;
+
+};
+
+class SB_CORE_API PushPullExecutive : public AbstractExecutive
+{
+
+    SB_DECLARE_OBJECT(PushPullExecutive, "sb::PushPullExecutive")
+
+public:
+
+    class Private;
+
+    virtual
+    ~PushPullExecutive
+    (
+    );
+
+    virtual
+    void
+    on_input_pushed
+    (
+        size_t index_
+    )
+    override;
+
+    virtual
+    void
+    on_output_pulled
+    (
+        size_t index_
+    )
+    override;
+
+private:
+
+    SB_DECL_HIDDEN
+    static
+    void
+    construct
+    (
+        PushPullExecutive* this_
+    );
+
+    Private*
+    d_ptr;
+
+};
 
 }
 

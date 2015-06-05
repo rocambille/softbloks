@@ -23,6 +23,57 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
+class PushExecutive::Private
+{
+
+public:
+
+    PushExecutive::Private
+    (
+        PushExecutive* q_ptr_
+    );
+
+public:
+
+    PushExecutive*
+    q_ptr;
+
+};
+
+class PullExecutive::Private
+{
+
+public:
+
+    PullExecutive::Private
+    (
+        PullExecutive* q_ptr_
+    );
+
+public:
+
+    PullExecutive*
+    q_ptr;
+
+};
+
+class PushPullExecutive::Private
+{
+
+public:
+
+    PushPullExecutive::Private
+    (
+        PushPullExecutive* q_ptr_
+    );
+
+public:
+
+    PushPullExecutive*
+    q_ptr;
+
+};
+
 }
 
 #endif // SB_EXECUTIVE_PRIVATE_H

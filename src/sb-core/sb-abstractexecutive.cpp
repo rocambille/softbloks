@@ -37,6 +37,14 @@ AbstractExecutive::construct
     this_->d_ptr = new Private(this_);
 }
 
+void
+AbstractExecutive::execute
+(
+)
+{
+    d_ptr->blok->process();
+}
+
 AbstractExecutive::Private::Private
 (
     AbstractExecutive* q_ptr_

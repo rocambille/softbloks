@@ -23,6 +23,8 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
+class AbstractBlok;
+
 class SB_CORE_API AbstractExecutive : public AbstractObject
 {
 
@@ -34,6 +36,35 @@ public:
 
     virtual
     ~AbstractExecutive
+    (
+    );
+
+    virtual
+    void
+    on_input_pushed
+    (
+        size_t index_
+    )
+    = 0;
+
+    virtual
+    void
+    on_output_pulled
+    (
+        size_t index_
+    )
+    = 0;
+
+protected:
+
+    AbstractBlok*
+    get_blok
+    (
+    )
+    const;
+
+    void
+    execute
     (
     );
 

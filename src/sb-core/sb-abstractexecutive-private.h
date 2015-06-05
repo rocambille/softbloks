@@ -55,7 +55,7 @@ public:
     q_ptr;
 
     AbstractBlok*
-    block;
+    blok;
 
 };
 

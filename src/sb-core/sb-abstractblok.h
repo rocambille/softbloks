@@ -82,6 +82,12 @@ public:
         const std::string& name_
     );
 
+    virtual
+    void
+    process
+    (
+    ){}
+
 private:
 
     SB_DECL_HIDDEN

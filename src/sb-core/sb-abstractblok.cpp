@@ -222,7 +222,7 @@ AbstractBlok::Private::set_input_count
     this->minimum_input_count = minimum_;
     this->maximum_input_count = maximum_;
 
-    this->inputs.resize(minimum_, nullptr);
+    this->inputs.resize(minimum_);
 
     this->inputs_format.resize(
         this->inputs.size(),
@@ -315,12 +315,14 @@ AbstractBlok::Private::update_outputs_index_range
 {
     std::vector<IndexRange> index_ranges;
 
-    for(SharedDataSet input : this->inputs)
+    for(auto input : this->inputs)
     {
-        if(input)
+        auto locked_input = input.lock();
+
+        if(locked_input)
         {
             index_ranges.push_back(
-                input->get_index_range()
+                locked_input->get_index_range()
             );
         }
         else
@@ -331,7 +333,7 @@ AbstractBlok::Private::update_outputs_index_range
         }
     }
 
-    for(SharedDataSet output : this->outputs)
+    for(auto output : this->outputs)
     {
         auto converter = this->index_range_converters.at(
             DataSet::Private::from(
@@ -356,12 +358,14 @@ AbstractBlok::Private::update_outputs_defined_indices
 {
     std::vector<IndexCollection> index_collections;
 
-    for(SharedDataSet input : this->inputs)
+    for(auto input : this->inputs)
     {
-        if(input)
+        auto locked_input = input.lock();
+
+        if(locked_input)
         {
             index_collections.push_back(
-                input->get_defined_indices()
+                locked_input->get_defined_indices()
             );
         }
         else
@@ -372,7 +376,7 @@ AbstractBlok::Private::update_outputs_defined_indices
         }
     }
 
-    for(SharedDataSet output : this->outputs)
+    for(auto output : this->outputs)
     {
         auto converter = this->defined_indices_converters.at(
             DataSet::Private::from(
@@ -397,7 +401,7 @@ AbstractBlok::Private::update_inputs_wanted_indices
 {
     std::vector<IndexCollection> index_collections;
 
-    for(SharedDataSet output : this->outputs)
+    for(auto output : this->outputs)
     {
         index_collections.push_back(
             DataSet::Private::from(
@@ -406,18 +410,20 @@ AbstractBlok::Private::update_inputs_wanted_indices
         );
     }
 
-    for(SharedDataSet input : this->inputs)
+    for(auto input : this->inputs)
     {
-        if(input)
+        auto locked_input = input.lock();
+
+        if(locked_input)
         {
             auto converter = this->wanted_indices_converters.at(
                 DataSet::Private::from(
-                    input
+                    locked_input
                 )->source_index
             );
 
             DataSet::Private::from(
-                input
+                locked_input
             )->set_wanted_indices(
                 converter(
                     index_collections
@@ -434,7 +440,7 @@ AbstractBlok::Private::get_input
 )
 const
 {
-    return this->inputs.at(index_);
+    return this->inputs.at(index_).lock();
 }
 
 bool
@@ -451,7 +457,7 @@ AbstractBlok::Private::set_input
         index_ < this->maximum_input_count
     )
     {
-        this->inputs.resize(index_+1, nullptr);
+        this->inputs.resize(index_+1);
 
         this->inputs_format.resize(
             this->inputs.size(),

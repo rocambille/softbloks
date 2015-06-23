@@ -25,7 +25,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
-class AbstractExecutive::Private
+class SB_DECL_HIDDEN AbstractExecutive::Private
 {
 
 public:

@@ -39,7 +39,7 @@ const
 {
     return AbstractBlok::Private::from(
         this
-    )->inputs.at(index_);
+    )->inputs.at(index_).lock();
 }
 
 bool

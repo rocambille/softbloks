@@ -25,7 +25,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
-class DataSet::Private
+class SB_DECL_HIDDEN DataSet::Private
 {
 
 public:
@@ -97,6 +97,10 @@ public:
     data_map;
 
 };
+
+typedef
+    std::weak_ptr<DataSet>
+    WeakDataSet;
 
 }
 

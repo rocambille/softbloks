@@ -23,7 +23,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
-class AbstractSoft::Private
+class SB_DECL_HIDDEN AbstractSoft::Private
 {
 
 public:

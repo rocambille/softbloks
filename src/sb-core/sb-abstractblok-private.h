@@ -21,11 +21,12 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb-core/sb-abstractblok.h>
 
 #include <sb-core/sb-abstractdata.h>
+#include <sb-core/sb-dataset-private.h>
 
 namespace sb
 {
 
-class AbstractBlok::Private
+class SB_DECL_HIDDEN AbstractBlok::Private
 {
 
 public:
@@ -136,7 +137,7 @@ public:
     size_t
     maximum_input_count;
 
-    std::vector<SharedDataSet>
+    std::vector<WeakDataSet>
     inputs;
 
     std::vector<ObjectFormat>

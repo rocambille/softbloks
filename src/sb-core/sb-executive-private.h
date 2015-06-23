@@ -23,7 +23,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
-class PushExecutive::Private
+class SB_DECL_HIDDEN PushExecutive::Private
 {
 
 public:
@@ -40,7 +40,7 @@ public:
 
 };
 
-class PullExecutive::Private
+class SB_DECL_HIDDEN PullExecutive::Private
 {
 
 public:
@@ -57,7 +57,7 @@ public:
 
 };
 
-class PushPullExecutive::Private
+class SB_DECL_HIDDEN PushPullExecutive::Private
 {
 
 public:

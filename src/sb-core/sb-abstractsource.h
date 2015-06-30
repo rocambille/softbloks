@@ -95,6 +95,21 @@ private:
 
 };
 
+typedef
+    std::unique_ptr<AbstractSource, UniqueObject::deleter_type>
+    UniqueSource;
+
+SB_CORE_API
+inline
+UniqueSource
+create_unique_source
+(
+    const std::string& name_
+)
+{
+    return create_unique<AbstractSource>(name_);
+}
+
 }
 
 #endif // SB_ABSTRACTSOURCE_H

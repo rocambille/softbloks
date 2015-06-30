@@ -31,7 +31,7 @@ AbstractFilter::~AbstractFilter
 }
 
 SharedDataSet
-AbstractFilter::get_input
+AbstractFilter::lock_input
 (
     size_t index_
 )

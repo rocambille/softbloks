@@ -42,6 +42,8 @@ public:
     )
     {
         this->text = value_;
+
+        this->push_output(0);
     }
 
     static
@@ -51,10 +53,13 @@ public:
         HelloSource* this_
     )
     {
+        this_->set_output_count(1);
+
         this_->text = "Hello World !!!";
 
-        this_->register_property<std::string>(
-            "HelloSource::text",
+        this_->get_output(0)->register_property<std::string>(
+            this_,
+            "text",
             sb::READ_WRITE,
             std::bind(
                 &get_text, this_
@@ -79,6 +84,35 @@ class HelloFilter : public sb::AbstractFilter
 
 public:
 
+    virtual
+    void
+    process
+    (
+    )
+    override
+    {
+        // update this->text
+
+        this->text = std::string();
+
+        for(int i = 0; i < this->multiplier; ++i)
+        {
+            this->text.append(
+                this->lock_input(0)->get<std::string>("text")
+            ).append(
+                "\n"
+            );
+        }
+
+        // remove last "\n"
+
+        this->text.pop_back();
+
+        // push data
+
+        this->push_output(0);
+    }
+
     int
     get_multiplier
     (
@@ -95,42 +129,9 @@ public:
     )
     {
         this->multiplier = value_;
+
+        this->process();
     }
-
-    static
-    void
-    construct
-    (
-        HelloFilter* this_
-    )
-    {
-        this_->multiplier = 1;
-
-        this_->register_property<int>(
-            "HelloFilter::multiplier",
-            sb::READ_WRITE,
-            std::bind(
-                &get_multiplier, this_
-            ),
-            std::bind(
-                &set_multiplier, this_, _1
-            )
-        );
-    }
-
-private:
-
-    int
-    multiplier;
-
-};
-
-class HelloSink : public sb::AbstractSink
-{
-
-    SB_DECLARE_OBJECT(HelloSink, "HelloSink")
-
-public:
 
     std::string
     get_text
@@ -145,11 +146,42 @@ public:
     void
     construct
     (
-        HelloSink* this_
+        HelloFilter* this_
     )
     {
-        this_->register_property<std::string>(
-            "HelloSink::text",
+        this_->set_input_count(1);
+
+        this_->set_input_format(
+            0,
+            {
+                {
+                    sb::DataSet::get_object_name()
+                },
+                {
+                    {"text", {typeid(std::string), sb::READ_ONLY}}
+                }
+            }
+        );
+
+        this_->set_output_count(1);
+
+        this_->multiplier = 1;
+
+        this_->get_output(0)->register_property<int>(
+            this_,
+            "multiplier",
+            sb::READ_WRITE,
+            std::bind(
+                &get_multiplier, this_
+            ),
+            std::bind(
+                &set_multiplier, this_, _1
+            )
+        );
+
+        this_->get_output(0)->register_property<std::string>(
+            this_,
+            "text",
             sb::READ_ONLY,
             std::bind(
                 &get_text, this_
@@ -160,8 +192,83 @@ public:
 
 private:
 
+    int
+    multiplier;
+
     std::string
     text;
+
+};
+
+class HelloSink : public sb::AbstractSink
+{
+
+    SB_DECLARE_OBJECT(HelloSink, "HelloSink")
+
+public:
+
+    virtual
+    void
+    process
+    (
+    )
+    override
+    {
+        this->pull_input(0);
+
+        for(auto notify : observers)
+        {
+            notify();
+        }
+    }
+
+    void
+    register_observer
+    (
+        const std::function<void(void)>& notify_
+    )
+    {
+        this->observers.push_back(notify_);
+
+        notify_();
+    }
+
+    static
+    void
+    construct
+    (
+        HelloSink* this_
+    )
+    {
+        this_->set_input_count(1);
+        this_->set_input_format(
+            0,
+            {
+                {
+                    sb::DataSet::get_object_name()
+                },
+                {
+                    {"multiplier",  {typeid(int),           sb::READ_ONLY}},
+                    {"text",        {typeid(std::string),   sb::READ_ONLY}}
+                }
+            }
+        );
+
+        this_->register_property< std::function<void(void)> >(
+            this_,
+            "observer",
+            sb::WRITE_ONLY,
+            nullptr,
+            std::bind(
+                &register_observer, this_, _1
+            )
+        );
+    }
+
+private:
+
+    std::vector< std::function<void(void)> >
+    observers;
 
 };
 

@@ -57,6 +57,9 @@ public:
     AbstractBlok*
     blok;
 
+    bool
+    is_executing;
+
 };
 
 }

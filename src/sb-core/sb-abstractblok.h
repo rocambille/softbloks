@@ -82,11 +82,25 @@ public:
         const std::string& name_
     );
 
+    void
+    pull_input
+    (
+        size_t index_
+    );
+
+    void
+    push_output
+    (
+        size_t index_
+    );
+
     virtual
     void
     process
     (
-    ){}
+    )
+    {
+    }
 
 private:
 

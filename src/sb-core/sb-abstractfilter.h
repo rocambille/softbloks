@@ -38,7 +38,7 @@ public:
     );
 
     SharedDataSet
-    get_input
+    lock_input
     (
         size_t index_
     )
@@ -135,6 +135,21 @@ private:
     d_ptr;
 
 };
+
+typedef
+    std::unique_ptr<AbstractFilter, UniqueObject::deleter_type>
+    UniqueFilter;
+
+SB_CORE_API
+inline
+UniqueFilter
+create_unique_filter
+(
+    const std::string& name_
+)
+{
+    return create_unique<AbstractFilter>(name_);
+}
 
 }
 

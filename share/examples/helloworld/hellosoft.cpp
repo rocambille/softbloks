@@ -19,6 +19,22 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <QtWidgets>
 
+template<typename... Args>
+struct SIGNAL
+{
+    template<typename C, typename R> 
+    static
+    auto
+    FOR
+    (
+        R (C::*method_)(Args...)
+    )
+    -> decltype(method_)
+    { 
+        return method_;
+    } 
+};
+
 class HelloSoft : public sb::AbstractSoft
 {
 
@@ -37,10 +53,24 @@ public:
 
         QLineEdit* line_edit = new QLineEdit(
             QString::fromStdString(
-                this->source->get<std::string>(
-                    "HelloSource::text"
+                this->source->get_output(0)->get<std::string>(
+                    "text"
                 )
             )
+        );
+
+        QObject::connect(
+            line_edit, &QLineEdit :: textChanged,
+            [this]
+            (
+                const QString& text_
+            )
+            {
+                this->source->get_output(0)->set<std::string>(
+                    "text",
+                    text_.toStdString()
+                );
+            }
         );
 
         layout->addWidget(line_edit, 1, Qt::AlignRight);
@@ -51,9 +81,23 @@ public:
 
         QSpinBox* spin_box = new QSpinBox;
         spin_box->setValue(
-            this->filter->get<int>(
-                "HelloFilter::multiplier"
+            this->filter->get_output(0)->get<int>(
+                "multiplier"
             )
+        );
+
+        QObject::connect(
+            spin_box, SIGNAL<int>::FOR(&QSpinBox::valueChanged),
+            [this]
+            (
+                int value_
+            )
+            {
+                this->filter->get_output(0)->set<int>(
+                    "multiplier",
+                    value_
+                );
+            }
         );
 
         layout->addWidget(spin_box);
@@ -62,12 +106,22 @@ public:
 
         // create sink's widget
 
-        QLabel* label = new QLabel(
-            QString::fromStdString(
-                this->sink->get<std::string>(
-                    "HelloSink::text"
-                )
+        QLabel* label = new QLabel;
+
+        this->sink->set< std::function<void(void)> >(
+            "observer",
+            [this, label]
+            (
             )
+            {
+                label->setText(
+                    QString::fromStdString(
+                        this->sink->lock_input(0)->get<std::string>(
+                            "text"
+                        )
+                    )
+                );
+            }
         );
 
         layout->addWidget(label, 1, Qt::AlignLeft | Qt::AlignVCenter);
@@ -87,17 +141,26 @@ public:
         HelloSoft* this_
     )
     {
-        this_->source =
-            sb::create_unique_blok("HelloSource");
+        this_->source = sb::create_unique_source("HelloSource");
 
-        this_->filter =
-            sb::create_unique_blok("HelloFilter");
+        this_->filter = sb::create_unique_filter("HelloFilter");
 
-        this_->sink =
-            sb::create_unique_blok("HelloSink");
+        this_->filter->set_input(
+            0,
+            this_->source->get_output(0)
+        );
+
+        this_->sink = sb::create_unique_sink("HelloSink");
+
+        this_->sink->set_input(
+            0,
+            this_->filter->get_output(0)
+        );
+
+        this_->sink->process();
 
         this_->register_property<QWidget*>(
-            "Qt5Widgets::main_view",
+            "Qt5Widgets::mainview",
             sb::READ_ONLY,
             std::bind(&HelloSoft::get_widget, this_),
             nullptr
@@ -106,13 +169,13 @@ public:
 
 private:
 
-    sb::UniqueBlok
+    sb::UniqueSource
     source;
 
-    sb::UniqueBlok
+    sb::UniqueFilter
     filter;
 
-    sb::UniqueBlok
+    sb::UniqueSink
     sink;
 
 };

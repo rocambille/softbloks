@@ -38,7 +38,7 @@ public:
     );
 
     SharedDataSet
-    get_input
+    lock_input
     (
         size_t index_
     )
@@ -94,6 +94,21 @@ private:
     d_ptr;
 
 };
+
+typedef
+    std::unique_ptr<AbstractSink, UniqueObject::deleter_type>
+    UniqueSink;
+
+SB_CORE_API
+inline
+UniqueSink
+create_unique_sink
+(
+    const std::string& name_
+)
+{
+    return create_unique<AbstractSink>(name_);
+}
 
 }
 

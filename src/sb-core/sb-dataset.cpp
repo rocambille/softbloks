@@ -106,8 +106,10 @@ DataSet::Private::set_index_range
 
     for(auto follower : this->followers)
     {
+        // TODO : avoid multiple calls on a same blok
+
         AbstractBlok::Private::from(
-            follower
+            Unmapper::blok(follower)
         )->update_outputs_index_range();
     }
 
@@ -165,8 +167,10 @@ DataSet::Private::set_defined_indices
         {
             for(auto follower : this->followers)
             {
+                // TODO : avoid multiple calls on a same blok
+
                 AbstractBlok::Private::from(
-                    follower
+                    Unmapper::blok(follower)
                 )->update_outputs_index_range();
             }
         }
@@ -183,8 +187,10 @@ DataSet::Private::set_defined_indices
 
     for(auto follower : this->followers)
     {
+        // TODO : avoid multiple calls on a same blok
+
         AbstractBlok::Private::from(
-            follower
+            Unmapper::blok(follower)
         )->update_outputs_defined_indices();
     }
 }

@@ -42,14 +42,22 @@ AbstractExecutive::execute
 (
 )
 {
-    d_ptr->blok->process();
+    if(!d_ptr->is_executing)
+    {
+        d_ptr->is_executing = true;
+
+        d_ptr->blok->process();
+
+        d_ptr->is_executing = false;
+    }
 }
 
 AbstractExecutive::Private::Private
 (
     AbstractExecutive* q_ptr_
 ):
-    q_ptr(q_ptr_)
+    q_ptr           (q_ptr_),
+    is_executing    (false)
 {
 }
 

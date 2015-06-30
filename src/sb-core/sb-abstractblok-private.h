@@ -92,7 +92,7 @@ public:
     );
 
     SharedDataSet
-    get_input
+    lock_input
     (
         size_t index_
     )
@@ -105,12 +105,11 @@ public:
         const SharedDataSet& value_
     );
 
-    SharedDataSet
-    get_output
+    void
+    unlink_input
     (
         size_t index_
-    )
-    const;
+    );
 
     static
     AbstractBlok::Private*

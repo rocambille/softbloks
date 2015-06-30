@@ -90,7 +90,12 @@ AbstractBlok::~AbstractBlok
 (
 )
 {
-    for(SharedDataSet output : d_ptr->outputs)
+    for(size_t i = 0; i < d_ptr->inputs.size(); ++i)
+    {
+        d_ptr->unlink_input(i);
+    }
+
+    for(auto output : d_ptr->outputs)
     {
         DataSet::Private::from(
             output
@@ -167,9 +172,59 @@ AbstractBlok::use_executive
 {
     d_ptr->executive = sb::create_unique_executive(name_);
 
+    if(!d_ptr->executive)
+    {
+        throw std::invalid_argument(
+            "fatal: AbstractBlok::use_executive(invalid executive name)"
+        );
+    }
+
     AbstractExecutive::Private::from(
         d_ptr->executive
     )->blok = this;
+}
+
+void
+AbstractBlok::pull_input
+(
+    size_t index_
+)
+{
+    // AbstractBlok::Private::lock_input calls this method:
+    // don't call it here or it will cause infinite recursion
+
+    auto input_d_ptr = DataSet::Private::from(
+        d_ptr->inputs.at(index_).lock()
+    );
+
+    AbstractBlok::Private::from(
+        input_d_ptr->source_blok
+    )->executive->on_output_pulled(
+        input_d_ptr->source_index
+    );
+}
+
+void
+AbstractBlok::push_output
+(
+    size_t index_
+)
+{
+    // AbstractBlok::Private::lock_input calls this method:
+    // don't call it here or it will cause infinite recursion
+
+    auto output_d_ptr = DataSet::Private::from(
+        d_ptr->outputs.at(index_)
+    );
+
+    for(auto follower : output_d_ptr->followers)
+    {
+        AbstractBlok::Private::from(
+            Unmapper::blok(follower)
+        )->executive->on_input_pushed(
+            Unmapper::input_index(follower)
+        );
+    }
 }
 
 void
@@ -434,12 +489,14 @@ AbstractBlok::Private::update_inputs_wanted_indices
 }
 
 SharedDataSet
-AbstractBlok::Private::get_input
+AbstractBlok::Private::lock_input
 (
     size_t index_
 )
 const
 {
+    q_ptr->pull_input(index_);
+
     return this->inputs.at(index_).lock();
 }
 
@@ -484,7 +541,22 @@ AbstractBlok::Private::set_input
     {
         ok = true;
 
+        this->unlink_input(index_);
+
         this->inputs[index_] = value_;
+
+        if(value_)
+        {
+            // register this blok as a follower
+
+            DataSet::Private::from(
+                value_
+            )->followers.emplace(
+                q_ptr, index_
+            );
+        }
+
+        // update indices
 
         this->update_outputs_index_range();
         this->update_outputs_defined_indices();
@@ -495,14 +567,41 @@ AbstractBlok::Private::set_input
     return ok;
 }
 
-SharedDataSet
-AbstractBlok::Private::get_output
+void
+AbstractBlok::Private::unlink_input
 (
     size_t index_
 )
-const
 {
-    return this->outputs.at(index_);
+    auto input = this->inputs[index_].lock();
+
+    if(input)
+    {
+        // unregister this blok from previous input's followers
+
+        auto input_d_ptr = DataSet::Private::from(
+            input
+        );
+
+        auto erase_candidates = 
+            input_d_ptr->followers.equal_range(
+                q_ptr
+            );
+
+        auto candidate = erase_candidates.first;
+
+        while(candidate != erase_candidates.second)
+        {
+            if(Unmapper::input_index(*candidate) == index_)
+            {
+                candidate = input_d_ptr->followers.erase(candidate);
+            }
+            else
+            {
+                ++candidate;
+            }
+        }
+    }
 }
 
 AbstractBlok::Private*

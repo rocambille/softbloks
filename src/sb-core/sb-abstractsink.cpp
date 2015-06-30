@@ -32,7 +32,7 @@ AbstractSink::~AbstractSink
 }
 
 SharedDataSet
-AbstractSink::get_input
+AbstractSink::lock_input
 (
     size_t index_
 )
@@ -66,7 +66,7 @@ AbstractSink::set_wanted_indices
 )
 {
     DataSet::Private::from(
-        this->get_input(
+        this->lock_input(
             input_
         )
     )->set_wanted_indices(

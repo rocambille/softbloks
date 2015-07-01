@@ -28,7 +28,7 @@ class SB_DECL_HIDDEN AbstractSoft::Private
 
 public:
 
-    AbstractSoft::Private
+    Private
     (
         AbstractSoft* q_ptr_
     );

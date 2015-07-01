@@ -28,7 +28,7 @@ class SB_DECL_HIDDEN AbstractSink::Private
 
 public:
 
-    AbstractSink::Private
+    Private
     (
         AbstractSink* q_ptr_
     );

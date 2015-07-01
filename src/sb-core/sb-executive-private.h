@@ -28,7 +28,7 @@ class SB_DECL_HIDDEN PushExecutive::Private
 
 public:
 
-    PushExecutive::Private
+    Private
     (
         PushExecutive* q_ptr_
     );
@@ -45,7 +45,7 @@ class SB_DECL_HIDDEN PullExecutive::Private
 
 public:
 
-    PullExecutive::Private
+    Private
     (
         PullExecutive* q_ptr_
     );
@@ -62,7 +62,7 @@ class SB_DECL_HIDDEN PushPullExecutive::Private
 
 public:
 
-    PushPullExecutive::Private
+    Private
     (
         PushPullExecutive* q_ptr_
     );

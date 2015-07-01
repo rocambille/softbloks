@@ -28,7 +28,7 @@ class SB_DECL_HIDDEN AbstractData::Private
 
 public:
 
-    AbstractData::Private
+    Private
     (
         AbstractData* q_ptr_
     );

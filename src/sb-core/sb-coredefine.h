@@ -22,6 +22,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <array>
 #include <functional>
+#include <limits>
 #include <memory>
 #include <vector>
 

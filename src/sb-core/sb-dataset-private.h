@@ -61,7 +61,7 @@ class SB_DECL_HIDDEN DataSet::Private
 
 public:
 
-    DataSet::Private
+    Private
     (
         DataSet* q_ptr_
     );
@@ -85,14 +85,14 @@ public:
     );
 
     static
-    DataSet::Private*
+    Private*
     from
     (
         const DataSet* this_
     );
 
     static
-    DataSet::Private*
+    Private*
     from
     (
         const SharedDataSet& this_

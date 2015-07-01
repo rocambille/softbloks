@@ -30,20 +30,20 @@ class SB_DECL_HIDDEN AbstractExecutive::Private
 
 public:
 
-    AbstractExecutive::Private
+    Private
     (
         AbstractExecutive* q_ptr_
     );
 
     static
-    AbstractExecutive::Private*
+    Private*
     from
     (
         const AbstractExecutive* this_
     );
 
     static
-    AbstractExecutive::Private*
+    Private*
     from
     (
         const UniqueExecutive& this_

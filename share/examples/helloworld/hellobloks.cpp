@@ -62,10 +62,10 @@ public:
             "text",
             sb::READ_WRITE,
             std::bind(
-                &get_text, this_
+                &HelloSource::get_text, this_
             ),
             std::bind(
-                &set_text, this_, _1
+                &HelloSource::set_text, this_, _1
             )
         );
     }
@@ -172,10 +172,10 @@ public:
             "multiplier",
             sb::READ_WRITE,
             std::bind(
-                &get_multiplier, this_
+                &HelloFilter::get_multiplier, this_
             ),
             std::bind(
-                &set_multiplier, this_, _1
+                &HelloFilter::set_multiplier, this_, _1
             )
         );
 
@@ -184,7 +184,7 @@ public:
             "text",
             sb::READ_ONLY,
             std::bind(
-                &get_text, this_
+                &HelloFilter::get_text, this_
             ),
             nullptr
         );
@@ -260,7 +260,7 @@ public:
             sb::WRITE_ONLY,
             nullptr,
             std::bind(
-                &register_observer, this_, _1
+                &HelloSink::register_observer, this_, _1
             )
         );
     }

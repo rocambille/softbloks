@@ -31,7 +31,7 @@ class SB_DECL_HIDDEN AbstractBlok::Private
 
 public:
 
-    AbstractBlok::Private
+    Private
     (
         AbstractBlok* q_ptr_
     );
@@ -112,14 +112,14 @@ public:
     );
 
     static
-    AbstractBlok::Private*
+    Private*
     from
     (
         const AbstractBlok* this_
     );
 
     static
-    AbstractBlok::Private*
+    Private*
     from
     (
         const UniqueBlok& this_

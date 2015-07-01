@@ -20,6 +20,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sb-core/sb-coredefine.h>
 
+#include <algorithm>
 #include <map>
 #include <string>
 #include <typeindex>
@@ -103,86 +104,6 @@ inline
 bool
 register_object
 (
-)
-{
-    return AbstractObject::register_object(
-        T::get_object_name(),
-        []
-        (
-        )
-        {
-            auto instance = UniqueObject(
-                new T,
-                []
-                (
-                    AbstractObject* ptr_
-                )
-                {
-                    delete ptr_;
-
-                    AbstractObject::forget(ptr_);
-                }
-            );
-
-            AbstractObject::init(instance.get());
-
-            return instance;
-        }
-    );
-}
-
-SB_CORE_API
-std::vector<std::string>
-get_registered_object_names
-(
-    const ObjectFormat& filter_ = any_format
-);
-
-SB_CORE_API
-SharedObject
-create_shared_object
-(
-    const std::string& name_
-);
-
-template<typename T>
-inline
-std::shared_ptr<T>
-create_shared
-(
-    const std::string& name_
-)
-{
-    return std::static_pointer_cast<T>(
-        create_shared_object(name_)
-    );
-}
-
-SB_CORE_API
-UniqueObject
-create_unique_object
-(
-    const std::string& name_
-);
-
-template<typename T>
-inline
-std::unique_ptr<T, UniqueObject::deleter_type>
-create_unique
-(
-    const std::string& name_
-)
-{
-    return sb::static_pointer_cast<T>(
-        create_unique_object(name_)
-    );
-}
-
-SB_CORE_API
-ObjectFormat
-get_object_format
-(
-    const std::string& name_
 );
 
 class SB_CORE_API AbstractObject
@@ -448,7 +369,6 @@ protected:
 
 protected:
 
-    SB_DECL_HIDDEN
     static
     void
     add_type_name
@@ -459,7 +379,6 @@ protected:
 
 private:
 
-    SB_DECL_HIDDEN
     static
     void
     construct
@@ -467,7 +386,6 @@ private:
         AbstractObject* this_
     );
 
-    SB_DECL_HIDDEN
     static
     void
     init
@@ -475,7 +393,6 @@ private:
         AbstractObject* this_
     );
 
-    SB_DECL_HIDDEN
     static
     void
     forget
@@ -483,20 +400,12 @@ private:
         AbstractObject* this_
     );
 
-    SB_DECL_HIDDEN
     static
     bool
     register_object
     (
         const std::string& name_,
         const ObjectFactory& factory_
-    );
-
-    template<typename T>
-    friend
-    bool
-    register_object
-    (
     );
 
     PropertyMap*
@@ -506,6 +415,93 @@ private:
     d_ptr;
 
 };
+
+template<typename T>
+inline
+bool
+register_object
+(
+)
+{
+    return AbstractObject::register_object(
+        T::get_object_name(),
+        []
+        (
+        )
+        {
+            auto instance = UniqueObject(
+                new T,
+                []
+                (
+                    AbstractObject* ptr_
+                )
+                {
+                    delete ptr_;
+
+                    AbstractObject::forget(ptr_);
+                }
+            );
+
+            AbstractObject::init(instance.get());
+
+            return instance;
+        }
+    );
+}
+
+SB_CORE_API
+std::vector<std::string>
+get_registered_object_names
+(
+    const ObjectFormat& filter_ = any_format
+);
+
+SB_CORE_API
+SharedObject
+create_shared_object
+(
+    const std::string& name_
+);
+
+template<typename T>
+inline
+std::shared_ptr<T>
+create_shared
+(
+    const std::string& name_
+)
+{
+    return std::static_pointer_cast<T>(
+        create_shared_object(name_)
+    );
+}
+
+SB_CORE_API
+UniqueObject
+create_unique_object
+(
+    const std::string& name_
+);
+
+template<typename T>
+inline
+std::unique_ptr<T, UniqueObject::deleter_type>
+create_unique
+(
+    const std::string& name_
+)
+{
+    return sb::static_pointer_cast<T>(
+        create_unique_object(name_)
+    );
+}
+
+SB_CORE_API
+ObjectFormat
+get_object_format
+(
+    const std::string& name_
+);
 
 }
 

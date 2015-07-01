@@ -70,7 +70,6 @@ protected:
 
 private:
 
-    SB_DECL_HIDDEN
     static
     void
     construct

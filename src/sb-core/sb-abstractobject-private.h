@@ -28,20 +28,20 @@ class SB_DECL_HIDDEN AbstractObject::Private
 
 public:
 
-    AbstractObject::Private
+    Private
     (
         AbstractObject* q_ptr_
     );
 
     static
-    AbstractObject::Private*
+    Private*
     from
     (
         const AbstractObject* this_
     );
 
     static
-    AbstractObject::Private*
+    Private*
     from
     (
         const SharedObject& this_

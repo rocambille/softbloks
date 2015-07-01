@@ -28,7 +28,7 @@ class SB_DECL_HIDDEN AbstractFilter::Private
 
 public:
 
-    AbstractFilter::Private
+    Private
     (
         AbstractFilter* q_ptr_
     );

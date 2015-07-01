@@ -28,7 +28,7 @@ class SB_DECL_HIDDEN AbstractSource::Private
 
 public:
 
-    AbstractSource::Private
+    Private
     (
         AbstractSource* q_ptr_
     );

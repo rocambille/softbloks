@@ -106,7 +106,10 @@ public:
 
         // remove last "\n"
 
-        this->text.pop_back();
+        if(this->text.size() > 0)
+        {
+            this->text.pop_back();
+        }
 
         // push data
 

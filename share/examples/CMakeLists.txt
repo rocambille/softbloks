@@ -20,5 +20,10 @@ option(BUILD_EXAMPLES
 )
 
 if(BUILD_EXAMPLES)
+    option(BUILD_QT5_EXAMPLES
+        "build software"
+        ${Qt5_FOUND}
+    )
+
     add_subdirectory(helloworld)
 endif()

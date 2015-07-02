@@ -18,7 +18,9 @@ sb_add_module(hellobloks
     hellobloks.cpp
 )
 
-sb_add_qt5_module(hellosoft
-    hellosoft.cpp
-    Qt5::Widgets
-)
+if(BUILD_QT5_EXAMPLES)
+    sb_add_qt5_module(hellosoft
+        hellosoft.cpp
+        Qt5::Widgets
+    )
+endif()

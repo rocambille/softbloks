@@ -251,8 +251,7 @@ public:
                     sb::DataSet::get_object_name()
                 },
                 {
-                    {"multiplier",  {typeid(int),           sb::READ_ONLY}},
-                    {"text",        {typeid(std::string),   sb::READ_ONLY}}
+                    {"text", {typeid(std::string), sb::READ_ONLY}}
                 }
             }
         );

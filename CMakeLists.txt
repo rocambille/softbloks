@@ -16,7 +16,7 @@
 
 cmake_minimum_required(VERSION 2.8.11)
 
-project(Softbloks C CXX)
+project(Softbloks CXX)
 
 # set version
 
@@ -67,6 +67,35 @@ install(
     "${PROJECT_SOURCE_DIR}/README.md"
     DESTINATION ${SB_INSTALL_ROOT_DESTINATION}
 )
+
+# install redist files
+
+if(MSVC)
+    # check VCINSTALLDIR in environment variables
+    if(DEFINED ENV{VCINSTALLDIR})
+        # retrieve and convert into a cmake path
+        file(TO_CMAKE_PATH "$ENV{VCINSTALLDIR}" _VCINSTALLDIR)
+    else()
+        # guess from compiler
+        string(REGEX REPLACE "/bin/.*$" "" _VCINSTALLDIR "${CMAKE_CXX_COMPILER}")
+    endif()
+
+    if(CMAKE_SIZEOF_VOID_P EQUAL 4)
+        set(_architecture x86)
+    else()
+        set(_architecture x64)
+    endif()
+
+    file(GLOB_RECURSE _msvc_runtimes
+        ${_VCINSTALLDIR}/redist/${_architecture}/msvcr*.dll
+        ${_VCINSTALLDIR}/redist/${_architecture}/msvcp*.dll
+    )
+
+    install(
+        FILES ${_msvc_runtimes}
+        DESTINATION ${SB_INSTALL_RUNTIME_DESTINATION}
+    )
+endif()
 
 # manage Qt5 targets
 

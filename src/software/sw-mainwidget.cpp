@@ -501,20 +501,82 @@ MainWidgetPrivate::create_chooser
 (
 )
 {
-    QListWidget* widget = new QListWidget;
+    QVBoxLayout* layout = new QVBoxLayout;
+    layout->setContentsMargins(0, 0, 0, 0);
+
+    QListWidget* list_widget = new QListWidget;
 
     auto names = sb::get_registered_object_names(
         {
             {
                 sb::AbstractSoft::get_object_name()
+            },
+            {
+                {"Qt5Widgets::mainview", {typeid(QWidget*), sb::READ_ONLY}}
             }
         }
     );
 
     for(auto name : names)
     {
-        widget->addItem(QString::fromStdString(name));
+        list_widget->addItem(
+            QString::fromStdString(name)
+        );
     }
+
+    connect(
+        list_widget, &QListWidget :: itemDoubleClicked,
+        [this, layout, list_widget]
+        (
+            QListWidgetItem* item_
+        )
+        {
+            // remove list_widget from the layout
+
+            list_widget->hide();
+
+            layout->removeWidget(list_widget);
+
+            list_widget->deleteLater();
+
+            // replace it with soft's widget
+
+            auto soft = sb::create_shared_object(
+                item_->text().toStdString()
+            );
+
+            QWidget* widget = soft->get<QWidget*>("Qt5Widgets::mainview");
+
+            layout->addWidget(
+                widget
+            );
+
+            // manage widget/soft storing
+
+            widget_to_soft_map.insert(
+                widget,
+                soft
+            );
+
+            connect(
+                widget, &QObject :: destroyed,
+                [this]
+                (
+                    QObject* object_
+                )
+                {
+                    this->widget_to_soft_map.remove(
+                        qobject_cast<QWidget*>(object_)
+                    );
+                }
+            );
+        }
+    );
+
+    layout->addWidget(list_widget);
+
+    QWidget* widget = new QWidget;
+    widget->setLayout(layout);
 
     return widget;
 }

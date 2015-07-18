@@ -18,17 +18,17 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SB_ABSTRACTSOFT_PRIVATE_H
 #define SB_ABSTRACTSOFT_PRIVATE_H
 
-#include "sb-abstractsoft.h"
+#include <sb-core/sb-abstractsoft.h>
 
 namespace sb
 {
 
-class AbstractSoft::Private
+class SB_DECL_HIDDEN AbstractSoft::Private
 {
 
 public:
 
-    AbstractSoft::Private
+    Private
     (
         AbstractSoft* q_ptr_
     );

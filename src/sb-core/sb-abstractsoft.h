@@ -18,7 +18,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SB_ABSTRACTSOFT_H
 #define SB_ABSTRACTSOFT_H
 
-#include "sb-abstractobject.h"
+#include <sb-core/sb-abstractobject.h>
 
 namespace sb
 {
@@ -39,7 +39,6 @@ public:
 
 private:
 
-    SB_DECL_HIDDEN
     static
     void
     construct
@@ -51,6 +50,21 @@ private:
     d_ptr;
 
 };
+
+typedef
+    std::shared_ptr<AbstractSoft>
+    SharedSoft;
+
+SB_CORE_API
+inline
+SharedSoft
+create_shared_soft
+(
+    const std::string& name_
+)
+{
+    return create_shared<AbstractSoft>(name_);
+}
 
 }
 

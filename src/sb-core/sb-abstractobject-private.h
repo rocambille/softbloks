@@ -18,30 +18,30 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SB_ABSTRACTOBJECT_PRIVATE_H
 #define SB_ABSTRACTOBJECT_PRIVATE_H
 
-#include "sb-abstractobject.h"
+#include <sb-core/sb-abstractobject.h>
 
 namespace sb
 {
 
-class AbstractObject::Private
+class SB_DECL_HIDDEN AbstractObject::Private
 {
 
 public:
 
-    AbstractObject::Private
+    Private
     (
         AbstractObject* q_ptr_
     );
 
     static
-    AbstractObject::Private*
+    Private*
     from
     (
         const AbstractObject* this_
     );
 
     static
-    AbstractObject::Private*
+    Private*
     from
     (
         const SharedObject& this_

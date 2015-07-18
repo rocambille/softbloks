@@ -18,7 +18,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SB_ABSTRACTSINK_H
 #define SB_ABSTRACTSINK_H
 
-#include "sb-abstractblok.h"
+#include <sb-core/sb-abstractblok.h>
 
 namespace sb
 {
@@ -38,7 +38,7 @@ public:
     );
 
     SharedDataSet
-    get_input
+    lock_input
     (
         size_t index_
     )
@@ -82,7 +82,6 @@ protected:
 
 private:
 
-    SB_DECL_HIDDEN
     static
     void
     construct
@@ -94,6 +93,21 @@ private:
     d_ptr;
 
 };
+
+typedef
+    std::unique_ptr<AbstractSink, UniqueObject::deleter_type>
+    UniqueSink;
+
+SB_CORE_API
+inline
+UniqueSink
+create_unique_sink
+(
+    const std::string& name_
+)
+{
+    return create_unique<AbstractSink>(name_);
+}
 
 }
 

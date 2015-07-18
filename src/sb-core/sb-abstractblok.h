@@ -18,9 +18,10 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SB_ABSTRACTBLOK_H
 #define SB_ABSTRACTBLOK_H
 
-#include "sb-abstractobject.h"
+#include <sb-core/sb-abstractobject.h>
 
-#include "sb-abstractdata.h"
+#include <sb-core/sb-abstractexecutive.h>
+#include <sb-core/sb-dataset.h>
 
 namespace sb
 {
@@ -75,9 +76,34 @@ public:
     )
     const;
 
+    void
+    use_executive
+    (
+        const std::string& name_
+    );
+
+    void
+    pull_input
+    (
+        size_t index_
+    );
+
+    void
+    push_output
+    (
+        size_t index_
+    );
+
+    virtual
+    void
+    process
+    (
+    )
+    {
+    }
+
 private:
 
-    SB_DECL_HIDDEN
     static
     void
     construct
@@ -91,8 +117,19 @@ private:
 };
 
 typedef
-    std::shared_ptr<AbstractBlok>
-    SharedBlok;
+    std::unique_ptr<AbstractBlok, UniqueObject::deleter_type>
+    UniqueBlok;
+
+SB_CORE_API
+inline
+UniqueBlok
+create_unique_blok
+(
+    const std::string& name_
+)
+{
+    return create_unique<AbstractBlok>(name_);
+}
 
 }
 

@@ -18,19 +18,20 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SB_ABSTRACTBLOK_PRIVATE_H
 #define SB_ABSTRACTBLOK_PRIVATE_H
 
-#include "sb-abstractblok.h"
+#include <sb-core/sb-abstractblok.h>
 
-#include "sb-abstractdata.h"
+#include <sb-core/sb-abstractdata.h>
+#include <sb-core/sb-dataset-private.h>
 
 namespace sb
 {
 
-class AbstractBlok::Private
+class SB_DECL_HIDDEN AbstractBlok::Private
 {
 
 public:
 
-    AbstractBlok::Private
+    Private
     (
         AbstractBlok* q_ptr_
     );
@@ -91,7 +92,7 @@ public:
     );
 
     SharedDataSet
-    get_input
+    lock_input
     (
         size_t index_
     )
@@ -104,25 +105,24 @@ public:
         const SharedDataSet& value_
     );
 
-    SharedDataSet
-    get_output
+    void
+    unlink_input
     (
         size_t index_
-    )
-    const;
+    );
 
     static
-    AbstractBlok::Private*
+    Private*
     from
     (
         const AbstractBlok* this_
     );
 
     static
-    AbstractBlok::Private*
+    Private*
     from
     (
-        const SharedBlok& this_
+        const UniqueBlok& this_
     );
 
 public:
@@ -136,7 +136,7 @@ public:
     size_t
     maximum_input_count;
 
-    std::vector<SharedDataSet>
+    std::vector<WeakDataSet>
     inputs;
 
     std::vector<ObjectFormat>
@@ -159,6 +159,9 @@ public:
 
     std::vector<IndexCollectionConverter>
     defined_indices_converters;
+
+    UniqueExecutive
+    executive;
 
 };
 

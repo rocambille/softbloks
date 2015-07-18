@@ -15,59 +15,65 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef SB_ABSTRACTDATA_H
-#define SB_ABSTRACTDATA_H
+#ifndef SB_EXECUTIVE_PRIVATE_H
+#define SB_EXECUTIVE_PRIVATE_H
 
-#include <sb-core/sb-abstractobject.h>
+#include <sb-core/sb-executive.h>
 
 namespace sb
 {
 
-class SB_CORE_API AbstractData : public AbstractObject
+class SB_DECL_HIDDEN PushExecutive::Private
 {
-
-    SB_DECLARE_OBJECT(AbstractData, "sb::AbstractData")
 
 public:
 
-    class Private;
-
-    virtual
-    ~AbstractData
+    Private
     (
+        PushExecutive* q_ptr_
     );
 
-private:
+public:
 
-    static
-    void
-    construct
-    (
-        AbstractData* this_
-    );
-
-private:
-
-    Private*
-    d_ptr;
+    PushExecutive*
+    q_ptr;
 
 };
 
-typedef
-    std::shared_ptr<AbstractData>
-    SharedData;
-
-SB_CORE_API
-inline
-SharedData
-create_shared_data
-(
-    const std::string& name_
-)
+class SB_DECL_HIDDEN PullExecutive::Private
 {
-    return create_shared<AbstractData>(name_);
-}
+
+public:
+
+    Private
+    (
+        PullExecutive* q_ptr_
+    );
+
+public:
+
+    PullExecutive*
+    q_ptr;
+
+};
+
+class SB_DECL_HIDDEN PushPullExecutive::Private
+{
+
+public:
+
+    Private
+    (
+        PushPullExecutive* q_ptr_
+    );
+
+public:
+
+    PushPullExecutive*
+    q_ptr;
+
+};
 
 }
 
-#endif // SB_ABSTRACTDATA_H
+#endif // SB_EXECUTIVE_PRIVATE_H

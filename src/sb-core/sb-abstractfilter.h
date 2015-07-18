@@ -18,7 +18,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SB_ABSTRACTFILTER_H
 #define SB_ABSTRACTFILTER_H
 
-#include "sb-abstractblok.h"
+#include <sb-core/sb-abstractblok.h>
 
 namespace sb
 {
@@ -38,7 +38,7 @@ public:
     );
 
     SharedDataSet
-    get_input
+    lock_input
     (
         size_t index_
     )
@@ -123,7 +123,6 @@ protected:
 
 private:
 
-    SB_DECL_HIDDEN
     static
     void
     construct
@@ -135,6 +134,21 @@ private:
     d_ptr;
 
 };
+
+typedef
+    std::unique_ptr<AbstractFilter, UniqueObject::deleter_type>
+    UniqueFilter;
+
+SB_CORE_API
+inline
+UniqueFilter
+create_unique_filter
+(
+    const std::string& name_
+)
+{
+    return create_unique<AbstractFilter>(name_);
+}
 
 }
 

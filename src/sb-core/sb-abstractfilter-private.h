@@ -18,17 +18,17 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SB_ABSTRACTFILTER_PRIVATE_H
 #define SB_ABSTRACTFILTER_PRIVATE_H
 
-#include "sb-abstractfilter.h"
+#include <sb-core/sb-abstractfilter.h>
 
 namespace sb
 {
 
-class AbstractFilter::Private
+class SB_DECL_HIDDEN AbstractFilter::Private
 {
 
 public:
 
-    AbstractFilter::Private
+    Private
     (
         AbstractFilter* q_ptr_
     );

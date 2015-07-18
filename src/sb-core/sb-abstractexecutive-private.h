@@ -15,42 +15,53 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "sb-core.h"
+#ifndef SB_ABSTRACTEXECUTIVE_PRIVATE_H
+#define SB_ABSTRACTEXECUTIVE_PRIVATE_H
 
-class Soft1 : public sb::AbstractSoft
+#include <sb-core/sb-abstractexecutive.h>
+
+#include <sb-core/sb-abstractblok.h>
+
+namespace sb
 {
 
-    SB_DECLARE_OBJECT(Soft1, "Soft1")
+class SB_DECL_HIDDEN AbstractExecutive::Private
+{
+
+public:
+
+    Private
+    (
+        AbstractExecutive* q_ptr_
+    );
 
     static
-    void
-    construct
+    Private*
+    from
     (
-        Soft1* this_
-    )
-    {
-    }
+        const AbstractExecutive* this_
+    );
+
+    static
+    Private*
+    from
+    (
+        const UniqueExecutive& this_
+    );
+
+public:
+
+    AbstractExecutive*
+    q_ptr;
+
+    AbstractBlok*
+    blok;
+
+    bool
+    is_executing;
 
 };
 
-class Soft2 : public sb::AbstractSoft
-{
-
-    SB_DECLARE_OBJECT(Soft2, "Soft2")
-
-    static
-    void
-    construct
-    (
-        Soft2* this_
-    )
-    {
-    }
-
-};
-
-SB_DECLARE_MODULE(helloworld)
-{
-    sb::register_object<Soft1>();
-    sb::register_object<Soft2>();
 }
+
+#endif // SB_ABSTRACTEXECUTIVE_PRIVATE_H

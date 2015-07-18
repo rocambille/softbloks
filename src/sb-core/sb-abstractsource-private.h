@@ -18,17 +18,17 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SB_ABSTRACTSOURCE_PRIVATE_H
 #define SB_ABSTRACTSOURCE_PRIVATE_H
 
-#include "sb-abstractsource.h"
+#include <sb-core/sb-abstractsource.h>
 
 namespace sb
 {
 
-class AbstractSource::Private
+class SB_DECL_HIDDEN AbstractSource::Private
 {
 
 public:
 
-    AbstractSource::Private
+    Private
     (
         AbstractSource* q_ptr_
     );

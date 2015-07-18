@@ -18,10 +18,12 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SB_COREDEFINE_H
 #define SB_COREDEFINE_H
 
-#include "sb-global.h"
+#include <sb-global/sb-global.h>
 
 #include <array>
 #include <functional>
+#include <limits>
+#include <memory>
 #include <vector>
 
 #ifdef sb_core_EXPORTS
@@ -57,6 +59,21 @@ typedef
     IndexCollectionConverter;
 
 const size_t infinity = std::numeric_limits<size_t>::max();
+
+template<typename U, typename T, typename D>
+std::unique_ptr<U, D>
+static_pointer_cast(std::unique_ptr<T, D>&& t_ptr_)
+{
+    auto ptr = static_cast<U*>(t_ptr_.get());
+
+    std::unique_ptr<U, D> u_ptr(
+        ptr, std::move(t_ptr_.get_deleter())
+    );
+
+    t_ptr_.release();
+
+    return u_ptr;
+}
 
 }
 
@@ -95,6 +112,6 @@ const size_t infinity = std::numeric_limits<size_t>::max();
         );
 
 #define SB_DECLARE_MODULE(name_) \
-    extern "C" SB_DECL_EXPORT void sb_init_module()
+    extern "C" SB_DECL_EXPORT void sb_main()
 
 #endif // SB_COREDEFINE_H

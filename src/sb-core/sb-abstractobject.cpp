@@ -15,9 +15,9 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "sb-abstractobject.h"
+#include <sb-core/sb-abstractobject.h>
 
-#include "sb-abstractobject-private.h"
+#include <sb-core/sb-abstractobject-private.h>
 
 namespace sb
 {
@@ -135,12 +135,31 @@ sb::get_registered_object_names
 }
 
 SharedObject
-sb::create_object
+sb::create_shared_object
 (
     const std::string& name_
 )
 {
     SharedObject instance;
+
+    auto object_factory =
+        Global::object_factory_map.find(name_);
+
+    if(object_factory != Global::object_factory_map.end())
+    {
+        instance = Unmapper::factory(*object_factory)();
+    }
+
+    return instance;
+}
+
+UniqueObject
+sb::create_unique_object
+(
+    const std::string& name_
+)
+{
+    UniqueObject instance;
 
     auto object_factory =
         Global::object_factory_map.find(name_);

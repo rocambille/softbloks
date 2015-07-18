@@ -14,11 +14,13 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
-option(BUILD_EXAMPLES
-    "build examples"
-    OFF
+sb_add_module(hellobloks
+    hellobloks.cpp
 )
 
-if(BUILD_EXAMPLES)
-    add_subdirectory(helloworld)
+if(BUILD_QT5_EXAMPLES)
+    sb_add_qt5_module(hellosoft
+        hellosoft.cpp
+        Qt5::Widgets
+    )
 endif()

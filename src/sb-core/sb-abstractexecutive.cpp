@@ -15,13 +15,13 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include <sb-core/sb-abstractdata.h>
+#include <sb-core/sb-abstractexecutive.h>
 
-#include <sb-core/sb-abstractdata-private.h>
+#include <sb-core/sb-abstractexecutive-private.h>
 
 using namespace sb;
 
-AbstractData::~AbstractData
+AbstractExecutive::~AbstractExecutive
 (
 )
 {
@@ -29,18 +29,52 @@ AbstractData::~AbstractData
 }
 
 void
-AbstractData::construct
+AbstractExecutive::construct
 (
-    AbstractData* this_
+    AbstractExecutive* this_
 )
 {
     this_->d_ptr = new Private(this_);
 }
 
-AbstractData::Private::Private
+void
+AbstractExecutive::execute
 (
-    AbstractData* q_ptr_
-):
-    q_ptr(q_ptr_)
+)
 {
+    if(!d_ptr->is_executing)
+    {
+        d_ptr->is_executing = true;
+
+        d_ptr->blok->process();
+
+        d_ptr->is_executing = false;
+    }
+}
+
+AbstractExecutive::Private::Private
+(
+    AbstractExecutive* q_ptr_
+):
+    q_ptr           (q_ptr_),
+    is_executing    (false)
+{
+}
+
+AbstractExecutive::Private*
+AbstractExecutive::Private::from
+(
+    const AbstractExecutive* this_
+)
+{
+    return this_->d_ptr;
+}
+
+AbstractExecutive::Private*
+AbstractExecutive::Private::from
+(
+    const UniqueExecutive& this_
+)
+{
+    return this_->d_ptr;
 }

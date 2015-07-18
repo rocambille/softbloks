@@ -14,6 +14,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
-sb_add_module(helloworld
-    helloworld.cpp
+option(BUILD_EXAMPLES
+    "build examples"
+    OFF
 )
+
+if(BUILD_EXAMPLES)
+    option(BUILD_QT5_EXAMPLES
+        "build software"
+        ${Qt5_FOUND}
+    )
+
+    add_subdirectory(helloworld)
+endif()

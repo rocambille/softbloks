@@ -15,69 +15,57 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef SB_ABSTRACTSOURCE_H
-#define SB_ABSTRACTSOURCE_H
+#ifndef SB_ABSTRACTEXECUTIVE_H
+#define SB_ABSTRACTEXECUTIVE_H
 
-#include <sb-core/sb-abstractblok.h>
+#include <sb-core/sb-abstractobject.h>
 
 namespace sb
 {
 
-class SB_CORE_API AbstractSource : public AbstractBlok
+class AbstractBlok;
+
+class SB_CORE_API AbstractExecutive : public AbstractObject
 {
 
-    SB_DECLARE_OBJECT(AbstractSource, "sb::AbstractSource")
+    SB_DECLARE_OBJECT(AbstractExecutive, "sb::AbstractExecutive")
 
 public:
 
     class Private;
 
     virtual
-    ~AbstractSource
+    ~AbstractExecutive
     (
     );
 
-    SharedDataSet
-    get_output
+    virtual
+    void
+    on_input_pushed
     (
         size_t index_
     )
-    const;
+    = 0;
+
+    virtual
+    void
+    on_output_pulled
+    (
+        size_t index_
+    )
+    = 0;
 
 protected:
 
-    void
-    set_output_count
+    AbstractBlok*
+    get_blok
     (
-        size_t value_
-    );
+    )
+    const;
 
     void
-    set_output_count
+    execute
     (
-        size_t minimum_,
-        size_t maximum_
-    );
-
-    void
-    set_output_format
-    (
-        size_t index_,
-        const ObjectFormat& format
-    );
-
-    void
-    set_index_range
-    (
-        size_t output_,
-        const IndexRange& value_
-    );
-
-    void
-    set_defined_indices
-    (
-        size_t output_,
-        const IndexCollection& value_
     );
 
 private:
@@ -86,7 +74,7 @@ private:
     void
     construct
     (
-        AbstractSource* this_
+        AbstractExecutive* this_
     );
 
     Private*
@@ -95,20 +83,20 @@ private:
 };
 
 typedef
-    std::unique_ptr<AbstractSource, UniqueObject::deleter_type>
-    UniqueSource;
+    std::unique_ptr<AbstractExecutive, UniqueObject::deleter_type>
+    UniqueExecutive;
 
 SB_CORE_API
 inline
-UniqueSource
-create_unique_source
+UniqueExecutive
+create_unique_executive
 (
     const std::string& name_
 )
 {
-    return create_unique<AbstractSource>(name_);
+    return create_unique<AbstractExecutive>(name_);
 }
 
 }
 
-#endif // SB_ABSTRACTSOURCE_H
+#endif // SB_ABSTRACTEXECUTIVE_H

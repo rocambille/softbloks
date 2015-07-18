@@ -15,13 +15,15 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "sb-abstractblok.h"
+#include <sb-core/sb-abstractblok.h>
 
-#include "sb-abstractblok-private.h"
+#include <sb-core/sb-abstractblok-private.h>
 
 #include <algorithm>
 
-#include "sb-abstractdata-private.h"
+#include <sb-core/sb-abstractexecutive-private.h>
+#include <sb-core/sb-dataset-private.h>
+#include <sb-core/sb-executive.h>
 
 using namespace sb;
 
@@ -88,12 +90,22 @@ AbstractBlok::~AbstractBlok
 (
 )
 {
-    for(SharedDataSet output : d_ptr->outputs)
+    for(size_t i = 0; i < d_ptr->inputs.size(); ++i)
+    {
+        d_ptr->unlink_input(i);
+    }
+
+    for(auto output : d_ptr->outputs)
     {
         DataSet::Private::from(
             output
         )->source_blok = nullptr;
     }
+
+    // d_ptr->executive points to this blok:
+    // ensure it is destroyed first
+
+    d_ptr->executive.reset();
 
     delete d_ptr;
 }
@@ -153,12 +165,81 @@ const
 }
 
 void
+AbstractBlok::use_executive
+(
+    const std::string& name_
+)
+{
+    d_ptr->executive = sb::create_unique_executive(name_);
+
+    if(!d_ptr->executive)
+    {
+        throw std::invalid_argument(
+            "fatal: AbstractBlok::use_executive(invalid executive name)"
+        );
+    }
+
+    AbstractExecutive::Private::from(
+        d_ptr->executive
+    )->blok = this;
+}
+
+void
+AbstractBlok::pull_input
+(
+    size_t index_
+)
+{
+    // AbstractBlok::Private::lock_input calls this method:
+    // don't call it here or it will cause infinite recursion
+
+    auto input_d_ptr = DataSet::Private::from(
+        d_ptr->inputs.at(index_).lock()
+    );
+
+    AbstractBlok::Private::from(
+        input_d_ptr->source_blok
+    )->executive->on_output_pulled(
+        input_d_ptr->source_index
+    );
+}
+
+void
+AbstractBlok::push_output
+(
+    size_t index_
+)
+{
+    // AbstractBlok::Private::lock_input calls this method:
+    // don't call it here or it will cause infinite recursion
+
+    auto output_d_ptr = DataSet::Private::from(
+        d_ptr->outputs.at(index_)
+    );
+
+    for(auto follower : output_d_ptr->followers)
+    {
+        AbstractBlok::Private::from(
+            Unmapper::blok(follower)
+        )->executive->on_input_pushed(
+            Unmapper::input_index(follower)
+        );
+    }
+}
+
+void
 AbstractBlok::construct
 (
     AbstractBlok* this_
 )
 {
+    sb::register_object<PushPullExecutive>();
+
     this_->d_ptr = new Private(this_);
+
+    this_->use_executive(
+        PushPullExecutive::get_object_name()
+    );
 }
 
 AbstractBlok::Private::Private
@@ -196,7 +277,7 @@ AbstractBlok::Private::set_input_count
     this->minimum_input_count = minimum_;
     this->maximum_input_count = maximum_;
 
-    this->inputs.resize(minimum_, nullptr);
+    this->inputs.resize(minimum_);
 
     this->inputs_format.resize(
         this->inputs.size(),
@@ -248,7 +329,7 @@ AbstractBlok::Private::set_output_count
 
     for(size_t i(previous_output_count); i < this->outputs.size(); ++i)
     {
-        SharedDataSet data_set = sb::create<DataSet>(
+        SharedDataSet data_set = sb::create_shared_data_set(
             DataSet::get_object_name()
         );
 
@@ -289,12 +370,14 @@ AbstractBlok::Private::update_outputs_index_range
 {
     std::vector<IndexRange> index_ranges;
 
-    for(SharedDataSet input : this->inputs)
+    for(auto input : this->inputs)
     {
-        if(input)
+        auto locked_input = input.lock();
+
+        if(locked_input)
         {
             index_ranges.push_back(
-                input->get_index_range()
+                locked_input->get_index_range()
             );
         }
         else
@@ -305,7 +388,7 @@ AbstractBlok::Private::update_outputs_index_range
         }
     }
 
-    for(SharedDataSet output : this->outputs)
+    for(auto output : this->outputs)
     {
         auto converter = this->index_range_converters.at(
             DataSet::Private::from(
@@ -330,12 +413,14 @@ AbstractBlok::Private::update_outputs_defined_indices
 {
     std::vector<IndexCollection> index_collections;
 
-    for(SharedDataSet input : this->inputs)
+    for(auto input : this->inputs)
     {
-        if(input)
+        auto locked_input = input.lock();
+
+        if(locked_input)
         {
             index_collections.push_back(
-                input->get_defined_indices()
+                locked_input->get_defined_indices()
             );
         }
         else
@@ -346,7 +431,7 @@ AbstractBlok::Private::update_outputs_defined_indices
         }
     }
 
-    for(SharedDataSet output : this->outputs)
+    for(auto output : this->outputs)
     {
         auto converter = this->defined_indices_converters.at(
             DataSet::Private::from(
@@ -371,7 +456,7 @@ AbstractBlok::Private::update_inputs_wanted_indices
 {
     std::vector<IndexCollection> index_collections;
 
-    for(SharedDataSet output : this->outputs)
+    for(auto output : this->outputs)
     {
         index_collections.push_back(
             DataSet::Private::from(
@@ -380,18 +465,20 @@ AbstractBlok::Private::update_inputs_wanted_indices
         );
     }
 
-    for(SharedDataSet input : this->inputs)
+    for(auto input : this->inputs)
     {
-        if(input)
+        auto locked_input = input.lock();
+
+        if(locked_input)
         {
             auto converter = this->wanted_indices_converters.at(
                 DataSet::Private::from(
-                    input
+                    locked_input
                 )->source_index
             );
 
             DataSet::Private::from(
-                input
+                locked_input
             )->set_wanted_indices(
                 converter(
                     index_collections
@@ -402,13 +489,15 @@ AbstractBlok::Private::update_inputs_wanted_indices
 }
 
 SharedDataSet
-AbstractBlok::Private::get_input
+AbstractBlok::Private::lock_input
 (
     size_t index_
 )
 const
 {
-    return this->inputs.at(index_);
+    q_ptr->pull_input(index_);
+
+    return this->inputs.at(index_).lock();
 }
 
 bool
@@ -425,7 +514,7 @@ AbstractBlok::Private::set_input
         index_ < this->maximum_input_count
     )
     {
-        this->inputs.resize(index_+1, nullptr);
+        this->inputs.resize(index_+1);
 
         this->inputs_format.resize(
             this->inputs.size(),
@@ -452,7 +541,22 @@ AbstractBlok::Private::set_input
     {
         ok = true;
 
+        this->unlink_input(index_);
+
         this->inputs[index_] = value_;
+
+        if(value_)
+        {
+            // register this blok as a follower
+
+            DataSet::Private::from(
+                value_
+            )->followers.emplace(
+                q_ptr, index_
+            );
+        }
+
+        // update indices
 
         this->update_outputs_index_range();
         this->update_outputs_defined_indices();
@@ -463,14 +567,41 @@ AbstractBlok::Private::set_input
     return ok;
 }
 
-SharedDataSet
-AbstractBlok::Private::get_output
+void
+AbstractBlok::Private::unlink_input
 (
     size_t index_
 )
-const
 {
-    return this->outputs.at(index_);
+    auto input = this->inputs[index_].lock();
+
+    if(input)
+    {
+        // unregister this blok from previous input's followers
+
+        auto input_d_ptr = DataSet::Private::from(
+            input
+        );
+
+        auto erase_candidates = 
+            input_d_ptr->followers.equal_range(
+                q_ptr
+            );
+
+        auto candidate = erase_candidates.first;
+
+        while(candidate != erase_candidates.second)
+        {
+            if(Unmapper::input_index(*candidate) == index_)
+            {
+                candidate = input_d_ptr->followers.erase(candidate);
+            }
+            else
+            {
+                ++candidate;
+            }
+        }
+    }
 }
 
 AbstractBlok::Private*
@@ -485,7 +616,7 @@ AbstractBlok::Private::from
 AbstractBlok::Private*
 AbstractBlok::Private::from
 (
-    const SharedBlok& this_
+    const UniqueBlok& this_
 )
 {
     return this_->d_ptr;

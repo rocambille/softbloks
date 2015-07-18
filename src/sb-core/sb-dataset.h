@@ -15,69 +15,60 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef SB_ABSTRACTSOURCE_H
-#define SB_ABSTRACTSOURCE_H
+#ifndef SB_DATASET_H
+#define SB_DATASET_H
 
-#include <sb-core/sb-abstractblok.h>
+#include <sb-core/sb-abstractobject.h>
+
+#include <sb-core/sb-abstractdata.h>
 
 namespace sb
 {
 
-class SB_CORE_API AbstractSource : public AbstractBlok
+class SB_CORE_API DataSet : public AbstractObject
 {
 
-    SB_DECLARE_OBJECT(AbstractSource, "sb::AbstractSource")
+    SB_DECLARE_OBJECT(DataSet, "sb::DataSet")
 
 public:
 
     class Private;
 
     virtual
-    ~AbstractSource
+    ~DataSet
     (
     );
 
-    SharedDataSet
-    get_output
+    IndexRange
+    get_index_range
     (
-        size_t index_
     )
     const;
 
-protected:
+    IndexCollection
+    get_defined_indices
+    (
+    )
+    const;
+
+    IndexCollection
+    get_wanted_indices
+    (
+    )
+    const;
+
+    SharedData
+    get_data
+    (
+        double index_
+    )
+    const;
 
     void
-    set_output_count
+    set_data
     (
-        size_t value_
-    );
-
-    void
-    set_output_count
-    (
-        size_t minimum_,
-        size_t maximum_
-    );
-
-    void
-    set_output_format
-    (
-        size_t index_,
-        const ObjectFormat& format
-    );
-
-    void
-    set_index_range
-    (
-        size_t output_,
-        const IndexRange& value_
-    );
-
-    void
-    set_defined_indices
-    (
-        size_t output_,
-        const IndexCollection& value_
+        double index_,
+        const SharedData& value_
     );
 
 private:
@@ -86,7 +77,7 @@ private:
     void
     construct
     (
-        AbstractSource* this_
+        DataSet* this_
     );
 
     Private*
@@ -95,20 +86,20 @@ private:
 };
 
 typedef
-    std::unique_ptr<AbstractSource, UniqueObject::deleter_type>
-    UniqueSource;
+    std::shared_ptr<DataSet>
+    SharedDataSet;
 
 SB_CORE_API
 inline
-UniqueSource
-create_unique_source
+SharedDataSet
+create_shared_data_set
 (
     const std::string& name_
 )
 {
-    return create_unique<AbstractSource>(name_);
+    return create_shared<DataSet>(name_);
 }
 
 }
 
-#endif // SB_ABSTRACTSOURCE_H
+#endif // SB_DATASET_H

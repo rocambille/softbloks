@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 3.0.0)
 
 project(Softbloks CXX)
 
@@ -67,35 +67,6 @@ install(
     "${PROJECT_SOURCE_DIR}/README.md"
     DESTINATION ${SB_INSTALL_ROOT_DESTINATION}
 )
-
-# install redist files
-
-if(MSVC)
-    # check VCINSTALLDIR in environment variables
-    if(DEFINED ENV{VCINSTALLDIR})
-        # retrieve and convert into a cmake path
-        file(TO_CMAKE_PATH "$ENV{VCINSTALLDIR}" _VCINSTALLDIR)
-    else()
-        # guess from compiler
-        string(REGEX REPLACE "/bin/.*$" "" _VCINSTALLDIR "${CMAKE_CXX_COMPILER}")
-    endif()
-
-    if(CMAKE_SIZEOF_VOID_P EQUAL 4)
-        set(_architecture x86)
-    else()
-        set(_architecture x64)
-    endif()
-
-    file(GLOB_RECURSE _msvc_runtimes
-        ${_VCINSTALLDIR}/redist/${_architecture}/msvcr*.dll
-        ${_VCINSTALLDIR}/redist/${_architecture}/msvcp*.dll
-    )
-
-    install(
-        FILES ${_msvc_runtimes}
-        DESTINATION ${SB_INSTALL_RUNTIME_DESTINATION}
-    )
-endif()
 
 # manage Qt5 targets
 
@@ -165,8 +136,45 @@ endfunction()
 
 # declare custom add_library functions
 
+function(sb_add_header_only_target _name)
+    add_library(${_name} INTERFACE)
+
+    target_include_directories(${_name} INTERFACE
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
+        $<INSTALL_INTERFACE:${SB_INSTALL_INCLUDE_DESTINATION}>
+    )
+
+    install(
+        DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/"
+        DESTINATION ${SB_INSTALL_INCLUDE_DESTINATION}/${_name}
+        FILES_MATCHING
+        PATTERN *.h
+    )
+    install(
+        TARGETS ${_name}
+        EXPORT ${_name}-config
+    )
+    install(
+        EXPORT ${_name}-config
+        DESTINATION ${SB_INSTALL_SHARE_DESTINATION}/cmake/${_name}
+    )
+    install(
+        FILES "${PROJECT_BINARY_DIR}/share/cmake/config-version.cmake"
+        DESTINATION ${SB_INSTALL_SHARE_DESTINATION}/cmake/${_name}
+        RENAME ${_name}-config-version.cmake
+    )
+
+    # make headers displayed in IDEs
+
+    if(MSVC)
+        add_custom_target(${_name}.header-only SOURCES ${ARGN})
+    endif()
+endfunction()
+
 function(sb_add_library _name)
     add_library(${_name} SHARED ${ARGN})
+
+    target_link_libraries(${_name} sb-global)
 
     string(REGEX REPLACE "-" "_" _c_legal_name ${_name})
 
@@ -177,7 +185,6 @@ function(sb_add_library _name)
 
     target_include_directories(${_name} PUBLIC
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
-        $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src> # sb-global.h
         $<INSTALL_INTERFACE:${SB_INSTALL_INCLUDE_DESTINATION}>
     )
 
@@ -198,6 +205,11 @@ function(sb_add_library _name)
     install(
         EXPORT ${_name}-config
         DESTINATION ${SB_INSTALL_SHARE_DESTINATION}/cmake/${_name}
+    )
+    install(
+        FILES "${PROJECT_BINARY_DIR}/share/cmake/config-version.cmake"
+        DESTINATION ${SB_INSTALL_SHARE_DESTINATION}/cmake/${_name}
+        RENAME ${_name}-config-version.cmake
     )
 endfunction()
 
@@ -296,3 +308,14 @@ add_subdirectory(share/cmake)
 add_subdirectory(share/doc)
 add_subdirectory(share/examples)
 add_subdirectory(src)
+
+# install system runtime libs
+
+set(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_SKIP TRUE)
+
+include(InstallRequiredSystemLibraries)
+
+install(
+    PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
+    DESTINATION ${SB_INSTALL_RUNTIME_DESTINATION}
+)

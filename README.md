@@ -18,7 +18,7 @@ Building Softbloks from sources
 
 System requirements:
 
-* CMake 2.8.11 or later;
+* CMake 3.0.0 or later;
 * C++ compiler supporting the C++11 standard.
 
 If you are reading this part, we assume you cloned Softbloks from the

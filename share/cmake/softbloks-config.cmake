@@ -36,6 +36,19 @@ get_filename_component(_sb_cmake_prefix "${CMAKE_CURRENT_LIST_DIR}/.." ABSOLUTE)
 
 set(_sb_NOTFOUND_MESSAGE)
 
+macro(sb_add_component_to_find _name)
+    list(FIND softbloks_FIND_COMPONENTS ${_name} _index)
+    if(${_index} EQUAL -1)
+        set(softbloks_FIND_COMPONENTS ${_name} ${softbloks_FIND_COMPONENTS})
+    endif()
+endmacro()
+
+foreach(module ${softbloks_FIND_COMPONENTS})
+    if(${module} STREQUAL sb-core)
+        sb_add_component_to_find(sb-global)
+    endif()
+endforeach()
+
 foreach(module ${softbloks_FIND_COMPONENTS})
     find_package(${module}
         ${_sb_FIND_PARTS_QUIET}

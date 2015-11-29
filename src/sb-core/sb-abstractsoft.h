@@ -51,20 +51,14 @@ private:
 
 };
 
-typedef
-    std::shared_ptr<AbstractSoft>
-    SharedSoft;
+using SharedSoft = Shared<AbstractSoft>;
 
-SB_CORE_API
-inline
+static
 SharedSoft
-create_shared_soft
+(&create_shared_soft)
 (
     const std::string& name_
-)
-{
-    return create_shared<AbstractSoft>(name_);
-}
+) = create_shared<AbstractSoft>;
 
 }
 

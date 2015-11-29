@@ -15,12 +15,20 @@
 # along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 configure_file(
-    sb-global.h.in
-    "${CMAKE_CURRENT_BINARY_DIR}/sb-global.h"
+    sb-version.h.in
+    "${CMAKE_CURRENT_BINARY_DIR}/sb-version.h"
     @ONLY
 )
 
+sb_add_header_only_target(sb-global
+    sb-global.h
+    "${CMAKE_CURRENT_BINARY_DIR}/sb-version.h"
+)
+
+target_include_directories(sb-global INTERFACE
+    $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src> # sb-version.h
+)
 install(
-    FILES "${CMAKE_CURRENT_BINARY_DIR}/sb-global.h"
+    FILES "${CMAKE_CURRENT_BINARY_DIR}/sb-version.h"
     DESTINATION ${SB_INSTALL_INCLUDE_DESTINATION}/sb-global
 )

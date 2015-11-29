@@ -94,20 +94,14 @@ private:
 
 };
 
-typedef
-    std::unique_ptr<AbstractSink, UniqueObject::deleter_type>
-    UniqueSink;
+using UniqueSink = Unique<AbstractSink>;
 
-SB_CORE_API
-inline
+static
 UniqueSink
-create_unique_sink
+(&create_unique_sink)
 (
     const std::string& name_
-)
-{
-    return create_unique<AbstractSink>(name_);
-}
+) = create_unique<AbstractSink>;
 
 }
 

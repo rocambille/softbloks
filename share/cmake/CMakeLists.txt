@@ -28,8 +28,3 @@ install(
     DESTINATION ${SB_INSTALL_SHARE_DESTINATION}/cmake/softbloks
     RENAME softbloks-config-version.cmake
 )
-install(
-    FILES "${CMAKE_CURRENT_BINARY_DIR}/config-version.cmake"
-    DESTINATION ${SB_INSTALL_SHARE_DESTINATION}/cmake/sb-core
-    RENAME sb-core-config-version.cmake
-)

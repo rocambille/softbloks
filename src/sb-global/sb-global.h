@@ -18,22 +18,17 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SB_GLOBAL_H
 #define SB_GLOBAL_H
 
-// version
+// version macros
+
+#include <sb-global/sb-version.h>
 
 #define SB_VERSION_(major_, minor_)\
     ((major_<<8)|(minor_))
-
-#define SB_VERSION_MAJOR    @SOFTBLOKS_VERSION_MAJOR@
-#define SB_VERSION_MINOR    @SOFTBLOKS_VERSION_MINOR@
 
 #define SB_VERSION SB_VERSION_(SB_VERSION_MAJOR, SB_VERSION_MINOR)
 
 #define SB_BUILD_(year_, month_, day_)\
     ((year_<<16)|(month_<<8)|(day_))
-
-#define SB_BUILD_YEAR       @SOFTBLOKS_BUILD_YEAR@
-#define SB_BUILD_MONTH      @SOFTBLOKS_BUILD_MONTH@
-#define SB_BUILD_DAY        @SOFTBLOKS_BUILD_DAY@
 
 #define SB_BUILD SB_BUILD_(SB_BUILD_YEAR, SB_BUILD_MONTH, SB_BUILD_DAY)
 

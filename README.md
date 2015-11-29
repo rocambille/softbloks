@@ -18,7 +18,7 @@ Building Softbloks from sources
 
 System requirements:
 
-* CMake 2.8.11 or later;
+* CMake 3.0.0 or later;
 * C++ compiler supporting the C++11 standard.
 
 If you are reading this part, we assume you cloned Softbloks from the
@@ -50,7 +50,7 @@ Files are installed according to the following directory structure:
         <install_prefix>/
             sb*n*/
                 bin/
-                    (software and shared libraries)
+                    (executables and shared libraries)
                 include/
                     (include files)
                 lib/
@@ -71,7 +71,7 @@ Files are installed according to the following directory structure:
         <install_prefix>/
             bin/
                 sb*n*/
-                    (software)
+                    (executables)
             include/
                 sb*n*/
                     (include files)

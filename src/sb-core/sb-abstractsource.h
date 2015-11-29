@@ -94,20 +94,14 @@ private:
 
 };
 
-typedef
-    std::unique_ptr<AbstractSource, UniqueObject::deleter_type>
-    UniqueSource;
+using UniqueSource = Unique<AbstractSource>;
 
-SB_CORE_API
-inline
+static
 UniqueSource
-create_unique_source
+(&create_unique_source)
 (
     const std::string& name_
-)
-{
-    return create_unique<AbstractSource>(name_);
-}
+) = create_unique<AbstractSource>;
 
 }
 

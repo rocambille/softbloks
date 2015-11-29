@@ -15,57 +15,14 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef SB_ABSTRACTOBJECT_PRIVATE_H
-#define SB_ABSTRACTOBJECT_PRIVATE_H
+#ifndef SB_STATIC_POINTER_CAST_TEST_H
+#define SB_STATIC_POINTER_CAST_TEST_H
 
-#include <sb-core/sb-abstractobject.h>
+#include <gtest/gtest.h>
 
-namespace sb
-{
+#include <sb-core/sb-coredefine.h>
 
-class SB_DECL_HIDDEN AbstractObject::Private
-{
+using namespace sb;
 
-public:
 
-    Private
-    (
-        AbstractObject* q_ptr_
-    );
-
-    static
-    Private*
-    from
-    (
-        const AbstractObject* this_
-    );
-
-    static
-    Private*
-    from
-    (
-        const SharedObject& this_
-    );
-
-public:
-
-    AbstractObject*
-    q_ptr;
-
-    std::vector<std::string>
-    type_names;
-
-    bool
-    is_ready;
-
-};
-
-SB_CORE_API
-void
-unregister_all_objects
-(
-);
-
-}
-
-#endif // SB_ABSTRACTOBJECT_PRIVATE_H
+#endif // SB_STATIC_POINTER_CAST_TEST_H

@@ -85,20 +85,14 @@ private:
 
 };
 
-typedef
-    std::shared_ptr<DataSet>
-    SharedDataSet;
+using SharedDataSet = Shared<DataSet>;
 
-SB_CORE_API
-inline
+static
 SharedDataSet
-create_shared_data_set
+(&create_shared_data_set)
 (
     const std::string& name_
-)
-{
-    return create_shared<DataSet>(name_);
-}
+) = create_shared<DataSet>;
 
 }
 

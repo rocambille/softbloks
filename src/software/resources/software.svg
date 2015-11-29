@@ -27,7 +27,7 @@
     </rdf:Description>
     <rdf:Description rdf:about=''
       xmlns:cc='http://creativecommons.org/ns#'>
-      <cc:attributionName>Bastien Oudot</cc:attributionName>
+      <cc:attributionName>Bastien Oudot and Romain Guillemot</cc:attributionName>
       <cc:attributionURL>http://github.com/rita-marylin-raquel/softbloks</cc:attributionURL>
     </rdf:Description>
     

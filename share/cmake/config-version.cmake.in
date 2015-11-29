@@ -1,4 +1,4 @@
-# Copyright (C) 2014 Bastien Oudot
+# Copyright (C) 2014-2015 Bastien Oudot and Romain Guillemot
 # 
 # This file is part of Softbloks.
 # Softbloks is free software: you can redistribute it and/or modify

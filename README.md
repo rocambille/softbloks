@@ -101,7 +101,7 @@ E-mail: <rita.marylin.raquel@gmail.com>
 Licensing
 ---------
 
-Copyright (C) 2014 Bastien Oudot
+Copyright (C) 2014-2015 Bastien Oudot and Romain Guillemot
 
 Softbloks is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by

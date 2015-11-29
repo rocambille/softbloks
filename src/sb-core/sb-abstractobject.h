@@ -21,83 +21,10 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb-core/sb-coredefine.h>
 
 #include <algorithm>
-#include <map>
 #include <string>
-#include <typeindex>
 
 namespace sb
 {
-
-struct PropertyFormat
-{
-
-    std::type_index
-    type;
-
-    sb::Mode
-    mode;
-
-};
-
-typedef
-    std::map<std::string, PropertyFormat>
-    PropertyFormatMap;
-
-namespace Unmapper
-{
-
-    inline
-    std::string
-    name
-    (
-        const PropertyFormatMap::value_type& value_
-    )
-    {
-        return value_.first;
-    }
-
-    inline
-    PropertyFormat
-    format
-    (
-        const PropertyFormatMap::value_type& value_
-    )
-    {
-        return value_.second;
-    }
-
-}
-
-struct ObjectFormat
-{
-
-    std::vector<std::string>
-    type_names;
-
-    PropertyFormatMap
-    properties;
-
-};
-
-const ObjectFormat
-undefined_format = { { "sb::UndefinedObject" } };
-
-const ObjectFormat
-any_format = { { "sb::AbstractObject" } };
-
-class AbstractObject;
-
-typedef
-    std::shared_ptr<AbstractObject>
-    SharedObject;
-
-typedef
-    std::unique_ptr<AbstractObject, std::function<void(AbstractObject*)>>
-    UniqueObject;
-
-typedef
-    std::function<UniqueObject(void)>
-    ObjectFactory;
 
 template<typename T>
 inline
@@ -105,6 +32,15 @@ bool
 register_object
 (
 );
+
+class AbstractObject;
+
+template<typename T>
+using Unique = std::unique_ptr<T, std::function<void(AbstractObject*)>>;
+
+using UniqueObject = Unique<AbstractObject>;
+
+using ObjectFactory = std::function<UniqueObject(void)>;
 
 class SB_CORE_API AbstractObject
 {
@@ -117,13 +53,9 @@ public:
     struct Accessors
     {
 
-        typedef
-            std::function<T(void)>
-            Get;
+        using Get = std::function<T(void)>;
 
-        typedef
-            std::function<void(const T&)>
-            Set;
+        using Set = std::function<void(const T&)>;
 
         Get
         get;
@@ -147,9 +79,7 @@ public:
 
     };
 
-    typedef
-        std::map<std::string, Property>
-        PropertyMap;
+    using PropertyMap = std::map<std::string, Property>;
 
     class Private;
 
@@ -417,44 +347,12 @@ private:
 };
 
 template<typename T>
-inline
-bool
-register_object
-(
-)
-{
-    return AbstractObject::register_object(
-        T::get_object_name(),
-        []
-        (
-        )
-        {
-            auto instance = UniqueObject(
-                new T,
-                []
-                (
-                    AbstractObject* ptr_
-                )
-                {
-                    delete ptr_;
+using Shared = std::shared_ptr<T>;
 
-                    AbstractObject::forget(ptr_);
-                }
-            );
+template<typename T>
+using Weak = std::weak_ptr<T>;
 
-            AbstractObject::init(instance.get());
-
-            return instance;
-        }
-    );
-}
-
-SB_CORE_API
-std::vector<std::string>
-get_registered_object_names
-(
-    const ObjectFormat& filter_ = any_format
-);
+using SharedObject = Shared<AbstractObject>;
 
 SB_CORE_API
 SharedObject
@@ -496,6 +394,50 @@ create_unique
     );
 }
 
+template<typename T>
+inline
+bool
+register_object
+(
+)
+{
+    auto factory = (
+        []
+        (
+        )
+        {
+            auto instance = UniqueObject(
+                new T,
+                []
+                (
+                    AbstractObject* ptr_
+                )
+                {
+                    delete ptr_;
+
+                    AbstractObject::forget(ptr_);
+                }
+            );
+
+            AbstractObject::init(instance.get());
+
+            return instance;
+        }
+    );
+
+    return AbstractObject::register_object(
+        T::get_object_name(),
+        factory
+    );
+}
+
+SB_CORE_API
+std::vector<std::string>
+get_registered_object_names
+(
+    const ObjectFormat& filter_ = any_object_format
+);
+
 SB_CORE_API
 ObjectFormat
 get_object_format
@@ -503,86 +445,6 @@ get_object_format
     const std::string& name_
 );
 
-}
-
-inline
-bool
-operator>>
-(
-    const sb::ObjectFormat& from_,
-    const sb::ObjectFormat& to_extract_
-)
-{
-    return std::all_of(
-        to_extract_.type_names.begin(),
-        to_extract_.type_names.end(),
-        [&from_]
-        (
-            const std::string& type_name_
-        )
-        {
-            return std::find(
-                from_.type_names.begin(),
-                from_.type_names.end(),
-                type_name_
-            ) != from_.type_names.end();
-        }
-    ) && std::all_of(
-        to_extract_.properties.begin(),
-        to_extract_.properties.end(),
-        [&from_]
-        (
-            const sb::PropertyFormatMap::value_type& value_to_extract_
-        )
-        {
-            return std::find_if(
-                from_.properties.begin(),
-                from_.properties.end(),
-                [&value_to_extract_]
-                (
-                    const sb::PropertyFormatMap::value_type& from_value_
-                )
-                {
-                    return (
-                        sb::Unmapper::name(
-                            value_to_extract_
-                        ) ==
-                        sb::Unmapper::name(
-                            from_value_
-                        )
-                    ) && (
-                        sb::Unmapper::format(
-                            value_to_extract_
-                        ).type ==
-                        sb::Unmapper::format(
-                            from_value_
-                        ).type
-                    ) && (
-                        (
-                            sb::Unmapper::format(
-                                value_to_extract_
-                            ).mode &
-                            sb::Unmapper::format(
-                                from_value_
-                            ).mode
-                        ) ==
-                        sb::Unmapper::format(value_to_extract_).mode
-                    );
-                }
-            ) != from_.properties.end();
-        }
-    );
-}
-
-inline
-bool
-operator<<
-(
-    const sb::ObjectFormat& target_,
-    const sb::ObjectFormat& to_inject_
-)
-{
-    return to_inject_ >> target_;
 }
 
 #endif // SB_ABSTRACTOBJECT_H

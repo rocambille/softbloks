@@ -22,13 +22,9 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
-typedef
-    std::map<std::string, ObjectFactory>
-    ObjectFactoryMap;
+using ObjectFactoryMap = std::map<std::string, ObjectFactory>;
 
-typedef
-    std::map<std::string, ObjectFormat>
-    ObjectFormatMap;
+using ObjectFormatMap = std::map<std::string, ObjectFormat>;
 
 namespace Global
 {
@@ -109,77 +105,6 @@ namespace Unmapper
 }
 
 using namespace sb;
-
-std::vector<std::string>
-sb::get_registered_object_names
-(
-    const ObjectFormat& filter_
-)
-{
-    std::vector<std::string> registered_objects;
-    registered_objects.reserve(
-        Global::object_factory_map.size()
-    );
-
-    for(auto object : Global::object_format_map)
-    {
-        if(Unmapper::format(object) >> filter_)
-        {
-            registered_objects.push_back(
-                Unmapper::name(object)
-            );
-        }
-    }
-
-    return registered_objects;
-}
-
-SharedObject
-sb::create_shared_object
-(
-    const std::string& name_
-)
-{
-    SharedObject instance;
-
-    auto object_factory =
-        Global::object_factory_map.find(name_);
-
-    if(object_factory != Global::object_factory_map.end())
-    {
-        instance = Unmapper::factory(*object_factory)();
-    }
-
-    return instance;
-}
-
-UniqueObject
-sb::create_unique_object
-(
-    const std::string& name_
-)
-{
-    UniqueObject instance;
-
-    auto object_factory =
-        Global::object_factory_map.find(name_);
-
-    if(object_factory != Global::object_factory_map.end())
-    {
-        instance = Unmapper::factory(*object_factory)();
-    }
-
-    return instance;
-}
-
-ObjectFormat
-sb::get_object_format
-(
-    const std::string& name_
-)
-{
-    return Global::object_format_map.at(name_);
-}
 
 AbstractObject::~AbstractObject
 (
@@ -345,6 +270,87 @@ AbstractObject::register_object
     return registered;
 }
 
+SharedObject
+sb::create_shared_object
+(
+    const std::string& name_
+)
+{
+    SharedObject instance;
+
+    auto object_factory =
+        Global::object_factory_map.find(name_);
+
+    if(object_factory != Global::object_factory_map.end())
+    {
+        instance = Unmapper::factory(*object_factory)();
+    }
+
+    return instance;
+}
+
+UniqueObject
+sb::create_unique_object
+(
+    const std::string& name_
+)
+{
+    UniqueObject instance;
+
+    auto object_factory =
+        Global::object_factory_map.find(name_);
+
+    if(object_factory != Global::object_factory_map.end())
+    {
+        instance = Unmapper::factory(*object_factory)();
+    }
+
+    return instance;
+}
+
+std::vector<std::string>
+sb::get_registered_object_names
+(
+    const ObjectFormat& filter_
+)
+{
+    std::vector<std::string> registered_objects;
+    registered_objects.reserve(
+        Global::object_factory_map.size()
+    );
+
+    for(auto object : Global::object_format_map)
+    {
+        if(Unmapper::format(object) >> filter_)
+        {
+            registered_objects.push_back(
+                Unmapper::name(object)
+            );
+        }
+    }
+
+    return registered_objects;
+}
+
+ObjectFormat
+sb::get_object_format
+(
+    const std::string& name_
+)
+{
+    auto object_format = undefined_object_format;
+
+    auto mapped_format =
+        Global::object_format_map.find(name_);
+
+    if(mapped_format != Global::object_format_map.end())
+    {
+        object_format = Unmapper::format(*mapped_format);
+    }
+
+    return object_format;
+}
+
 AbstractObject::Private::Private
 (
     AbstractObject* q_ptr_
@@ -370,4 +376,13 @@ AbstractObject::Private::from
 )
 {
     return this_->d_ptr;
+}
+
+void
+sb::unregister_all_objects
+(
+)
+{
+    Global::object_factory_map.clear();
+    Global::object_format_map.clear();
 }

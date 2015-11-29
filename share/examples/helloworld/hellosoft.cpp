@@ -180,7 +180,7 @@ private:
 
 };
 
-SB_DECLARE_MODULE(helloworld)
+SB_DECLARE_MODULE(hellosoft)
 {
     sb::register_object<HelloSoft>();
 }

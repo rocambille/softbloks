@@ -16,15 +16,27 @@
 
 find_package(GTest)
 
-option(BUILD_TESTS
-    "build tests"
+option(BUILD_TESTING
+    "build testing"
     ${GTEST_FOUND}
 )
 
-if(BUILD_TESTS)
+function(sb_add_test _name)
+    sb_add_executable(${_name} ${ARGN})
+
+    target_link_libraries(${_name} ${GTEST_BOTH_LIBRARIES})
+endfunction()
+
+if(BUILD_TESTING)
     if(GTEST_FOUND)
-        enable_testing()
         include_directories(${GTEST_INCLUDE_DIRS})
+
+        sb_add_test(sb-core-test
+            sb-abstractobject-test.h
+            sb-coredefine-test.h
+            sb-core-test.cpp
+            sb-fixtures.h
+        )
     else()
         message(FATAL_ERROR
             "GTest is required to build tests."

@@ -135,20 +135,14 @@ private:
 
 };
 
-typedef
-    std::unique_ptr<AbstractFilter, UniqueObject::deleter_type>
-    UniqueFilter;
+using UniqueFilter = Unique<AbstractFilter>;
 
-SB_CORE_API
-inline
+static
 UniqueFilter
-create_unique_filter
+(&create_unique_filter)
 (
     const std::string& name_
-)
-{
-    return create_unique<AbstractFilter>(name_);
-}
+) = create_unique<AbstractFilter>;
 
 }
 

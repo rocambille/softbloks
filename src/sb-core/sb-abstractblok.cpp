@@ -281,7 +281,7 @@ AbstractBlok::Private::set_input_count
 
     this->inputs_format.resize(
         this->inputs.size(),
-        undefined_format
+        undefined_object_format
     );
 
     this->wanted_indices_converters.resize(
@@ -518,7 +518,7 @@ AbstractBlok::Private::set_input
 
         this->inputs_format.resize(
             this->inputs.size(),
-            undefined_format
+            undefined_object_format
         );
 
         this->wanted_indices_converters.resize(
@@ -527,7 +527,7 @@ AbstractBlok::Private::set_input
         );
     }
 
-    ObjectFormat input_format = undefined_format;
+    ObjectFormat input_format = undefined_object_format;
 
     if(index_ < this->inputs_format.size())
     {

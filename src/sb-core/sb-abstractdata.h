@@ -53,20 +53,14 @@ private:
 
 };
 
-typedef
-    std::shared_ptr<AbstractData>
-    SharedData;
+using SharedData = Shared<AbstractData>;
 
-SB_CORE_API
-inline
+static
 SharedData
-create_shared_data
+(&create_shared_data)
 (
     const std::string& name_
-)
-{
-    return create_shared<AbstractData>(name_);
-}
+) = create_shared<AbstractData>;
 
 }
 

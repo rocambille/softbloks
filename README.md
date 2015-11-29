@@ -50,7 +50,7 @@ Files are installed according to the following directory structure:
         <install_prefix>/
             sb*n*/
                 bin/
-                    (software and shared libraries)
+                    (executables and shared libraries)
                 include/
                     (include files)
                 lib/
@@ -71,7 +71,7 @@ Files are installed according to the following directory structure:
         <install_prefix>/
             bin/
                 sb*n*/
-                    (software)
+                    (executables)
             include/
                 sb*n*/
                     (include files)

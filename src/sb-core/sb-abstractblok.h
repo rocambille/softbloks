@@ -116,20 +116,14 @@ private:
 
 };
 
-typedef
-    std::unique_ptr<AbstractBlok, UniqueObject::deleter_type>
-    UniqueBlok;
+using UniqueBlok = Unique<AbstractBlok>;
 
-SB_CORE_API
-inline
+static
 UniqueBlok
-create_unique_blok
+(&create_unique_blok)
 (
     const std::string& name_
-)
-{
-    return create_unique<AbstractBlok>(name_);
-}
+) = create_unique<AbstractBlok>;
 
 }
 

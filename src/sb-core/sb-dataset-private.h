@@ -27,9 +27,8 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
-typedef
-    std::unordered_multimap<AbstractBlok*, size_t>
-    FollowerCollection;
+using FollowerCollection =
+    std::unordered_multimap<AbstractBlok*, size_t>;
 
 namespace Unmapper
 {
@@ -129,9 +128,7 @@ public:
 
 };
 
-typedef
-    std::weak_ptr<DataSet>
-    WeakDataSet;
+using WeakDataSet = Weak<DataSet>;
 
 }
 

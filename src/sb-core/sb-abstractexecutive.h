@@ -82,20 +82,14 @@ private:
 
 };
 
-typedef
-    std::unique_ptr<AbstractExecutive, UniqueObject::deleter_type>
-    UniqueExecutive;
+using UniqueExecutive = Unique<AbstractExecutive>;
 
-SB_CORE_API
-inline
+static
 UniqueExecutive
-create_unique_executive
+(&create_unique_executive)
 (
     const std::string& name_
-)
-{
-    return create_unique<AbstractExecutive>(name_);
-}
+) = create_unique<AbstractExecutive>;
 
 }
 

@@ -22,8 +22,6 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sb-core/sb-core.h>
 
-#include <sb-core/sb-abstractobject-private.h>
-
 namespace sb
 {
 

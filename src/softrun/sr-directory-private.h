@@ -15,44 +15,41 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef SW_APPLICATION_H
-#define SW_APPLICATION_H
+#ifndef SR_DIRECTORY_PRIVATE_H
+#define SR_DIRECTORY_PRIVATE_H
 
-#include "sw-define.h"
+#include "sr-directory.h"
 
-#include <QApplication>
+#include <sb-global/sb-global.h>
 
-namespace sw
+namespace sr
 {
 
-class ApplicationPrivate;
-
-class Application : public QApplication
+class Directory::Private
 {
-
-    Q_OBJECT
 
 public:
 
-    Application
+    Private
     (
-        int& argc_,
-        char** argv_
+        Directory* q_ptr_
     );
 
-    ~Application
-    (
-    );
+public:
 
-private:
+    Directory*
+    q_ptr;
 
-    Q_DECLARE_PRIVATE(Application)
+    std::string
+    path;
 
-    ApplicationPrivate*
-    d_ptr;
+#ifdef SB_OS_WIN
+    std::string
+    windows_path;
+#endif
 
 };
 
 }
 
-#endif // SW_APPLICATION_H
+#endif // SR_DIRECTORY_PRIVATE_H

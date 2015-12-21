@@ -445,6 +445,12 @@ get_object_format
     const std::string& name_
 );
 
+SB_CORE_API
+void
+unregister_all_objects
+(
+);
+
 }
 
 #endif // SB_ABSTRACTOBJECT_H

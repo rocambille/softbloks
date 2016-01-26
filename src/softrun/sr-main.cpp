@@ -30,10 +30,11 @@ main
 )
 {
     bool invalid_argument = true;
+    bool reached_end_of_options = false;
+    bool get_descriptors = false;
 
+    std::vector<std::string> parsed_names;
     std::vector<std::string> parsed_module_paths;
-
-    std::string name;
 
     if(argc_ > 1)
     {
@@ -43,45 +44,64 @@ main
 
         for(int i(1); !invalid_argument && i < argc_; ++i)
         {
-            if(std::string(argv_[i]) == "--module-path")
+            std::string current = std::string(argv_[i]);
+
+            bool parsed = true;
+
+            if(!reached_end_of_options)
             {
-                if(
-                    i+1 < argc_ &&
-                    std::string(argv_[i+1]) != "--"
-                )
+                // check if current is an option
+
+                if(current == "--get-descriptors")
+                {
+                    get_descriptors = true;
+                }
+                else if(current == "--create")
+                {
+                    // next argument should be a valid name for an object to
+                    // create
+
+                    if(
+                        // check there is a next argument
+                        i+1 < argc_ &&
+                        // check the next argument is not an option
+                        std::string(argv_[i+1])[0] != '-'
+                            // any argument given by the system should contain
+                            // at least 1 character?
+                    )
+                    {
+                        parsed_names.push_back(
+                            std::string(argv_[++i])
+                        );
+                    }
+                    else
+                    {
+                        invalid_argument = true;
+                    }
+                }
+                else
+                {
+                    parsed = false;
+                }
+            }
+
+            if(!parsed)
+            {
+                if(current == "--")
+                {
+                    reached_end_of_options = true;
+                }
+                else
                 {
                     parsed_module_paths.push_back(
-                        std::string(argv_[++i])
+                        current
                     );
                 }
-                else
-                {
-                    invalid_argument = true;
-                }
-            }
-            else if(std::string(argv_[i]) == "--")
-            {
-                if(i+1 < argc_)
-                {
-                    name = std::string(argv_[++i]);
-                }
-                else
-                {
-                    invalid_argument = true;
-                }
-            }
-            else if(i+1 == argc_)
-            {
-                name = std::string(argv_[i]);
-            }
-            else
-            {
-                invalid_argument = true;
             }
         }
     }
 
-    if(name.empty())
+    if(parsed_module_paths.empty())
     {
         invalid_argument = true;
     }
@@ -93,12 +113,16 @@ main
         std::cout <<
             "usage: " <<
             argv_[0] <<
-            " [options] [--] <name>" <<
+            " [--get-descriptors]" <<
+            " [--create <name>]" <<
+            " [--] <paths>" <<
             std::endl;
+
+        // TODO : add explanations for options
     }
     else
     {
-        // pre-process module paths
+        // process module paths
 
         std::vector<std::string> processed_module_paths;
 
@@ -109,15 +133,22 @@ main
             if(directory.exists())
             {
                 // the path is a directory : replace with the contained files
+                // (maybe should add an option for some recursivity)
 
                 sr::Directory::EntryList entry_list =
                     directory.get_entry_list();
 
                 for(auto entry : entry_list)
                 {
-                    processed_module_paths.push_back(
-                        directory.get_path() + entry
-                    );
+                    if(
+                        entry != "." &&
+                        entry != ".."
+                    )
+                    {
+                        processed_module_paths.push_back(
+                            directory.get_path() + entry
+                        );
+                    }
                 }
             }
             else
@@ -128,25 +159,92 @@ main
             }
         }
 
-        // load modules
+        // we are ready
 
-        for(std::string path : processed_module_paths)
+        if(get_descriptors)
         {
-            sr::FunctionPointer sb_main = sr::Library::resolve(
-                path,
-                "sb_main"
-            );
+            // print descriptors
 
-            if(sb_main)
+            for(std::string path : processed_module_paths)
             {
-                sb_main();
+                using GetDescriptorFunctionPointer = const char*(*)();
+
+                GetDescriptorFunctionPointer sb_get_module_descriptor =
+                    reinterpret_cast<GetDescriptorFunctionPointer>(
+                        sr::Library::resolve(
+                            path,
+                            "sb_get_module_descriptor"
+                        )
+                    );
+
+                if(sb_get_module_descriptor)
+                {
+                    std::cout <<
+                        "module: " <<
+                        path <<
+                        std::endl <<
+                        sb_get_module_descriptor() <<
+                        std::endl <<
+                        std::endl;
+                }
             }
         }
-
-        // run wanted soft
-
+        else
         {
-            auto soft = sb::create_shared_soft(name);
+            // run modules
+
+            for(std::string path : processed_module_paths)
+            {
+                std::cout <<
+                    "running " <<
+                    path <<
+                    std::endl;
+
+                sr::FunctionPointer sb_main = sr::Library::resolve(
+                    path,
+                    "sb_main"
+                );
+
+                if(sb_main)
+                {
+                    sb_main();
+
+                    std::cout <<
+                        "\tOK" <<
+                        std::endl;
+                }
+                else
+                {
+                    std::cout <<
+                        "\tFAILED" <<
+                        std::endl;
+                }
+            }
+
+            // create wanted objects
+
+            for(std::string name : parsed_names)
+            {
+                std::cout <<
+                    "creating " <<
+                    name <<
+                    std::endl;
+
+                auto object = sb::create_unique_object(name);
+
+                if(object)
+                {
+                    std::cout <<
+                        "\tOK" <<
+                        std::endl;
+                }
+                else
+                {
+                    std::cout <<
+                        "\tFAILED" <<
+                        std::endl;
+                }
+            }
         }
 
         // make sure to forget dynamically loaded factories,

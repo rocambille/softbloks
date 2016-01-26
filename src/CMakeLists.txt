@@ -16,5 +16,6 @@
 
 add_subdirectory(sb-global)
 add_subdirectory(sb-core)
+add_subdirectory(softrun)
 add_subdirectory(software)
 add_subdirectory(testing)

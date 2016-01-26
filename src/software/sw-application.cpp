@@ -61,6 +61,16 @@ Application::Application
     d->main_widget.show();
 }
 
+Application::~Application
+(
+)
+{
+    // make sure to forget dynamically loaded factories,
+    // before libraries are unloaded
+
+    sb::unregister_all_objects();
+}
+
 ApplicationPrivate::ApplicationPrivate
 (
     Application* q_ptr_

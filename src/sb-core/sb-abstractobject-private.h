@@ -60,12 +60,6 @@ public:
 
 };
 
-SB_CORE_API
-void
-unregister_all_objects
-(
-);
-
 }
 
 #endif // SB_ABSTRACTOBJECT_PRIVATE_H

@@ -351,6 +351,15 @@ sb::get_object_format
     return object_format;
 }
 
+void
+sb::unregister_all_objects
+(
+)
+{
+    Global::object_factory_map.clear();
+    Global::object_format_map.clear();
+}
+
 AbstractObject::Private::Private
 (
     AbstractObject* q_ptr_
@@ -376,13 +385,4 @@ AbstractObject::Private::from
 )
 {
     return this_->d_ptr;
-}
-
-void
-sb::unregister_all_objects
-(
-)
-{
-    Global::object_factory_map.clear();
-    Global::object_format_map.clear();
 }

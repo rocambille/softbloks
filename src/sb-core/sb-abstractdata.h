@@ -23,27 +23,20 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
-class SB_CORE_API AbstractData : public AbstractObject
+SB_CLASS(SB_CORE_API, AbstractData, "sb.AbstractData", AbstractObject)
 {
-
-    SB_DECLARE_OBJECT(AbstractData, "sb::AbstractData")
 
 public:
 
     class Private;
 
-    virtual
-    ~AbstractData
+    AbstractData
     (
     );
 
-private:
-
-    static
-    void
-    construct
+    virtual
+    ~AbstractData
     (
-        AbstractData* this_
     );
 
 private:

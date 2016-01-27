@@ -509,7 +509,7 @@ MainWidgetPrivate::create_chooser
     auto names = sb::get_registered_object_names(
         {
             {
-                sb::AbstractSoft::get_object_name()
+                sb::get_object_name<sb::AbstractSoft>()
             },
             {
                 {"Qt5Widgets::mainview", {typeid(QWidget*), sb::READ_ONLY}}

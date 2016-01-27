@@ -58,7 +58,10 @@ const size_t infinity = std::numeric_limits<size_t>::max();
 
 template<typename U, typename T, typename D>
 std::unique_ptr<U, D>
-static_pointer_cast(std::unique_ptr<T, D>&& t_ptr_)
+static_pointer_cast
+(
+    std::unique_ptr<T, D>&& t_ptr_
+)
 {
     auto ptr = static_cast<U*>(t_ptr_.get());
 
@@ -69,6 +72,23 @@ static_pointer_cast(std::unique_ptr<T, D>&& t_ptr_)
     t_ptr_.release();
 
     return u_ptr;
+}
+
+template <typename T>
+std::vector<T>
+join
+(
+    const std::vector<T>& a_,
+    const std::vector<T>& b_
+)
+{
+    std::vector<T> ab;
+    ab.reserve(a_.size() + b_.size());
+
+    ab.insert(ab.end(), a_.begin(), a_.end());
+    ab.insert(ab.end(), b_.begin(), b_.end());
+
+    return ab;
 }
 
 struct PropertyFormat
@@ -200,43 +220,44 @@ const sb::ObjectFormat
 undefined_object_format = { { } };
 
 const sb::ObjectFormat
-any_object_format = { { "sb::AbstractObject" } };
+any_object_format = { { "sb.AbstractObject" } };
+
+template<typename T>
+class Meta
+{
+
+public:
+
+    static
+    std::vector<std::string>
+    object_names;
+
+};
+
+template<typename T>
+inline
+std::string
+get_object_name
+(
+)
+{
+    return Meta<T>::object_names[0];
+}
 
 }
 
-#define SB_DECLARE_OBJECT(type_, type_name_)\
-\
-    public:\
-\
-        static\
-        std::string\
-        get_object_name\
-        (\
-        )\
-        {\
-            return type_name_;\
-        }\
-\
-    protected:\
-\
-        type_\
-        (\
-        )\
-        {\
-            type_::construct(this);\
-\
-            sb::AbstractObject::add_type_name(\
-                this,\
-                type_name_\
-            );\
-        }\
-\
-        template<typename T>\
-        friend\
-        bool\
-        sb::register_object\
-        (\
-        );
+#define SB_ROOT(attributes_, type_, name_)\
+    class type_;\
+    std::vector<std::string> sb::Meta<type_>::object_names = {name_};\
+    class attributes_ type_ : public sb::Meta<type_>
+
+#define SB_CLASS(attributes_, type_, name_, super_class_)\
+    class type_;\
+    std::vector<std::string> sb::Meta<type_>::object_names = sb::join(\
+        std::vector<std::string>({name_}),\
+        sb::Meta<super_class_>::object_names\
+    );\
+    class attributes_ type_ : public sb::Meta<type_>, public super_class_
 
 #define SB_DECLARE_MODULE(descriptor_)\
     namespace Global\

@@ -35,12 +35,40 @@ struct SIGNAL
     } 
 };
 
-class HelloSoft : public sb::AbstractSoft
+SB_CLASS(, HelloSoft, "HelloSoft", sb::AbstractSoft)
 {
 
-    SB_DECLARE_OBJECT(HelloSoft, "HelloSoft")
-
 public:
+
+    HelloSoft
+    (
+    )
+    {
+        this->source = sb::create_unique_source("HelloSource");
+
+        this->filter = sb::create_unique_filter("HelloFilter");
+
+        this->filter->set_input(
+            0,
+            this->source->get_output(0)
+        );
+
+        this->sink = sb::create_unique_sink("HelloSink");
+
+        this->sink->set_input(
+            0,
+            this->filter->get_output(0)
+        );
+
+        this->sink->process();
+
+        this->register_property<QWidget*>(
+            "Qt5Widgets::mainview",
+            sb::READ_ONLY,
+            std::bind(&HelloSoft::get_widget, this),
+            nullptr
+        );
+    }
 
     QWidget*
     get_widget
@@ -132,39 +160,6 @@ public:
         widget->setLayout(layout);
 
         return widget;
-    }
-
-    static
-    void
-    construct
-    (
-        HelloSoft* this_
-    )
-    {
-        this_->source = sb::create_unique_source("HelloSource");
-
-        this_->filter = sb::create_unique_filter("HelloFilter");
-
-        this_->filter->set_input(
-            0,
-            this_->source->get_output(0)
-        );
-
-        this_->sink = sb::create_unique_sink("HelloSink");
-
-        this_->sink->set_input(
-            0,
-            this_->filter->get_output(0)
-        );
-
-        this_->sink->process();
-
-        this_->register_property<QWidget*>(
-            "Qt5Widgets::mainview",
-            sb::READ_ONLY,
-            std::bind(&HelloSoft::get_widget, this_),
-            nullptr
-        );
     }
 
 private:

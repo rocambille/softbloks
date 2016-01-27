@@ -23,6 +23,13 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace sb;
 
+AbstractFilter::AbstractFilter
+(
+)
+{
+    this->d_ptr = new Private(this);
+}
+
 AbstractFilter::~AbstractFilter
 (
 )
@@ -197,15 +204,6 @@ AbstractFilter::set_wanted_indices_converter
     ) = (
         value_
     );
-}
-
-void
-AbstractFilter::construct
-(
-    AbstractFilter* this_
-)
-{
-    this_->d_ptr = new Private(this_);
 }
 
 AbstractFilter::Private::Private

@@ -25,14 +25,16 @@ namespace sb
 
 class AbstractBlok;
 
-class SB_CORE_API AbstractExecutive : public AbstractObject
+SB_CLASS(SB_CORE_API, AbstractExecutive, "sb.AbstractExecutive", AbstractObject)
 {
-
-    SB_DECLARE_OBJECT(AbstractExecutive, "sb::AbstractExecutive")
 
 public:
 
     class Private;
+
+    AbstractExecutive
+    (
+    );
 
     virtual
     ~AbstractExecutive
@@ -69,13 +71,6 @@ protected:
     );
 
 private:
-
-    static
-    void
-    construct
-    (
-        AbstractExecutive* this_
-    );
 
     Private*
     d_ptr;

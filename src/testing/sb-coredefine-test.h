@@ -278,7 +278,7 @@ public:
 // create a test format
 const ObjectFormat ObjectFormatTest::foo_object_format = {
     { // of type "foo" derived from sb::AbstractObject
-        "sb::AbstractObject", "foo"
+        "sb.AbstractObject", "foo"
     },
     { // with a dummy property "bar" of type int in read/write mode
         {"bar", {typeid(int), sb::READ_WRITE}}

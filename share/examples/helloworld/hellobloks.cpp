@@ -19,12 +19,31 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace std::placeholders;
 
-class HelloSource : public sb::AbstractSource
+SB_CLASS(, HelloSource, "HelloSource", sb::AbstractSource)
 {
 
-    SB_DECLARE_OBJECT(HelloSource, "HelloSource")
-
 public:
+
+    HelloSource
+    (
+    )
+    {
+        this->set_output_count(1);
+
+        this->text = "Hello World !!!";
+
+        this->get_output(0)->register_property<std::string>(
+            this,
+            "text",
+            sb::READ_WRITE,
+            std::bind(
+                &HelloSource::get_text, this
+            ),
+            std::bind(
+                &HelloSource::set_text, this, _1
+            )
+        );
+    }
 
     std::string
     get_text
@@ -46,30 +65,6 @@ public:
         this->push_output(0);
     }
 
-    static
-    void
-    construct
-    (
-        HelloSource* this_
-    )
-    {
-        this_->set_output_count(1);
-
-        this_->text = "Hello World !!!";
-
-        this_->get_output(0)->register_property<std::string>(
-            this_,
-            "text",
-            sb::READ_WRITE,
-            std::bind(
-                &HelloSource::get_text, this_
-            ),
-            std::bind(
-                &HelloSource::set_text, this_, _1
-            )
-        );
-    }
-
 private:
 
     std::string
@@ -77,12 +72,55 @@ private:
 
 };
 
-class HelloFilter : public sb::AbstractFilter
+SB_CLASS(, HelloFilter, "HelloFilter", sb::AbstractFilter)
 {
 
-    SB_DECLARE_OBJECT(HelloFilter, "HelloFilter")
-
 public:
+
+    HelloFilter
+    (
+    )
+    {
+        this->set_input_count(1);
+
+        this->set_input_format(
+            0,
+            {
+                {
+                    sb::get_object_name<sb::DataSet>()
+                },
+                {
+                    {"text", {typeid(std::string), sb::READ_ONLY}}
+                }
+            }
+        );
+
+        this->set_output_count(1);
+
+        this->multiplier = 1;
+
+        this->get_output(0)->register_property<int>(
+            this,
+            "multiplier",
+            sb::READ_WRITE,
+            std::bind(
+                &HelloFilter::get_multiplier, this
+            ),
+            std::bind(
+                &HelloFilter::set_multiplier, this, _1
+            )
+        );
+
+        this->get_output(0)->register_property<std::string>(
+            this,
+            "text",
+            sb::READ_ONLY,
+            std::bind(
+                &HelloFilter::get_text, this
+            ),
+            nullptr
+        );
+    }
 
     virtual
     void
@@ -145,54 +183,6 @@ public:
         return this->text;
     }
 
-    static
-    void
-    construct
-    (
-        HelloFilter* this_
-    )
-    {
-        this_->set_input_count(1);
-
-        this_->set_input_format(
-            0,
-            {
-                {
-                    sb::DataSet::get_object_name()
-                },
-                {
-                    {"text", {typeid(std::string), sb::READ_ONLY}}
-                }
-            }
-        );
-
-        this_->set_output_count(1);
-
-        this_->multiplier = 1;
-
-        this_->get_output(0)->register_property<int>(
-            this_,
-            "multiplier",
-            sb::READ_WRITE,
-            std::bind(
-                &HelloFilter::get_multiplier, this_
-            ),
-            std::bind(
-                &HelloFilter::set_multiplier, this_, _1
-            )
-        );
-
-        this_->get_output(0)->register_property<std::string>(
-            this_,
-            "text",
-            sb::READ_ONLY,
-            std::bind(
-                &HelloFilter::get_text, this_
-            ),
-            nullptr
-        );
-    }
-
 private:
 
     int
@@ -203,12 +193,38 @@ private:
 
 };
 
-class HelloSink : public sb::AbstractSink
+SB_CLASS(, HelloSink, "HelloSink", sb::AbstractSink)
 {
 
-    SB_DECLARE_OBJECT(HelloSink, "HelloSink")
-
 public:
+
+    HelloSink
+    (
+    )
+    {
+        this->set_input_count(1);
+        this->set_input_format(
+            0,
+            {
+                {
+                    sb::get_object_name<sb::DataSet>()
+                },
+                {
+                    {"text", {typeid(std::string), sb::READ_ONLY}}
+                }
+            }
+        );
+
+        this->register_property< std::function<void(void)> >(
+            this,
+            "observer",
+            sb::WRITE_ONLY,
+            nullptr,
+            std::bind(
+                &HelloSink::register_observer, this, _1
+            )
+        );
+    }
 
     virtual
     void
@@ -234,37 +250,6 @@ public:
         this->observers.push_back(notify_);
 
         notify_();
-    }
-
-    static
-    void
-    construct
-    (
-        HelloSink* this_
-    )
-    {
-        this_->set_input_count(1);
-        this_->set_input_format(
-            0,
-            {
-                {
-                    sb::DataSet::get_object_name()
-                },
-                {
-                    {"text", {typeid(std::string), sb::READ_ONLY}}
-                }
-            }
-        );
-
-        this_->register_property< std::function<void(void)> >(
-            this_,
-            "observer",
-            sb::WRITE_ONLY,
-            nullptr,
-            std::bind(
-                &HelloSink::register_observer, this_, _1
-            )
-        );
     }
 
 private:

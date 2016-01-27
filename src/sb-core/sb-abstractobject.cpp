@@ -106,6 +106,15 @@ namespace Unmapper
 
 using namespace sb;
 
+AbstractObject::AbstractObject
+(
+)
+{
+    this->properties = new std::map<std::string, Property>;
+
+    this->d_ptr = new Private(this);
+}
+
 AbstractObject::~AbstractObject
 (
 )
@@ -198,31 +207,15 @@ AbstractObject::unregister_property
 }
 
 void
-AbstractObject::add_type_name
+AbstractObject::set_type_name
 (
     AbstractObject* this_,
-    std::string type_name_
+    std::vector<std::string> names_
 )
 {
     auto& type_names = AbstractObject::Private::from(
         this_
-    )->type_names;
-
-    type_names.insert(
-        type_names.begin(),
-        type_name_
-    );
-}
-
-void
-AbstractObject::construct
-(
-    AbstractObject* this_
-)
-{
-    this_->properties = new std::map<std::string, Property>;
-
-    this_->d_ptr = new Private(this_);
+    )->type_names = names_;
 }
 
 void

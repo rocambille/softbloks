@@ -23,14 +23,16 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
-class SB_CORE_API PushExecutive : public AbstractExecutive
+SB_CLASS(SB_CORE_API, PushExecutive, "sb.PushExecutive", AbstractExecutive)
 {
-
-    SB_DECLARE_OBJECT(PushExecutive, "sb::PushExecutive")
 
 public:
 
     class Private;
+
+    PushExecutive
+    (
+    );
 
     virtual
     ~PushExecutive
@@ -55,26 +57,21 @@ public:
 
 private:
 
-    static
-    void
-    construct
-    (
-        PushExecutive* this_
-    );
-
     Private*
     d_ptr;
 
 };
 
-class SB_CORE_API PullExecutive : public AbstractExecutive
+SB_CLASS(SB_CORE_API, PullExecutive, "sb.PullExecutive", AbstractExecutive)
 {
-
-    SB_DECLARE_OBJECT(PullExecutive, "sb::PullExecutive")
 
 public:
 
     class Private;
+
+    PullExecutive
+    (
+    );
 
     virtual
     ~PullExecutive
@@ -99,26 +96,21 @@ public:
 
 private:
 
-    static
-    void
-    construct
-    (
-        PullExecutive* this_
-    );
-
     Private*
     d_ptr;
 
 };
 
-class SB_CORE_API PushPullExecutive : public AbstractExecutive
+SB_CLASS(SB_CORE_API, PushPullExecutive, "sb.PushPullExecutive", AbstractExecutive)
 {
-
-    SB_DECLARE_OBJECT(PushPullExecutive, "sb::PushPullExecutive")
 
 public:
 
     class Private;
+
+    PushPullExecutive
+    (
+    );
 
     virtual
     ~PushPullExecutive
@@ -142,13 +134,6 @@ public:
     override;
 
 private:
-
-    static
-    void
-    construct
-    (
-        PushPullExecutive* this_
-    );
 
     Private*
     d_ptr;

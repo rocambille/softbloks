@@ -42,10 +42,8 @@ using UniqueObject = Unique<AbstractObject>;
 
 using ObjectFactory = std::function<UniqueObject(void)>;
 
-class SB_CORE_API AbstractObject
+SB_ROOT(SB_CORE_API, AbstractObject, "sb.AbstractObject")
 {
-
-    SB_DECLARE_OBJECT(AbstractObject, "sb::AbstractObject")
 
 public:
 
@@ -91,6 +89,10 @@ public:
         const AbstractObject& other_
     )
     = delete;
+
+    AbstractObject
+    (
+    );
 
     virtual
     ~AbstractObject
@@ -297,24 +299,24 @@ protected:
         const std::string& name_
     );
 
+    template<typename T>
+    friend
+    bool
+    sb::register_object
+    (
+    );
+
 protected:
 
     static
     void
-    add_type_name
+    set_type_name
     (
         AbstractObject* this_,
-        std::string type_name_
+        std::vector<std::string> names_
     );
 
 private:
-
-    static
-    void
-    construct
-    (
-        AbstractObject* this_
-    );
 
     static
     void
@@ -419,6 +421,10 @@ register_object
                 }
             );
 
+            AbstractObject::set_type_name(
+                instance.get(),
+                Meta<T>::object_names
+            );
             AbstractObject::init(instance.get());
 
             return instance;
@@ -426,7 +432,7 @@ register_object
     );
 
     return AbstractObject::register_object(
-        T::get_object_name(),
+        get_object_name<T>(),
         factory
     );
 }

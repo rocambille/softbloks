@@ -25,14 +25,16 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
-class SB_CORE_API DataSet : public AbstractObject
+SB_CLASS(SB_CORE_API, DataSet, "sb.DataSet", AbstractObject)
 {
-
-    SB_DECLARE_OBJECT(DataSet, "sb::DataSet")
 
 public:
 
     class Private;
+
+    DataSet
+    (
+    );
 
     virtual
     ~DataSet
@@ -72,13 +74,6 @@ public:
     );
 
 private:
-
-    static
-    void
-    construct
-    (
-        DataSet* this_
-    );
 
     Private*
     d_ptr;

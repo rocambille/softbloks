@@ -207,13 +207,13 @@ AbstractObject::unregister_property
 }
 
 void
-AbstractObject::set_type_name
+AbstractObject::set_type_names
 (
     AbstractObject* this_,
     std::vector<std::string> names_
 )
 {
-    auto& type_names = AbstractObject::Private::from(
+    AbstractObject::Private::from(
         this_
     )->type_names = names_;
 }
@@ -237,30 +237,57 @@ AbstractObject::forget
 bool
 AbstractObject::register_object
 (
-    const std::string& name_,
+    const ObjectFormat& format_,
     const ObjectFactory& factory_
 )
 {
     bool registered = false;
 
-    if(Global::object_factory_map.count(name_) == 0)
+    std::string name = format_.type_names[0];
+
+    if(Global::object_factory_map.count(name) == 0)
     {
         Global::object_factory_map.emplace(
-            name_,
+            name,
             factory_
         );
 
-        auto instance = factory_();
-
         Global::object_format_map.emplace(
-            name_,
-            instance->get_instance_format()
+            name,
+            format_
         );
 
         registered = true;
     }
 
     return registered;
+}
+
+AbstractObject::Private::Private
+(
+    AbstractObject* q_ptr_
+):
+    q_ptr   (q_ptr_),
+    is_ready(false)
+{
+}
+
+AbstractObject::Private*
+AbstractObject::Private::from
+(
+    const AbstractObject* this_
+)
+{
+    return this_->d_ptr;
+}
+
+AbstractObject::Private*
+AbstractObject::Private::from
+(
+    const SharedObject& this_
+)
+{
+    return this_->d_ptr;
 }
 
 SharedObject
@@ -351,31 +378,4 @@ sb::unregister_all_objects
 {
     Global::object_factory_map.clear();
     Global::object_format_map.clear();
-}
-
-AbstractObject::Private::Private
-(
-    AbstractObject* q_ptr_
-):
-    q_ptr   (q_ptr_),
-    is_ready(false)
-{
-}
-
-AbstractObject::Private*
-AbstractObject::Private::from
-(
-    const AbstractObject* this_
-)
-{
-    return this_->d_ptr;
-}
-
-AbstractObject::Private*
-AbstractObject::Private::from
-(
-    const SharedObject& this_
-)
-{
-    return this_->d_ptr;
 }

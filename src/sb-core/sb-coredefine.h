@@ -20,6 +20,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sb-global/sb-global.h>
 
+#include <algorithm>
 #include <array>
 #include <functional>
 #include <limits>
@@ -87,6 +88,22 @@ join
 
     ab.insert(ab.end(), a_.begin(), a_.end());
     ab.insert(ab.end(), b_.begin(), b_.end());
+
+    return ab;
+}
+
+template <typename T, typename U>
+std::map<T, U>
+join
+(
+    const std::map<T, U>& a_,
+    const std::map<T, U>& b_
+)
+{
+    std::map<T, U> ab;
+
+    ab.insert(a_.begin(), a_.end());
+    ab.insert(b_.begin(), b_.end());
 
     return ab;
 }
@@ -223,16 +240,17 @@ const sb::ObjectFormat
 any_object_format = { { "sb.AbstractObject" } };
 
 template<typename T>
-class Meta
+class Meta;
+
+template<typename T>
+inline
+std::vector<std::string>
+get_type_names
+(
+)
 {
-
-public:
-
-    static
-    std::vector<std::string>
-    object_names;
-
-};
+    return std::vector<std::string>();
+}
 
 template<typename T>
 inline
@@ -241,23 +259,85 @@ get_object_name
 (
 )
 {
-    return Meta<T>::object_names[0];
+    return sb::get_type_names<T>()[0];
+}
+
+template<typename T>
+inline
+sb::PropertyFormatMap
+get_properties
+(
+)
+{
+    return sb::get_properties<typename sb::Meta<T>::super_class>();
 }
 
 }
 
-#define SB_ROOT(attributes_, type_, name_)\
+#define SB_META_(type_, name_, super_class_)\
+    template<>\
+    class Meta<type_>\
+    {\
+        public: using super_class = super_class_;\
+    };\
+    template<>\
+    inline\
+    std::vector<std::string>\
+    get_type_names<type_>\
+    (\
+    )\
+    {\
+        return sb::join(\
+            std::vector<std::string>({name_}),\
+            sb::get_type_names<super_class_>()\
+        );\
+    }
+
+#define SB_OUTSIDE_CLASS(attributes_, type_, name_, super_class_)\
     class type_;\
-    std::vector<std::string> sb::Meta<type_>::object_names = {name_};\
-    class attributes_ type_ : public sb::Meta<type_>
+    namespace sb\
+    {\
+        SB_META_(type_, name_, super_class_)\
+    }\
+    class attributes_ type_ : public super_class_
 
 #define SB_CLASS(attributes_, type_, name_, super_class_)\
     class type_;\
-    std::vector<std::string> sb::Meta<type_>::object_names = sb::join(\
-        std::vector<std::string>({name_}),\
-        sb::Meta<super_class_>::object_names\
-    );\
-    class attributes_ type_ : public sb::Meta<type_>, public super_class_
+    SB_META_(type_, name_, super_class_)\
+    class attributes_ type_ : public super_class_
+
+#define SB_PROPERTIES_(type_, properties_)\
+    template<>\
+    inline\
+    sb::PropertyFormatMap\
+    get_properties<type_>\
+    (\
+    )\
+    {\
+        return sb::join(\
+            sb::PropertyFormatMap(properties_),\
+            sb::get_properties<sb::Meta<type_>::super_class>()\
+        );\
+    }
+
+#define SB_PROPERTIES(type_, ...)\
+    SB_PROPERTIES_(\
+        type_,\
+        std::initializer_list<sb::PropertyFormatMap::value_type>(\
+            {__VA_ARGS__}\
+        )\
+    )
+
+#define SB_OUTSIDE_PROPERTIES(type_, ...)\
+    namespace sb\
+    {\
+        SB_PROPERTIES_(\
+            type_,\
+            std::initializer_list<sb::PropertyFormatMap::value_type>(\
+                {__VA_ARGS__}\
+            )\
+        )\
+    }
 
 #define SB_DECLARE_MODULE(descriptor_)\
     namespace Global\

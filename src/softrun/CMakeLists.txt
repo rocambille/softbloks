@@ -23,3 +23,9 @@ sb_add_executable(softrun
     sr-library-private.h
     sr-main.cpp
 )
+
+if(UNIX)
+    target_link_libraries(softrun
+        ${CMAKE_DL_LIBS}
+    )
+endif()

@@ -42,7 +42,17 @@ using UniqueObject = Unique<AbstractObject>;
 
 using ObjectFactory = std::function<UniqueObject(void)>;
 
-SB_ROOT(SB_CORE_API, AbstractObject, "sb.AbstractObject")
+template<>
+inline
+std::vector<std::string>
+get_type_names<AbstractObject>
+(
+)
+{
+    return {"sb.AbstractObject"};
+}
+
+class SB_CORE_API AbstractObject
 {
 
 public:
@@ -306,17 +316,15 @@ protected:
     (
     );
 
-protected:
+private:
 
     static
     void
-    set_type_name
+    set_type_names
     (
         AbstractObject* this_,
         std::vector<std::string> names_
     );
-
-private:
 
     static
     void
@@ -336,7 +344,7 @@ private:
     bool
     register_object
     (
-        const std::string& name_,
+        const ObjectFormat& format_,
         const ObjectFactory& factory_
     );
 
@@ -347,6 +355,16 @@ private:
     d_ptr;
 
 };
+
+template<>
+inline
+sb::PropertyFormatMap
+get_properties<AbstractObject>
+(
+)
+{
+    return {};
+}
 
 template<typename T>
 using Shared = std::shared_ptr<T>;
@@ -421,9 +439,9 @@ register_object
                 }
             );
 
-            AbstractObject::set_type_name(
+            AbstractObject::set_type_names(
                 instance.get(),
-                Meta<T>::object_names
+                get_type_names<T>()
             );
             AbstractObject::init(instance.get());
 
@@ -432,7 +450,10 @@ register_object
     );
 
     return AbstractObject::register_object(
-        get_object_name<T>(),
+        {
+            get_type_names<T>(),
+            get_properties<T>()
+        },
         factory
     );
 }

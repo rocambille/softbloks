@@ -35,7 +35,7 @@ struct SIGNAL
     } 
 };
 
-SB_CLASS(, HelloSoft, "HelloSoft", sb::AbstractSoft)
+SB_OUTSIDE_CLASS(, HelloSoft, "HelloSoft", sb::AbstractSoft)
 {
 
 public:
@@ -63,7 +63,7 @@ public:
         this->sink->process();
 
         this->register_property<QWidget*>(
-            "Qt5Widgets::mainview",
+            "Qt5Widgets.mainview",
             sb::READ_ONLY,
             std::bind(&HelloSoft::get_widget, this),
             nullptr
@@ -174,6 +174,11 @@ private:
     sink;
 
 };
+
+SB_OUTSIDE_PROPERTIES(
+    HelloSoft,
+    {"Qt5Widgets.mainview", {typeid(QWidget*), sb::READ_ONLY}}
+)
 
 SB_DECLARE_MODULE(hellosoft)
 {

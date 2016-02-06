@@ -153,9 +153,9 @@ Library::Private::Private
 (
     const std::string& file_path_
 ):
+    reference_count (0),
     file_path       (file_path_),
-    handle          (nullptr),
-    reference_count (0)
+    handle          (nullptr)
 {
 }
 

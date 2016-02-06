@@ -512,7 +512,7 @@ MainWidgetPrivate::create_chooser
                 sb::get_object_name<sb::AbstractSoft>()
             },
             {
-                {"Qt5Widgets::mainview", {typeid(QWidget*), sb::READ_ONLY}}
+                {"Qt5Widgets.mainview", {typeid(QWidget*), sb::READ_ONLY}}
             }
         }
     );
@@ -545,7 +545,7 @@ MainWidgetPrivate::create_chooser
                 item_->text().toStdString()
             );
 
-            QWidget* widget = soft->get<QWidget*>("Qt5Widgets::mainview");
+            QWidget* widget = soft->get<QWidget*>("Qt5Widgets.mainview");
 
             layout->addWidget(
                 widget

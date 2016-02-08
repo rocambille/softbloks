@@ -35,7 +35,7 @@ struct SIGNAL
     } 
 };
 
-SB_OUTSIDE_CLASS(, HelloSoft, "HelloSoft", sb::AbstractSoft)
+class HelloSoft : public sb::AbstractSoft
 {
 
 public:
@@ -175,7 +175,13 @@ private:
 
 };
 
-SB_OUTSIDE_PROPERTIES(
+SB_DECLARE_CLASS(
+    HelloSoft,
+    "HelloSoft",
+    sb::AbstractSoft
+)
+
+SB_DECLARE_PROPERTIES(
     HelloSoft,
     {"Qt5Widgets.mainview", {typeid(QWidget*), sb::READ_ONLY}}
 )

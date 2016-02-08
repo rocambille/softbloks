@@ -23,7 +23,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
-SB_CLASS(SB_CORE_API, AbstractSource, "sb.AbstractSource", AbstractBlok)
+class SB_CORE_API AbstractSource : public sb::AbstractBlok
 {
 
 public:
@@ -99,5 +99,11 @@ UniqueSource
 ) = create_unique<AbstractSource>;
 
 }
+
+SB_DECLARE_CLASS(
+    sb::AbstractSource,
+    "sb.AbstractSource",
+    sb::AbstractBlok
+)
 
 #endif // SB_ABSTRACTSOURCE_H

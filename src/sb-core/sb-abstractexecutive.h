@@ -25,7 +25,7 @@ namespace sb
 
 class AbstractBlok;
 
-SB_CLASS(SB_CORE_API, AbstractExecutive, "sb.AbstractExecutive", AbstractObject)
+class SB_CORE_API AbstractExecutive : public sb::AbstractObject
 {
 
 public:
@@ -87,5 +87,11 @@ UniqueExecutive
 ) = create_unique<AbstractExecutive>;
 
 }
+
+SB_DECLARE_CLASS(
+    sb::AbstractExecutive,
+    "sb.AbstractExecutive",
+    sb::AbstractObject
+)
 
 #endif // SB_ABSTRACTEXECUTIVE_H

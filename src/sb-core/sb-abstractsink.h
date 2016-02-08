@@ -23,7 +23,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
-SB_CLASS(SB_CORE_API, AbstractSink, "sb.AbstractSink", AbstractBlok)
+class SB_CORE_API AbstractSink : public sb::AbstractBlok
 {
 
 public:
@@ -99,5 +99,11 @@ UniqueSink
 ) = create_unique<AbstractSink>;
 
 }
+
+SB_DECLARE_CLASS(
+    sb::AbstractSink,
+    "sb.AbstractSink",
+    sb::AbstractBlok
+)
 
 #endif // SB_ABSTRACTSINK_H

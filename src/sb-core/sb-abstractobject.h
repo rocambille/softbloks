@@ -42,16 +42,6 @@ using UniqueObject = Unique<AbstractObject>;
 
 using ObjectFactory = std::function<UniqueObject(void)>;
 
-template<>
-inline
-std::vector<std::string>
-get_type_names<AbstractObject>
-(
-)
-{
-    return {"sb.AbstractObject"};
-}
-
 class SB_CORE_API AbstractObject
 {
 
@@ -356,16 +346,6 @@ private:
 
 };
 
-template<>
-inline
-sb::PropertyFormatMap
-get_properties<AbstractObject>
-(
-)
-{
-    return {};
-}
-
 template<typename T>
 using Shared = std::shared_ptr<T>;
 
@@ -477,6 +457,26 @@ void
 unregister_all_objects
 (
 );
+
+template<>
+inline
+std::vector<std::string>
+get_type_names<AbstractObject>
+(
+)
+{
+    return {"sb.AbstractObject"};
+}
+
+template<>
+inline
+sb::PropertyFormatMap
+get_properties<AbstractObject>
+(
+)
+{
+    return {};
+}
 
 }
 

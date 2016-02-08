@@ -274,73 +274,55 @@ get_properties
 
 }
 
-#define SB_META_(type_, name_, super_class_)\
-    template<>\
-    class Meta<type_>\
-    {\
-        public: using super_class = super_class_;\
-    };\
-    template<>\
-    inline\
-    std::vector<std::string>\
-    get_type_names<type_>\
-    (\
-    )\
-    {\
-        return sb::join(\
-            std::vector<std::string>({name_}),\
-            sb::get_type_names<super_class_>()\
-        );\
-    }
-
-#define SB_OUTSIDE_CLASS(attributes_, type_, name_, super_class_)\
-    class type_;\
+#define SB_DECLARE_CLASS(type_, name_, super_class_)\
     namespace sb\
     {\
-        SB_META_(type_, name_, super_class_)\
-    }\
-    class attributes_ type_ : public super_class_
-
-#define SB_CLASS(attributes_, type_, name_, super_class_)\
-    class type_;\
-    SB_META_(type_, name_, super_class_)\
-    class attributes_ type_ : public super_class_
-
-#define SB_PROPERTIES_(type_, properties_)\
-    template<>\
-    inline\
-    sb::PropertyFormatMap\
-    get_properties<type_>\
-    (\
-    )\
-    {\
-        return sb::join(\
-            sb::PropertyFormatMap(properties_),\
-            sb::get_properties<sb::Meta<type_>::super_class>()\
-        );\
+        template<>\
+        class Meta<type_>\
+        {\
+            public: using super_class = super_class_;\
+        };\
+        template<>\
+        inline\
+        std::vector<std::string>\
+        get_type_names<type_>\
+        (\
+        )\
+        {\
+            return sb::join(\
+                std::vector<std::string>({name_}),\
+                sb::get_type_names<super_class_>()\
+            );\
+        }\
     }
 
-#define SB_PROPERTIES(type_, ...)\
-    SB_PROPERTIES_(\
+#define SB_DECLARE_PROPERTIES_(type_, properties_)\
+    namespace sb\
+    {\
+        template<>\
+        inline\
+        sb::PropertyFormatMap\
+        get_properties<type_>\
+        (\
+        )\
+        {\
+            return sb::join(\
+                sb::PropertyFormatMap(properties_),\
+                sb::get_properties<sb::Meta<type_>::super_class>()\
+            );\
+        }\
+    }
+
+#define SB_DECLARE_PROPERTIES(type_, ...)\
+    SB_DECLARE_PROPERTIES_(\
         type_,\
         std::initializer_list<sb::PropertyFormatMap::value_type>(\
             {__VA_ARGS__}\
         )\
     )
 
-#define SB_OUTSIDE_PROPERTIES(type_, ...)\
-    namespace sb\
-    {\
-        SB_PROPERTIES_(\
-            type_,\
-            std::initializer_list<sb::PropertyFormatMap::value_type>(\
-                {__VA_ARGS__}\
-            )\
-        )\
-    }
-
 #define SB_DECLARE_MODULE(descriptor_)\
-    namespace Global\
+    namespace sb\
     {\
         const char descriptor[] = "{" #descriptor_ "}";\
     }\
@@ -351,7 +333,7 @@ get_properties
     (\
     )\
     {\
-        return Global::descriptor;\
+        return sb::descriptor;\
     }\
     extern "C"\
     SB_DECL_EXPORT\

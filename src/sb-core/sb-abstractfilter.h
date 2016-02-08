@@ -23,7 +23,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
-SB_CLASS(SB_CORE_API, AbstractFilter, "sb.AbstractFilter", AbstractBlok)
+class SB_CORE_API AbstractFilter : public sb::AbstractBlok
 {
 
 public:
@@ -140,5 +140,11 @@ UniqueFilter
 ) = create_unique<AbstractFilter>;
 
 }
+
+SB_DECLARE_CLASS(
+    sb::AbstractFilter,
+    "sb.AbstractFilter",
+    sb::AbstractBlok
+)
 
 #endif // SB_ABSTRACTFILTER_H

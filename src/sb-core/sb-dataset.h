@@ -25,7 +25,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
-SB_CLASS(SB_CORE_API, DataSet, "sb.DataSet", AbstractObject)
+class SB_CORE_API DataSet : public sb::AbstractObject
 {
 
 public:
@@ -90,5 +90,11 @@ SharedDataSet
 ) = create_shared<DataSet>;
 
 }
+
+SB_DECLARE_CLASS(
+    sb::DataSet,
+    "sb.DataSet",
+    sb::AbstractObject
+)
 
 #endif // SB_DATASET_H

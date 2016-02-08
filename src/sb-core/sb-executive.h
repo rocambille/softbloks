@@ -23,7 +23,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
-SB_CLASS(SB_CORE_API, PushExecutive, "sb.PushExecutive", AbstractExecutive)
+class SB_CORE_API PushExecutive : public sb::AbstractExecutive
 {
 
 public:
@@ -62,7 +62,7 @@ private:
 
 };
 
-SB_CLASS(SB_CORE_API, PullExecutive, "sb.PullExecutive", AbstractExecutive)
+class SB_CORE_API PullExecutive : public sb::AbstractExecutive
 {
 
 public:
@@ -101,7 +101,7 @@ private:
 
 };
 
-SB_CLASS(SB_CORE_API, PushPullExecutive, "sb.PushPullExecutive", AbstractExecutive)
+class SB_CORE_API PushPullExecutive : public sb::AbstractExecutive
 {
 
 public:
@@ -141,5 +141,21 @@ private:
 };
 
 }
+
+SB_DECLARE_CLASS(
+    sb::PushExecutive,
+    "sb.PushExecutive",
+    sb::AbstractExecutive
+)
+SB_DECLARE_CLASS(
+    sb::PullExecutive,
+    "sb.PullExecutive",
+    sb::AbstractExecutive
+)
+SB_DECLARE_CLASS(
+    sb::PushPullExecutive,
+    "sb.PushPullExecutive",
+    sb::AbstractExecutive
+)
 
 #endif // SB_EXECUTIVE_H

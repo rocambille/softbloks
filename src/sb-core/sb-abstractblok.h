@@ -26,7 +26,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
-SB_CLASS(SB_CORE_API, AbstractBlok, "sb.AbstractBlok", AbstractObject)
+class SB_CORE_API AbstractBlok : public sb::AbstractObject
 {
 
 public:
@@ -121,5 +121,12 @@ UniqueBlok
 ) = create_unique<AbstractBlok>;
 
 }
+
+SB_DECLARE_CLASS(
+    sb::AbstractBlok,
+    "sb.AbstractBlok",
+    sb::AbstractObject
+)
+
 
 #endif // SB_ABSTRACTBLOK_H

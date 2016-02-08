@@ -19,7 +19,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace std::placeholders;
 
-SB_OUTSIDE_CLASS(, HelloSource, "HelloSource", sb::AbstractSource)
+class HelloSource : public sb::AbstractSource
 {
 
 public:
@@ -72,7 +72,7 @@ private:
 
 };
 
-SB_OUTSIDE_CLASS(, HelloFilter, "HelloFilter", sb::AbstractFilter)
+class HelloFilter : public sb::AbstractFilter
 {
 
 public:
@@ -193,7 +193,7 @@ private:
 
 };
 
-SB_OUTSIDE_CLASS(, HelloSink, "HelloSink", sb::AbstractSink)
+class HelloSink : public sb::AbstractSink
 {
 
 public:
@@ -258,6 +258,22 @@ private:
     observers;
 
 };
+
+SB_DECLARE_CLASS(
+    HelloSource,
+    "HelloSource",
+    sb::AbstractSource
+)
+SB_DECLARE_CLASS(
+    HelloFilter,
+    "HelloFilter",
+    sb::AbstractFilter
+)
+SB_DECLARE_CLASS(
+    HelloSink,
+    "HelloSink",
+    sb::AbstractSink
+)
 
 SB_DECLARE_MODULE(hellobloks)
 {

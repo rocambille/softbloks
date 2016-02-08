@@ -23,7 +23,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
-SB_CLASS(SB_CORE_API, AbstractData, "sb.AbstractData", AbstractObject)
+class SB_CORE_API AbstractData : public sb::AbstractObject
 {
 
 public:
@@ -56,5 +56,11 @@ SharedData
 ) = create_shared<AbstractData>;
 
 }
+
+SB_DECLARE_CLASS(
+    sb::AbstractData,
+    "sb.AbstractData",
+    sb::AbstractObject
+)
 
 #endif // SB_ABSTRACTDATA_H

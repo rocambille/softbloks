@@ -23,7 +23,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
-SB_CLASS(SB_CORE_API, AbstractSoft, "sb.AbstractSoft", AbstractObject)
+class SB_CORE_API AbstractSoft : public sb::AbstractObject
 {
 
 public:
@@ -56,5 +56,11 @@ SharedSoft
 ) = create_shared<AbstractSoft>;
 
 }
+
+SB_DECLARE_CLASS(
+    sb::AbstractSoft,
+    "sb.AbstractSoft",
+    sb::AbstractObject
+)
 
 #endif // SB_ABSTRACTSOFT_H

@@ -86,6 +86,19 @@ default_index_collection_converter =
 
 }
 
+AbstractBlok::AbstractBlok
+(
+)
+{
+    sb::register_object<PushPullExecutive>();
+
+    this->d_ptr = new Private(this);
+
+    this->use_executive(
+        get_object_name<PushPullExecutive>()
+    );
+}
+
 AbstractBlok::~AbstractBlok
 (
 )
@@ -210,9 +223,6 @@ AbstractBlok::push_output
     size_t index_
 )
 {
-    // AbstractBlok::Private::lock_input calls this method:
-    // don't call it here or it will cause infinite recursion
-
     auto output_d_ptr = DataSet::Private::from(
         d_ptr->outputs.at(index_)
     );
@@ -225,21 +235,6 @@ AbstractBlok::push_output
             Unmapper::input_index(follower)
         );
     }
-}
-
-void
-AbstractBlok::construct
-(
-    AbstractBlok* this_
-)
-{
-    sb::register_object<PushPullExecutive>();
-
-    this_->d_ptr = new Private(this_);
-
-    this_->use_executive(
-        PushPullExecutive::get_object_name()
-    );
 }
 
 AbstractBlok::Private::Private
@@ -330,7 +325,7 @@ AbstractBlok::Private::set_output_count
     for(size_t i(previous_output_count); i < this->outputs.size(); ++i)
     {
         SharedDataSet data_set = sb::create_shared_data_set(
-            DataSet::get_object_name()
+            get_object_name<DataSet>()
         );
 
         auto data_set_d_ptr = DataSet::Private::from(

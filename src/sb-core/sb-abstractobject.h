@@ -45,8 +45,6 @@ using ObjectFactory = std::function<UniqueObject(void)>;
 class SB_CORE_API AbstractObject
 {
 
-    SB_DECLARE_OBJECT(AbstractObject, "sb::AbstractObject")
-
 public:
 
     template<typename T>
@@ -91,6 +89,10 @@ public:
         const AbstractObject& other_
     )
     = delete;
+
+    AbstractObject
+    (
+    );
 
     virtual
     ~AbstractObject
@@ -297,23 +299,21 @@ protected:
         const std::string& name_
     );
 
-protected:
-
-    static
-    void
-    add_type_name
+    template<typename T>
+    friend
+    bool
+    sb::register_object
     (
-        AbstractObject* this_,
-        std::string type_name_
     );
 
 private:
 
     static
     void
-    construct
+    set_type_names
     (
-        AbstractObject* this_
+        AbstractObject* this_,
+        std::vector<std::string> names_
     );
 
     static
@@ -334,7 +334,7 @@ private:
     bool
     register_object
     (
-        const std::string& name_,
+        const ObjectFormat& format_,
         const ObjectFactory& factory_
     );
 
@@ -419,6 +419,10 @@ register_object
                 }
             );
 
+            AbstractObject::set_type_names(
+                instance.get(),
+                get_type_names<T>()
+            );
             AbstractObject::init(instance.get());
 
             return instance;
@@ -426,7 +430,10 @@ register_object
     );
 
     return AbstractObject::register_object(
-        T::get_object_name(),
+        {
+            get_type_names<T>(),
+            get_properties<T>()
+        },
         factory
     );
 }
@@ -450,6 +457,26 @@ void
 unregister_all_objects
 (
 );
+
+template<>
+inline
+std::vector<std::string>
+get_type_names<AbstractObject>
+(
+)
+{
+    return {"sb.AbstractObject"};
+}
+
+template<>
+inline
+sb::PropertyFormatMap
+get_properties<AbstractObject>
+(
+)
+{
+    return {};
+}
 
 }
 

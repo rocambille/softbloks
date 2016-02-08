@@ -144,7 +144,7 @@ public:
         register_object<T>();
 
         this->instance = create_unique<T>(
-            T::get_object_name()
+            get_object_name<T>()
         );
     }
 

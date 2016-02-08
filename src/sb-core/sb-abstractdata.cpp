@@ -21,20 +21,18 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace sb;
 
+AbstractData::AbstractData
+(
+)
+{
+    this->d_ptr = new Private(this);
+}
+
 AbstractData::~AbstractData
 (
 )
 {
     delete d_ptr;
-}
-
-void
-AbstractData::construct
-(
-    AbstractData* this_
-)
-{
-    this_->d_ptr = new Private(this_);
 }
 
 AbstractData::Private::Private

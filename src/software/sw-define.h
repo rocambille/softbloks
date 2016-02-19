@@ -20,6 +20,4 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sb-core/sb-core.h>
 
-#define SB_STRINGIFY(a_) "" # a_
-
 #endif // SW_DEFINE_H

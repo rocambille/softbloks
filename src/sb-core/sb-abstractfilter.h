@@ -23,14 +23,16 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
-class SB_CORE_API AbstractFilter : public AbstractBlok
+class SB_CORE_API AbstractFilter : public sb::AbstractBlok
 {
-
-    SB_DECLARE_OBJECT(AbstractFilter, "sb::AbstractFilter")
 
 public:
 
     class Private;
+
+    AbstractFilter
+    (
+    );
 
     virtual
     ~AbstractFilter
@@ -123,13 +125,6 @@ protected:
 
 private:
 
-    static
-    void
-    construct
-    (
-        AbstractFilter* this_
-    );
-
     Private*
     d_ptr;
 
@@ -145,5 +140,11 @@ UniqueFilter
 ) = create_unique<AbstractFilter>;
 
 }
+
+SB_DECLARE_CLASS(
+    sb::AbstractFilter,
+    "sb.AbstractFilter",
+    sb::AbstractBlok
+)
 
 #endif // SB_ABSTRACTFILTER_H

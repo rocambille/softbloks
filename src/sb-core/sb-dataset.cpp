@@ -23,6 +23,13 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace sb;
 
+DataSet::DataSet
+(
+)
+{
+    this->d_ptr = new Private(this);
+}
+
 DataSet::~DataSet
 (
 )
@@ -75,15 +82,6 @@ DataSet::set_data
 )
 {
     d_ptr->data_map.at(index_) = value_;
-}
-
-void
-DataSet::construct
-(
-    DataSet* this_
-)
-{
-    this_->d_ptr = new Private(this_);
 }
 
 DataSet::Private::Private

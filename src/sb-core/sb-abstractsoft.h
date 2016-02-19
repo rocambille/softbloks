@@ -23,14 +23,16 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
-class SB_CORE_API AbstractSoft : public AbstractObject
+class SB_CORE_API AbstractSoft : public sb::AbstractObject
 {
-
-    SB_DECLARE_OBJECT(AbstractSoft, "sb::AbstractSoft")
 
 public:
 
     class Private;
+
+    AbstractSoft
+    (
+    );
 
     virtual
     ~AbstractSoft
@@ -38,13 +40,6 @@ public:
     );
 
 private:
-
-    static
-    void
-    construct
-    (
-        AbstractSoft* this_
-    );
 
     Private*
     d_ptr;
@@ -61,5 +56,11 @@ SharedSoft
 ) = create_shared<AbstractSoft>;
 
 }
+
+SB_DECLARE_CLASS(
+    sb::AbstractSoft,
+    "sb.AbstractSoft",
+    sb::AbstractObject
+)
 
 #endif // SB_ABSTRACTSOFT_H

@@ -23,14 +23,16 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
-class SB_CORE_API AbstractSink : public AbstractBlok
+class SB_CORE_API AbstractSink : public sb::AbstractBlok
 {
-
-    SB_DECLARE_OBJECT(AbstractSink, "sb::AbstractSink")
 
 public:
 
     class Private;
+
+    AbstractSink
+    (
+    );
 
     virtual
     ~AbstractSink
@@ -82,13 +84,6 @@ protected:
 
 private:
 
-    static
-    void
-    construct
-    (
-        AbstractSink* this_
-    );
-
     Private*
     d_ptr;
 
@@ -104,5 +99,11 @@ UniqueSink
 ) = create_unique<AbstractSink>;
 
 }
+
+SB_DECLARE_CLASS(
+    sb::AbstractSink,
+    "sb.AbstractSink",
+    sb::AbstractBlok
+)
 
 #endif // SB_ABSTRACTSINK_H

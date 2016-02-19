@@ -24,6 +24,13 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace sb;
 
+AbstractSink::AbstractSink
+(
+)
+{
+    this->d_ptr = new Private(this);
+}
+
 AbstractSink::~AbstractSink
 (
 )
@@ -115,15 +122,6 @@ AbstractSink::set_input_format
         index_,
         format_
     );
-}
-
-void
-AbstractSink::construct
-(
-    AbstractSink* this_
-)
-{
-    this_->d_ptr = new Private(this_);
 }
 
 AbstractSink::Private::Private

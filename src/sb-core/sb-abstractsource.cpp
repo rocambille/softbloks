@@ -24,6 +24,13 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace sb;
 
+AbstractSource::AbstractSource
+(
+)
+{
+    this->d_ptr = new Private(this);
+}
+
 AbstractSource::~AbstractSource
 (
 )
@@ -116,15 +123,6 @@ AbstractSource::set_defined_indices
     )->set_defined_indices(
         value_
     );
-}
-
-void
-AbstractSource::construct
-(
-    AbstractSource* this_
-)
-{
-    this_->d_ptr = new Private(this_);
 }
 
 AbstractSource::Private::Private

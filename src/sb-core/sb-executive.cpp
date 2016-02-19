@@ -21,6 +21,13 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace sb;
 
+PushExecutive::PushExecutive
+(
+)
+{
+    this->d_ptr = new Private(this);
+}
+
 PushExecutive::~PushExecutive
 (
 )
@@ -45,15 +52,6 @@ PushExecutive::on_output_pulled
 {
 }
 
-void
-PushExecutive::construct
-(
-    PushExecutive* this_
-)
-{
-    this_->d_ptr = new Private(this_);
-}
-
 PushExecutive::Private::Private
 (
     PushExecutive* q_ptr_
@@ -63,6 +61,13 @@ PushExecutive::Private::Private
 }
 
 //////////////////////////////////////////////////////////////////////////////
+
+PullExecutive::PullExecutive
+(
+)
+{
+    this->d_ptr = new Private(this);
+}
 
 PullExecutive::~PullExecutive
 (
@@ -88,15 +93,6 @@ PullExecutive::on_output_pulled
     this->execute();
 }
 
-void
-PullExecutive::construct
-(
-    PullExecutive* this_
-)
-{
-    this_->d_ptr = new Private(this_);
-}
-
 PullExecutive::Private::Private
 (
     PullExecutive* q_ptr_
@@ -106,6 +102,13 @@ PullExecutive::Private::Private
 }
 
 //////////////////////////////////////////////////////////////////////////////
+
+PushPullExecutive::PushPullExecutive
+(
+)
+{
+    this->d_ptr = new Private(this);
+}
 
 PushPullExecutive::~PushPullExecutive
 (
@@ -130,15 +133,6 @@ PushPullExecutive::on_output_pulled
 )
 {
     this->execute();
-}
-
-void
-PushPullExecutive::construct
-(
-    PushPullExecutive* this_
-)
-{
-    this_->d_ptr = new Private(this_);
 }
 
 PushPullExecutive::Private::Private

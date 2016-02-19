@@ -26,14 +26,16 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
-class SB_CORE_API AbstractBlok : public AbstractObject
+class SB_CORE_API AbstractBlok : public sb::AbstractObject
 {
-
-    SB_DECLARE_OBJECT(AbstractBlok, "sb::AbstractBlok")
 
 public:
 
     class Private;
+
+    AbstractBlok
+    (
+    );
 
     virtual
     ~AbstractBlok
@@ -104,13 +106,6 @@ public:
 
 private:
 
-    static
-    void
-    construct
-    (
-        AbstractBlok* this_
-    );
-
     Private*
     d_ptr;
 
@@ -126,5 +121,12 @@ UniqueBlok
 ) = create_unique<AbstractBlok>;
 
 }
+
+SB_DECLARE_CLASS(
+    sb::AbstractBlok,
+    "sb.AbstractBlok",
+    sb::AbstractObject
+)
+
 
 #endif // SB_ABSTRACTBLOK_H

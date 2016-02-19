@@ -15,59 +15,82 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef SB_ABSTRACTEXECUTIVE_H
-#define SB_ABSTRACTEXECUTIVE_H
+#ifndef SR_LIBRARY_H
+#define SR_LIBRARY_H
 
-#include <sb-core/sb-abstractobject.h>
+#include <string>
 
-namespace sb
+namespace sr
 {
 
-class AbstractBlok;
+using FunctionPointer = void(*)();
 
-class SB_CORE_API AbstractExecutive : public sb::AbstractObject
+class Library
 {
 
 public:
 
     class Private;
 
-    AbstractExecutive
+    Library
+    (
+        const std::string& file_path_ = std::string()
+    );
+    Library
+    (
+        const Library& other_
+    );
+
+    ~Library
     (
     );
 
-    virtual
-    ~AbstractExecutive
+    Library&
+    operator=
     (
+        const Library& other_
     );
 
-    virtual
-    void
-    on_input_pushed
-    (
-        size_t index_
-    )
-    = 0;
-
-    virtual
-    void
-    on_output_pulled
-    (
-        size_t index_
-    )
-    = 0;
-
-protected:
-
-    AbstractBlok*
-    get_blok
+    const std::string&
+    get_file_path
     (
     )
     const;
 
     void
-    execute
+    set_file_path
     (
+        const std::string& file_path_
+    );
+
+    bool
+    is_loaded
+    (
+    )
+    const;
+
+    bool
+    load
+    (
+    );
+
+    bool
+    unload
+    (
+    );
+
+    FunctionPointer
+    resolve
+    (
+        const char* symbol_
+    );
+
+    static
+    FunctionPointer
+    resolve
+    (
+        const std::string& file_path_,
+        const char* symbol_
     );
 
 private:
@@ -77,21 +100,6 @@ private:
 
 };
 
-using UniqueExecutive = Unique<AbstractExecutive>;
-
-static
-UniqueExecutive
-(&create_unique_executive)
-(
-    const std::string& name_
-) = create_unique<AbstractExecutive>;
-
 }
 
-SB_DECLARE_CLASS(
-    sb::AbstractExecutive,
-    "sb.AbstractExecutive",
-    sb::AbstractObject
-)
-
-#endif // SB_ABSTRACTEXECUTIVE_H
+#endif // SR_LIBRARY_H

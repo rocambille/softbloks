@@ -14,23 +14,18 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
-option(BUILD_SOFTWARE
-    "build software"
-    ${Qt5_FOUND}
+sb_add_executable(softrun
+    sr-directory.cpp
+    sr-directory.h
+    sr-directory-private.h
+    sr-library.cpp
+    sr-library.h
+    sr-library-private.h
+    sr-main.cpp
 )
 
-if(BUILD_SOFTWARE)
-    sb_add_qt5_executable(software
-        sw-application.cpp
-        sw-application.h
-        sw-application-private.h
-        sw-define.h
-        sw-main.cpp
-        sw-mainwidget.cpp
-        sw-mainwidget.h
-        sw-mainwidget-private.h
-        rcc::sw-resources.qrc
-        Qt5::Widgets
-        Qt5::Svg
+if(UNIX)
+    target_link_libraries(softrun
+        ${CMAKE_DL_LIBS}
     )
 endif()

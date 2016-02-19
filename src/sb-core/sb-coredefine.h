@@ -20,6 +20,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sb-global/sb-global.h>
 
+#include <algorithm>
 #include <array>
 #include <functional>
 #include <limits>
@@ -58,7 +59,10 @@ const size_t infinity = std::numeric_limits<size_t>::max();
 
 template<typename U, typename T, typename D>
 std::unique_ptr<U, D>
-static_pointer_cast(std::unique_ptr<T, D>&& t_ptr_)
+static_pointer_cast
+(
+    std::unique_ptr<T, D>&& t_ptr_
+)
 {
     auto ptr = static_cast<U*>(t_ptr_.get());
 
@@ -69,6 +73,39 @@ static_pointer_cast(std::unique_ptr<T, D>&& t_ptr_)
     t_ptr_.release();
 
     return u_ptr;
+}
+
+template <typename T>
+std::vector<T>
+join
+(
+    const std::vector<T>& a_,
+    const std::vector<T>& b_
+)
+{
+    std::vector<T> ab;
+    ab.reserve(a_.size() + b_.size());
+
+    ab.insert(ab.end(), a_.begin(), a_.end());
+    ab.insert(ab.end(), b_.begin(), b_.end());
+
+    return ab;
+}
+
+template <typename T, typename U>
+std::map<T, U>
+join
+(
+    const std::map<T, U>& a_,
+    const std::map<T, U>& b_
+)
+{
+    std::map<T, U> ab;
+
+    ab.insert(a_.begin(), a_.end());
+    ab.insert(b_.begin(), b_.end());
+
+    return ab;
 }
 
 struct PropertyFormat
@@ -200,46 +237,92 @@ const sb::ObjectFormat
 undefined_object_format = { { } };
 
 const sb::ObjectFormat
-any_object_format = { { "sb::AbstractObject" } };
+any_object_format = { { "sb.AbstractObject" } };
+
+template<typename T>
+class Meta;
+
+template<typename T>
+inline
+std::vector<std::string>
+get_type_names
+(
+)
+{
+    return std::vector<std::string>();
+}
+
+template<typename T>
+inline
+std::string
+get_object_name
+(
+)
+{
+    return sb::get_type_names<T>()[0];
+}
+
+template<typename T>
+inline
+sb::PropertyFormatMap
+get_properties
+(
+)
+{
+    return sb::get_properties<typename sb::Meta<T>::super_class>();
+}
 
 }
 
-#define SB_DECLARE_OBJECT(type_, type_name_)\
-\
-    public:\
-\
-        static\
-        std::string\
-        get_object_name\
+#define SB_DECLARE_CLASS(type_, name_, super_class_)\
+    namespace sb\
+    {\
+        template<>\
+        class Meta<type_>\
+        {\
+            public: using super_class = super_class_;\
+        };\
+        template<>\
+        inline\
+        std::vector<std::string>\
+        get_type_names<type_>\
         (\
         )\
         {\
-            return type_name_;\
-        }\
-\
-    protected:\
-\
-        type_\
-        (\
-        )\
-        {\
-            type_::construct(this);\
-\
-            sb::AbstractObject::add_type_name(\
-                this,\
-                type_name_\
+            return sb::join(\
+                std::vector<std::string>({name_}),\
+                sb::get_type_names<super_class_>()\
             );\
         }\
-\
-        template<typename T>\
-        friend\
-        bool\
-        sb::register_object\
+    }
+
+#define SB_DECLARE_PROPERTIES_(type_, properties_)\
+    namespace sb\
+    {\
+        template<>\
+        inline\
+        sb::PropertyFormatMap\
+        get_properties<type_>\
         (\
-        );
+        )\
+        {\
+            return sb::join(\
+                sb::PropertyFormatMap(properties_),\
+                sb::get_properties<sb::Meta<type_>::super_class>()\
+            );\
+        }\
+    }
+
+#define SB_DECLARE_PROPERTIES(type_, ...)\
+    SB_DECLARE_PROPERTIES_(\
+        type_,\
+        std::initializer_list<sb::PropertyFormatMap::value_type>(\
+            {__VA_ARGS__}\
+        )\
+    )
 
 #define SB_DECLARE_MODULE(descriptor_)\
-    namespace Global\
+    namespace sb\
     {\
         const char descriptor[] = "{" #descriptor_ "}";\
     }\
@@ -250,7 +333,7 @@ any_object_format = { { "sb::AbstractObject" } };
     (\
     )\
     {\
-        return Global::descriptor;\
+        return sb::descriptor;\
     }\
     extern "C"\
     SB_DECL_EXPORT\

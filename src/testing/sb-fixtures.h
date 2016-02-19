@@ -22,8 +22,6 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sb-core/sb-core.h>
 
-#include <sb-core/sb-abstractobject-private.h>
-
 namespace sb
 {
 
@@ -146,7 +144,7 @@ public:
         register_object<T>();
 
         this->instance = create_unique<T>(
-            T::get_object_name()
+            get_object_name<T>()
         );
     }
 

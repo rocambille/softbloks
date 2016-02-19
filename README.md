@@ -1,4 +1,4 @@
-Softbloks Version 0.1 29/11/2015
+Softbloks Version 0.2 19/02/2016
 ================================
 
 What is Softbloks?
@@ -280,7 +280,7 @@ System requirements:
 * [CMake](http://cmake.org/) 3.0.0 or newer;
 * A C++11-standard-compliant compiler.
 
-Optionally:
+Optional requirements:
 
 * To build Qt5-based components: [Qt](http://www.qt.io/) 5.2 or newer.
 * To build unit tests: [GTest](https://github.com/google/googletest) 1.7 or newer.

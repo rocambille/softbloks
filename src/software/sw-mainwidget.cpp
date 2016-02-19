@@ -231,9 +231,9 @@ MainWidgetPrivate::create_home_widget
         QWidget* sub_widget = new QWidget;
         sub_widget->setLayout(sub_layout);
         sub_widget->setStyleSheet(
-            SB_STRINGIFY(
+            R"(
                 background: #dfdfdf;
-            )
+            )"
         );
 
     layout->addWidget(sub_widget);
@@ -271,7 +271,7 @@ MainWidgetPrivate::create_home_widget
 
         QPushButton* button = new QPushButton(page.first);
         button->setStyleSheet(
-            SB_STRINGIFY(
+            R"(
                 QPushButton
                 {
                     background: #dfdfdf;
@@ -287,7 +287,7 @@ MainWidgetPrivate::create_home_widget
                 {
                     background: #bdbdbd;
                 }
-            )
+            )"
         );
         button->setCheckable(true);
 
@@ -321,7 +321,19 @@ MainWidgetPrivate::create_get_started_widget
 (
 )
 {
-    return new QWidget;
+    QTextEdit* widget = new QTextEdit;
+    widget->setReadOnly(true);
+    widget->setPlainText(
+        tr(
+            "Software is a an integration tool for Qt-based softs.\n\n"
+            "Paths to modules declaring softs can be added in the options "
+            "below.\n\n"
+            "You can see available softs by clicking the button \"+\" above. "
+            "Double-click on a soft name to run it."
+        )
+    );
+
+    return widget;
 }
 
 QWidget*
@@ -512,7 +524,7 @@ MainWidgetPrivate::create_chooser
                 sb::get_object_name<sb::AbstractSoft>()
             },
             {
-                {"Qt5Widgets.mainview", {typeid(QWidget*), sb::READ_ONLY}}
+                {"Qt.mainview", {typeid(QWidget*), sb::READ_ONLY}}
             }
         }
     );
@@ -545,7 +557,7 @@ MainWidgetPrivate::create_chooser
                 item_->text().toStdString()
             );
 
-            QWidget* widget = soft->get<QWidget*>("Qt5Widgets.mainview");
+            QWidget* widget = soft->get<QWidget*>("Qt.mainview");
 
             layout->addWidget(
                 widget

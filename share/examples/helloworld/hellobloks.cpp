@@ -30,7 +30,7 @@ public:
     {
         this->set_output_count(1);
 
-        this->text = "Hello World !!!";
+        this->text = "Hello World!!!";
 
         this->get_output(0)->register_property<std::string>(
             this,

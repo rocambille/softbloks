@@ -63,7 +63,7 @@ public:
         this->sink->process();
 
         this->register_property<QWidget*>(
-            "Qt5Widgets.mainview",
+            "Qt.mainview",
             sb::READ_ONLY,
             std::bind(&HelloSoft::get_widget, this),
             nullptr
@@ -183,7 +183,7 @@ SB_DECLARE_CLASS(
 
 SB_DECLARE_PROPERTIES(
     HelloSoft,
-    {"Qt5Widgets.mainview", {typeid(QWidget*), sb::READ_ONLY}}
+    {"Qt.mainview", {typeid(QWidget*), sb::READ_ONLY}}
 )
 
 SB_DECLARE_MODULE(hellosoft)

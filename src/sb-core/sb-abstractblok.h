@@ -42,37 +42,37 @@ public:
     (
     );
 
-    size_t
+    sb::Size
     get_minimum_input_count
     (
     )
     const;
 
-    size_t
+    sb::Size
     get_maximum_input_count
     (
     )
     const;
 
-    size_t
+    sb::Size
     get_input_count
     (
     )
     const;
 
-    size_t
+    sb::Size
     get_minimum_output_count
     (
     )
     const;
 
-    size_t
+    sb::Size
     get_maximum_output_count
     (
     )
     const;
 
-    size_t
+    sb::Size
     get_output_count
     (
     )
@@ -87,13 +87,13 @@ public:
     void
     pull_input
     (
-        size_t index_
+        sb::Index index_
     );
 
     void
     push_output
     (
-        size_t index_
+        sb::Index index_
     );
 
     virtual

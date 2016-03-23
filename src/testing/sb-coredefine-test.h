@@ -149,7 +149,7 @@ TEST_F(
 
         // cast unique_ptr
 
-        b = static_pointer_cast<B>(std::move(a));
+        b = static_move_cast<B>(std::move(a));
 
         // assertions after cast
 
@@ -291,10 +291,10 @@ TEST_F(
 )
 {
     EXPECT_TRUE(
-        undefined_object_format == undefined_object_format
+        UNDEFINED_OBJECT_FORMAT == UNDEFINED_OBJECT_FORMAT
     );
     EXPECT_TRUE(
-        any_object_format == any_object_format
+        ANY_OBJECT_FORMAT == ANY_OBJECT_FORMAT
     );
     EXPECT_TRUE(
         ObjectFormatTest::foo_object_format == ObjectFormatTest::foo_object_format
@@ -307,13 +307,13 @@ TEST_F(
 )
 {
     EXPECT_FALSE(
-        undefined_object_format >> undefined_object_format
+        UNDEFINED_OBJECT_FORMAT >> UNDEFINED_OBJECT_FORMAT
     );
     EXPECT_FALSE(
-        any_object_format >> undefined_object_format
+        ANY_OBJECT_FORMAT >> UNDEFINED_OBJECT_FORMAT
     );
     EXPECT_FALSE(
-        ObjectFormatTest::foo_object_format >> undefined_object_format
+        ObjectFormatTest::foo_object_format >> UNDEFINED_OBJECT_FORMAT
     );
 }
 
@@ -323,13 +323,13 @@ TEST_F(
 )
 {
     EXPECT_FALSE(
-        undefined_object_format >> any_object_format
+        UNDEFINED_OBJECT_FORMAT >> ANY_OBJECT_FORMAT
     );
     EXPECT_TRUE(
-        any_object_format >> any_object_format
+        ANY_OBJECT_FORMAT >> ANY_OBJECT_FORMAT
     );
     EXPECT_TRUE(
-        ObjectFormatTest::foo_object_format >> any_object_format
+        ObjectFormatTest::foo_object_format >> ANY_OBJECT_FORMAT
     );
 }
 
@@ -339,10 +339,10 @@ TEST_F(
 )
 {
     EXPECT_FALSE(
-        undefined_object_format >> ObjectFormatTest::foo_object_format
+        UNDEFINED_OBJECT_FORMAT >> ObjectFormatTest::foo_object_format
     );
     EXPECT_FALSE(
-        any_object_format >> ObjectFormatTest::foo_object_format
+        ANY_OBJECT_FORMAT >> ObjectFormatTest::foo_object_format
     );
     EXPECT_TRUE(
         ObjectFormatTest::foo_object_format >> ObjectFormatTest::foo_object_format
@@ -355,13 +355,13 @@ TEST_F(
 )
 {
     EXPECT_FALSE(
-        undefined_object_format << undefined_object_format
+        UNDEFINED_OBJECT_FORMAT << UNDEFINED_OBJECT_FORMAT
     );
     EXPECT_FALSE(
-        undefined_object_format << any_object_format
+        UNDEFINED_OBJECT_FORMAT << ANY_OBJECT_FORMAT
     );
     EXPECT_FALSE(
-        undefined_object_format << ObjectFormatTest::foo_object_format
+        UNDEFINED_OBJECT_FORMAT << ObjectFormatTest::foo_object_format
     );
 }
 
@@ -371,13 +371,13 @@ TEST_F(
 )
 {
     EXPECT_FALSE(
-        any_object_format << undefined_object_format
+        ANY_OBJECT_FORMAT << UNDEFINED_OBJECT_FORMAT
     );
     EXPECT_TRUE(
-        any_object_format << any_object_format
+        ANY_OBJECT_FORMAT << ANY_OBJECT_FORMAT
     );
     EXPECT_TRUE(
-        any_object_format << ObjectFormatTest::foo_object_format
+        ANY_OBJECT_FORMAT << ObjectFormatTest::foo_object_format
     );
 }
 
@@ -387,10 +387,10 @@ TEST_F(
 )
 {
     EXPECT_FALSE(
-        ObjectFormatTest::foo_object_format << undefined_object_format
+        ObjectFormatTest::foo_object_format << UNDEFINED_OBJECT_FORMAT
     );
     EXPECT_FALSE(
-        ObjectFormatTest::foo_object_format << any_object_format
+        ObjectFormatTest::foo_object_format << ANY_OBJECT_FORMAT
     );
     EXPECT_TRUE(
         ObjectFormatTest::foo_object_format << ObjectFormatTest::foo_object_format

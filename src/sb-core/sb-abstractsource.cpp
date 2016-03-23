@@ -41,7 +41,7 @@ AbstractSource::~AbstractSource
 SharedDataSet
 AbstractSource::get_output
 (
-    size_t index_
+    Index index_
 )
 const
 {
@@ -53,7 +53,7 @@ const
 void
 AbstractSource::set_output_count
 (
-    size_t value_
+    Size value_
 )
 {
     AbstractBlok::Private::from(
@@ -66,8 +66,8 @@ AbstractSource::set_output_count
 void
 AbstractSource::set_output_count
 (
-    size_t minimum_,
-    size_t maximum_
+    Size minimum_,
+    Size maximum_
 )
 {
     AbstractBlok::Private::from(
@@ -81,7 +81,7 @@ AbstractSource::set_output_count
 void
 AbstractSource::set_output_format
 (
-    size_t index_,
+    Index index_,
     const ObjectFormat& format_
 )
 {
@@ -94,33 +94,33 @@ AbstractSource::set_output_format
 }
 
 void
-AbstractSource::set_index_range
+AbstractSource::set_data_key_range
 (
-    size_t output_,
-    const IndexRange& value_
+    Index output_,
+    const DataKeyRange& value_
 )
 {
     DataSet::Private::from(
         this->get_output(
             output_
         )
-    )->set_index_range(
+    )->set_data_key_range(
         value_
     );
 }
 
 void
-AbstractSource::set_defined_indices
+AbstractSource::set_defined_data_keys
 (
-    size_t output_,
-    const IndexCollection& value_
+    Index output_,
+    const DataKeyCollection& value_
 )
 {
     DataSet::Private::from(
         this->get_output(
             output_
         )
-    )->set_defined_indices(
+    )->set_defined_data_keys(
         value_
     );
 }

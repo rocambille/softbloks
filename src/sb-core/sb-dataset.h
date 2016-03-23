@@ -41,20 +41,20 @@ public:
     (
     );
 
-    IndexRange
-    get_index_range
+    DataKeyRange
+    get_data_key_range
     (
     )
     const;
 
-    IndexCollection
-    get_defined_indices
+    DataKeyCollection
+    get_defined_data_keys
     (
     )
     const;
 
-    IndexCollection
-    get_wanted_indices
+    DataKeyCollection
+    get_wanted_data_keys
     (
     )
     const;
@@ -62,14 +62,14 @@ public:
     SharedData
     get_data
     (
-        double index_
+        DataKey data_key_
     )
     const;
 
     void
     set_data
     (
-        double index_,
+        DataKey data_key_,
         const SharedData& value_
     );
 

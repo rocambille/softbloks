@@ -22,6 +22,8 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
+using ObjectFactory = std::function<UniqueObject(void)>;
+
 using ObjectFactoryMap = std::map<std::string, ObjectFactory>;
 
 using ObjectFormatMap = std::map<std::string, ObjectFormat>;
@@ -40,31 +42,12 @@ object_format_map;
 namespace Unmapper
 {
 
+    template<typename T>
     inline
     std::string
     name
     (
-        const AbstractObject::PropertyMap::value_type& value_
-    )
-    {
-        return value_.first;
-    }
-
-    inline
-    AbstractObject::Property
-    data
-    (
-        const AbstractObject::PropertyMap::value_type& value_
-    )
-    {
-        return value_.second;
-    }
-
-    inline
-    std::string
-    name
-    (
-        const ObjectFactoryMap::value_type& value_
+        const T& value_
     )
     {
         return value_.first;
@@ -78,16 +61,6 @@ namespace Unmapper
     )
     {
         return value_.second;
-    }
-
-    inline
-    std::string
-    name
-    (
-        const ObjectFormatMap::value_type& value_
-    )
-    {
-        return value_.first;
     }
 
     inline
@@ -135,8 +108,8 @@ const
     for(auto property : *(this->properties))
     {
         property_format.emplace(
-            Unmapper::name(property),
-            Unmapper::data(property).format
+            property.first,
+            property.second.format
         );
     }
 
@@ -146,24 +119,6 @@ const
     };
 
     return format;
-}
-
-bool
-AbstractObject::is_ready
-(
-)
-const
-{
-    return d_ptr->is_ready;
-}
-
-void
-AbstractObject::set_ready
-(
-    bool is_ready_
-)
-{
-    d_ptr->is_ready = is_ready_;
 }
 
 bool
@@ -181,7 +136,7 @@ AbstractObject::unregister_property
 
     if(
         find_result != this->properties->end() &&
-        Unmapper::data(*find_result).owner == owner_
+        find_result->second.owner == owner_
     )
     {
         // erase property
@@ -267,8 +222,7 @@ AbstractObject::Private::Private
 (
     AbstractObject* q_ptr_
 ):
-    q_ptr   (q_ptr_),
-    is_ready(false)
+    q_ptr   (q_ptr_)
 {
 }
 
@@ -358,7 +312,7 @@ sb::get_object_format
     const std::string& name_
 )
 {
-    auto object_format = undefined_object_format;
+    auto object_format = UNDEFINED_OBJECT_FORMAT;
 
     auto mapped_format =
         Global::object_format_map.find(name_);

@@ -42,7 +42,7 @@ public:
     SharedDataSet
     get_output
     (
-        size_t index_
+        sb::Index index_
     )
     const;
 
@@ -51,35 +51,35 @@ protected:
     void
     set_output_count
     (
-        size_t value_
+        sb::Size value_
     );
 
     void
     set_output_count
     (
-        size_t minimum_,
-        size_t maximum_
+        sb::Size minimum_,
+        sb::Size maximum_
     );
 
     void
     set_output_format
     (
-        size_t index_,
+        sb::Index index_,
         const ObjectFormat& format
     );
 
     void
-    set_index_range
+    set_data_key_range
     (
-        size_t output_,
-        const IndexRange& value_
+        sb::Index output_,
+        const DataKeyRange& value_
     );
 
     void
-    set_defined_indices
+    set_defined_data_keys
     (
-        size_t output_,
-        const IndexCollection& value_
+        sb::Index output_,
+        const DataKeyCollection& value_
     );
 
 private:

@@ -28,7 +28,7 @@ namespace sb
 {
 
 using FollowerCollection =
-    std::unordered_multimap<AbstractBlok*, size_t>;
+    std::unordered_multimap<AbstractBlok*, Index>;
 
 namespace Unmapper
 {
@@ -44,7 +44,7 @@ namespace Unmapper
     }
 
     inline
-    size_t
+    Index
     input_index
     (
         const FollowerCollection::value_type& value_
@@ -66,21 +66,21 @@ public:
     );
 
     void
-    set_index_range
+    set_data_key_range
     (
-        const IndexRange& value_
+        const DataKeyRange& value_
     );
 
     void
-    set_defined_indices
+    set_defined_data_keys
     (
-        const IndexCollection& value_
+        const DataKeyCollection& value_
     );
 
     void
-    set_wanted_indices
+    set_wanted_data_keys
     (
-        const IndexCollection& value_
+        const DataKeyCollection& value_
     );
 
     static
@@ -105,25 +105,25 @@ public:
     sb::AbstractBlok*
     source_blok;
 
-    size_t
+    Index
     source_index;
 
     FollowerCollection
     followers;
 
-    IndexRange
-    index_range;
+    DataKeyRange
+    data_key_range;
 
-    IndexCollection
-    defined_indices;
+    DataKeyCollection
+    defined_data_keys;
 
-    IndexCollection
-    wanted_indices;
+    DataKeyCollection
+    wanted_data_keys;
 
-    IndexCollection
-    available_indices;
+    DataKeyCollection
+    available_data_keys;
 
-    std::map<double, SharedData>
+    std::map<DataKey, SharedData>
     data_map;
 
 };

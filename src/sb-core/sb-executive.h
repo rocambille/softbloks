@@ -43,7 +43,7 @@ public:
     void
     on_input_pushed
     (
-        size_t index_
+        sb::Index index_
     )
     override;
 
@@ -51,7 +51,7 @@ public:
     void
     on_output_pulled
     (
-        size_t index_
+        sb::Index index_
     )
     override;
 
@@ -82,7 +82,7 @@ public:
     void
     on_input_pushed
     (
-        size_t index_
+        sb::Index index_
     )
     override;
 
@@ -90,7 +90,7 @@ public:
     void
     on_output_pulled
     (
-        size_t index_
+        sb::Index index_
     )
     override;
 
@@ -121,7 +121,7 @@ public:
     void
     on_input_pushed
     (
-        size_t index_
+        sb::Index index_
     )
     override;
 
@@ -129,7 +129,7 @@ public:
     void
     on_output_pulled
     (
-        size_t index_
+        sb::Index index_
     )
     override;
 

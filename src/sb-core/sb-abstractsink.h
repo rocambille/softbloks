@@ -42,22 +42,22 @@ public:
     SharedDataSet
     lock_input
     (
-        size_t index_
+        sb::Index index_
     )
     const;
 
     bool
     set_input
     (
-        size_t index_,
+        sb::Index index_,
         const SharedDataSet& value_
     );
 
     void
-    set_wanted_indices
+    set_wanted_data_keys
     (
-        size_t input_,
-        const IndexCollection& value_
+        sb::Index input_,
+        const DataKeyCollection& value_
     );
 
 protected:
@@ -65,20 +65,20 @@ protected:
     void
     set_input_count
     (
-        size_t value_
+        sb::Size value_
     );
 
     void
     set_input_count
     (
-        size_t minimum_,
-        size_t maximum_
+        sb::Size minimum_,
+        sb::Size maximum_
     );
 
     void
     set_input_format
     (
-        size_t index_,
+        sb::Index index_,
         const ObjectFormat& format_
     );
 

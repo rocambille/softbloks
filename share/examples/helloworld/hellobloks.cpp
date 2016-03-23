@@ -87,7 +87,7 @@ public:
             0,
             {
                 {
-                    sb::get_object_name<sb::DataSet>()
+                    sb::get_type_name<sb::DataSet>()
                 },
                 {
                     {"text", {typeid(std::string), sb::READ_ONLY}}
@@ -207,7 +207,7 @@ public:
             0,
             {
                 {
-                    sb::get_object_name<sb::DataSet>()
+                    sb::get_type_name<sb::DataSet>()
                 },
                 {
                     {"text", {typeid(std::string), sb::READ_ONLY}}

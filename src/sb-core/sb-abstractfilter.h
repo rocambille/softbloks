@@ -42,21 +42,21 @@ public:
     SharedDataSet
     lock_input
     (
-        size_t index_
+        sb::Index index_
     )
     const;
 
     bool
     set_input
     (
-        size_t index_,
+        sb::Index index_,
         const SharedDataSet& value_
     );
 
     SharedDataSet
     get_output
     (
-        size_t index_
+        sb::Index index_
     )
     const;
 
@@ -65,62 +65,62 @@ protected:
     void
     set_input_count
     (
-        size_t value_
+        sb::Size value_
     );
 
     void
     set_input_count
     (
-        size_t minimum_,
-        size_t maximum_
+        sb::Size minimum_,
+        sb::Size maximum_
     );
 
     void
     set_input_format
     (
-        size_t index_,
+        sb::Index index_,
         const ObjectFormat& format_
     );
 
     void
     set_output_count
     (
-        size_t value_
+        sb::Size value_
     );
 
     void
     set_output_count
     (
-        size_t minimum_,
-        size_t maximum_
+        sb::Size minimum_,
+        sb::Size maximum_
     );
 
     void
     set_output_format
     (
-        size_t index_,
+        sb::Index index_,
         const ObjectFormat& format_
     );
 
     void
-    set_index_range_converter
+    set_data_key_range_mapper
     (
-        size_t output_,
-        const IndexRangeConverter& value_
+        sb::Index output_,
+        const DataKeyRangeMapper& value_
     );
 
     void
-    set_defined_indices_converter
+    set_defined_data_keys_mapper
     (
-        size_t output_,
-        const IndexCollectionConverter& value_
+        sb::Index output_,
+        const DataKeyCollectionMapper& value_
     );
 
     void
-    set_wanted_indices_converter
+    set_wanted_data_keys_mapper
     (
-        size_t input_,
-        const IndexCollectionConverter& value_
+        sb::Index input_,
+        const DataKeyCollectionMapper& value_
     );
 
 private:

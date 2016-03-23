@@ -55,9 +55,6 @@ public:
     std::vector<std::string>
     type_names;
 
-    bool
-    is_ready;
-
 };
 
 }

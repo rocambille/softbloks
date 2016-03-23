@@ -45,7 +45,7 @@ public:
     void
     on_input_pushed
     (
-        size_t index_
+        sb::Index index_
     )
     = 0;
 
@@ -53,7 +53,7 @@ public:
     void
     on_output_pulled
     (
-        size_t index_
+        sb::Index index_
     )
     = 0;
 

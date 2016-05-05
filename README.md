@@ -258,6 +258,8 @@ defines among others the following branches:
 The repository uses the following directory structure:
 
     <root>/
+        3rdparty/
+            (third party libraries)
         share/
             cmake/
                 (config files for cmake packages)
@@ -283,7 +285,6 @@ System requirements:
 Optional requirements:
 
 * To build Qt5-based components: [Qt](http://www.qt.io/) 5.2 or newer.
-* To build unit tests: [GTest](https://github.com/google/googletest) 1.7 or newer.
 * To build the documentation: [Doxygen](http://www.doxygen.org/) 1.7 or newer.
 
 Given `<root>` is the directory where you cloned the sources, we recommend to
@@ -305,15 +306,15 @@ You can enable the compilation of the examples by adding the following option:
 
     cmake ... -D BUILD_EXAMPLES=ON ...
 
+You can enable the compilation of the unit tests by adding the following
+option:
+
+    cmake ... -D BUILD_TESTING=ON ...
+
 Suppose you installed Qt in directory `<Qt_install_prefix>`, you can enable
 the compilation of the Qt-based components by adding the following options:
 
     cmake ... -D Qt5_DIR=<Qt_install_prefix>/lib/cmake/Qt5 -D BUILD_SOFTWARE=ON -D BUILD_QT5_EXAMPLES=ON ...
-
-Suppose you installed Google Test in directory `<GTest_install_prefix>`, you
-can enable the compilation of the unit tests by adding the following options:
-
-    cmake ... -D GTEST_ROOT=<GTest_install_prefix> -D BUILD_TESTING=ON ...
 
 If you have installed Doxygen, you can enable the generation of the
 documentation by adding the following option:

@@ -32,10 +32,12 @@ public:
 
     class Private;
 
+    /// Constructs a data set.
     DataSet
     (
     );
 
+    /// Destroys this object.
     virtual
     ~DataSet
     (
@@ -75,13 +77,17 @@ public:
 
 private:
 
+    /// \cond INTERNAL
     Private*
     d_ptr;
+    /// \endcond
 
 };
 
+/// Alias for a managed data set with shared ownership.
 using SharedDataSet = Shared<DataSet>;
 
+/// Alias for create_shared<DataSet>().
 static
 SharedDataSet
 (&create_shared_data_set)
@@ -91,10 +97,12 @@ SharedDataSet
 
 }
 
+/// \cond INTERNAL
 SB_DECLARE_CLASS(
     sb::DataSet,
     "sb.DataSet",
     sb::AbstractObject
 )
+/// \endcond
 
 #endif // SB_DATASET_H

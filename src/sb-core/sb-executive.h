@@ -30,10 +30,12 @@ public:
 
     class Private;
 
+    /// Constructs an executive with push policy.
     PushExecutive
     (
     );
 
+    /// Destroys this object.
     virtual
     ~PushExecutive
     (
@@ -57,8 +59,10 @@ public:
 
 private:
 
+    /// \cond INTERNAL
     Private*
     d_ptr;
+    /// \endcond
 
 };
 
@@ -69,10 +73,12 @@ public:
 
     class Private;
 
+    /// Constructs an executive with pull policy.
     PullExecutive
     (
     );
 
+    /// Destroys this object.
     virtual
     ~PullExecutive
     (
@@ -96,8 +102,10 @@ public:
 
 private:
 
+    /// \cond INTERNAL
     Private*
     d_ptr;
+    /// \endcond
 
 };
 
@@ -108,10 +116,12 @@ public:
 
     class Private;
 
+    /// Constructs an executive with push/pull policy.
     PushPullExecutive
     (
     );
 
+    /// Destroys this object.
     virtual
     ~PushPullExecutive
     (
@@ -135,13 +145,16 @@ public:
 
 private:
 
+    /// \cond INTERNAL
     Private*
     d_ptr;
+    /// \endcond
 
 };
 
 }
 
+/// \cond INTERNAL
 SB_DECLARE_CLASS(
     sb::PushExecutive,
     "sb.PushExecutive",
@@ -157,5 +170,6 @@ SB_DECLARE_CLASS(
     "sb.PushPullExecutive",
     sb::AbstractExecutive
 )
+/// \endcond
 
 #endif // SB_EXECUTIVE_H

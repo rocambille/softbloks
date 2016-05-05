@@ -30,10 +30,12 @@ public:
 
     class Private;
 
+    /// Constructs a filter.
     AbstractFilter
     (
     );
 
+    /// Destroys this object.
     virtual
     ~AbstractFilter
     (
@@ -96,13 +98,6 @@ protected:
     );
 
     void
-    set_output_format
-    (
-        sb::Index index_,
-        const ObjectFormat& format_
-    );
-
-    void
     set_data_key_range_mapper
     (
         sb::Index output_,
@@ -125,13 +120,17 @@ protected:
 
 private:
 
+    /// \cond INTERNAL
     Private*
     d_ptr;
+    /// \endcond
 
 };
 
+/// Alias for a managed filter uniquely owned.
 using UniqueFilter = Unique<AbstractFilter>;
 
+/// Alias for create_unique<AbstractFilter>().
 static
 UniqueFilter
 (&create_unique_filter)
@@ -141,10 +140,12 @@ UniqueFilter
 
 }
 
+/// \cond INTERNAL
 SB_DECLARE_CLASS(
     sb::AbstractFilter,
     "sb.AbstractFilter",
     sb::AbstractBlok
 )
+/// \endcond
 
 #endif // SB_ABSTRACTFILTER_H

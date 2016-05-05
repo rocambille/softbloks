@@ -19,6 +19,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #define SB_COREDEFINE_H
 
 #include <sb-global/sb-global.h>
+#include <sb-global/sb-bitmask.h>
 
 #include <algorithm>
 #include <array>
@@ -92,18 +93,36 @@ using DataKeyCollectionMapper = std::function<
     )
 >;
 
-/// \brief This enum describes access modes.
-enum AccessMode
+/// \brief This enum describes a bitmask for access rights.
+///
+/// The applicable operators for this enum are overloaded using
+/// SB_DECLARE_BITMASK_OPERATORS().
+///
+/// \sa BitmaskWrapper.
+enum class AccessRights
 {
-    READ_ONLY   = 0x1, ///< Read-only mode.
-    WRITE_ONLY  = 0x2, ///< Write-only mode.
-    READ_WRITE  = 0x3  ///< Access for both reading and writing.
+
+// empty bitmask
+
+    NONE        = 0,            ///< No access permissions.
+
+// bitmask values
+
+    READ        = 1 << 0,       ///< Read permission.
+    WRITE       = 1 << 1,       ///< Write permission.
+
+// bitwise combinations
+
+    READ_WRITE  = READ | WRITE  ///< Read/write permissions.
+
 };
+
+SB_DECLARE_BITMASK_OPERATORS(sb::AccessRights)
 
 /// \brief The PropertyFormat structure represents the format of an
 /// AbstractObject's property.
 ///
-/// The format includes the type and the access mode of the property.
+/// The format includes the type and the access rights of the property.
 ///
 /// \sa \ref property-system "Softbloks's property system".
 struct PropertyFormat
@@ -113,16 +132,16 @@ struct PropertyFormat
     std::type_index
     type;
 
-    /// This attribute holds the access mode of the property.
-    sb::AccessMode
-    access_mode;
+    /// This attribute holds the access rights of the property.
+    sb::AccessRights
+    access_rights;
 
 };
 
 /// Compares the property formats \a left_ and \a right_.
 ///
 /// The comparison returns \b true if the described properties have the same
-/// types and the same access modes; it returns \b false otherwise.
+/// types and the same access rights; it returns \b false otherwise.
 inline
 bool
 operator==
@@ -134,7 +153,7 @@ operator==
     return (
         left_.type == right_.type
     ) && (
-        left_.access_mode == right_.access_mode
+        left_.access_rights == right_.access_rights
     );
 }
 
@@ -241,18 +260,17 @@ operator>>
                 )
                 {
                     return (
-                        value_to_extract_.first
-                    ) == (
+                        value_to_extract_.first ==
                         source_value_.first
                     ) && (
-                        value_to_extract_.second.type
-                    ) == (
+                        value_to_extract_.second.type ==
                         source_value_.second.type
                     ) && (
-                        value_to_extract_.second.access_mode &
-                        source_value_.second.access_mode
-                    ) == (
-                        value_to_extract_.second.access_mode
+                        sb::bitmask(
+                            value_to_extract_.second.access_rights
+                        ).is_set(
+                            source_value_.second.access_rights
+                        )
                     );
                 }
             ) != source_.properties.end();
@@ -348,7 +366,7 @@ get_properties
 /// This macro declares the class \a type_ as a registerable object for
 /// Softbloks.
 ///
-/// \a type_ must inherit AbstractObject or one of its descendants and
+/// \a type_ must inherit AbstractObject or a derived class and
 /// \a super_class_ must also be a declared object:
 ///
 /// \code{cpp}
@@ -400,10 +418,12 @@ get_properties
 /// \code{cpp}
 /// auto names = sb::get_registered_object_names(
 ///     {{
-///         sb::get_type_name<Foo>() // means "Foo or its descendants"
+///         sb::get_type_name<Foo>() // means "Foo or a derived class"
 ///     }}
 /// ); // contains "Foo" and "Bar"
 /// \endcode
+///
+/// Note that SB_DECLARE_CLASS() must be called outside of any namespace.
 ///
 /// \sa SB_DECLARE_PROPERTIES() and SB_DECLARE_MODULE().
 #define SB_DECLARE_CLASS(type_, name_, super_class_)\
@@ -451,6 +471,16 @@ get_properties
     }
 /// \endcond
 
+/// This macro can be used to declare a property format with \a type_ and
+/// \a access_rights_ associated to \a name_.
+///
+/// The declared property has the type PropertyFormatMap::value_type.
+///
+/// \sa SB_DECLARE_PROPERTIES(), AbstractFilter::set_input_format() and
+/// AbstractSink::set_input_format().
+#define SB_PROPERTY(name_, type_, access_rights_)\
+    {name_, {typeid(type_), access_rights_}}
+
 /// This macro declares properties for the declared object \a type_.
 ///
 /// Property declaration is optional and allows to expose all or part of an
@@ -467,14 +497,12 @@ get_properties
 ///
 ///         this->register_property<int>(
 ///             "declared_property",
-///             sb::READ_WRITE,
 ///             [](){ return 0; },  // reading accessor
 ///             [](const int&){ }   // writing accessor
 ///         );
 ///
 ///         this->register_property<int>(
 ///             "hidden_property",
-///             sb::READ_WRITE,
 ///             [](){ return 0; },  // reading accessor
 ///             [](const int&){ }   // writing accessor
 ///         );
@@ -493,7 +521,7 @@ get_properties
 ///
 /// SB_DECLARE_PROPERTIES(
 ///     Foo,
-///     {"declared_property", {typeid(int), sb::READ_WRITE}}
+///     SB_PROPERTY("declared_property", int, sb::AccessRights::READ_WRITE)
 /// )
 /// \endcode
 ///
@@ -517,7 +545,7 @@ get_properties
 ///             // we want to filter through properties
 ///         },
 ///         {
-///             {"declared_property", {typeid(int), sb::READ_WRITE}}
+///             SB_PROPERTY("declared_property", int, sb::AccessRights::READ_WRITE)
 ///         }
 ///     }
 /// ); // contains "Foo"
@@ -529,11 +557,13 @@ get_properties
 ///             // we want to filter through properties
 ///         },
 ///         {
-///             {"hidden_property", {typeid(int), sb::READ_WRITE}}
+///             SB_PROPERTY("hidden_property", int, sb::AccessRights::READ_WRITE)
 ///         }
 ///     }
 /// ); // DOES NOT contain "Foo" because "hidden_property" was not declared
 /// \endcode
+///
+/// Note that SB_DECLARE_PROPERTIES() must be called outside of any namespace.
 ///
 /// \sa SB_DECLARE_CLASS() and SB_DECLARE_MODULE().
 #define SB_DECLARE_PROPERTIES(type_, ...)\
@@ -549,6 +579,8 @@ get_properties
 /// Modules are useful to encapsulate registration of declared objects in a
 /// shared library, to be dynamically loaded as a plugin in a compatible tool
 /// (e.g. Softrun or Software).
+///
+/// Note that SB_DECLARE_MODULE() must be called outside of any namespace.
 ///
 /// \sa SB_DECLARE_CLASS() and SB_DECLARE_PROPERTIES().
 #define SB_DECLARE_MODULE(descriptor_)\

@@ -350,15 +350,6 @@ AbstractBlok::Private::set_output_count
 }
 
 void
-AbstractBlok::Private::set_output_format
-(
-    Index index_,
-    const ObjectFormat& format_
-)
-{
-}
-
-void
 AbstractBlok::Private::update_outputs_data_key_range
 (
 )

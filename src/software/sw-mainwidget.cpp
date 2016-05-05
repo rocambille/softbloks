@@ -524,7 +524,7 @@ MainWidgetPrivate::create_chooser
                 sb::get_type_name<sb::AbstractSoft>()
             },
             {
-                {"Qt.mainview", {typeid(QWidget*), sb::READ_ONLY}}
+                SB_PROPERTY("Qt.mainview", QWidget*, sb::AccessRights::READ)
             }
         }
     );
@@ -553,7 +553,7 @@ MainWidgetPrivate::create_chooser
 
             // replace it with soft's widget
 
-            auto soft = sb::create_shared_object(
+            auto soft = sb::create_shared_soft(
                 item_->text().toStdString()
             );
 

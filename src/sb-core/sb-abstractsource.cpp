@@ -79,21 +79,6 @@ AbstractSource::set_output_count
 }
 
 void
-AbstractSource::set_output_format
-(
-    Index index_,
-    const ObjectFormat& format_
-)
-{
-    AbstractBlok::Private::from(
-        this
-    )->set_output_format(
-        index_,
-        format_
-    );
-}
-
-void
 AbstractSource::set_data_key_range
 (
     Index output_,

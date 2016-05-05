@@ -148,21 +148,6 @@ AbstractFilter::set_output_count
 }
 
 void
-AbstractFilter::set_output_format
-(
-    Index index_,
-    const ObjectFormat& format_
-)
-{
-    AbstractBlok::Private::from(
-        this
-    )->set_output_format(
-        index_,
-        format_
-    );
-}
-
-void
 AbstractFilter::set_data_key_range_mapper
 (
     Index output_,

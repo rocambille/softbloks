@@ -22,8 +22,75 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sb-core/sb-coredefine.h>
 
-using namespace sb;
+namespace sb
+{
 
+namespace PropertyFormatTest
+{
+
+class PropertyFormatTest : public ::testing::Test
+{
+
+public:
+
+    //virtual
+    //void
+    //SetUp
+    //(
+    //)
+    //override
+    //{
+    //}
+
+    //virtual
+    //void
+    //TearDown
+    //(
+    //)
+    //override
+    //{
+    //}
+
+    static
+    const PropertyFormat
+    foo_property_format;
+
+    static
+    const PropertyFormat
+    bar_property_format;
+
+};
+
+// create test formats
+
+const PropertyFormat PropertyFormatTest::foo_property_format = {
+    typeid(int), sb::AccessRights::READ
+};
+
+const PropertyFormat PropertyFormatTest::bar_property_format = {
+    typeid(std::string), sb::AccessRights::WRITE
+};
+
+TEST_F(
+    PropertyFormatTest,
+    Equality
+)
+{
+    EXPECT_TRUE(
+        PropertyFormatTest::foo_property_format ==
+        PropertyFormatTest::foo_property_format
+    );
+    EXPECT_TRUE(
+        PropertyFormatTest::bar_property_format ==
+        PropertyFormatTest::bar_property_format
+    );
+    EXPECT_FALSE(
+        PropertyFormatTest::foo_property_format ==
+        PropertyFormatTest::bar_property_format
+    );
+}
+
+}
 
 }
 

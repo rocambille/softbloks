@@ -30,10 +30,12 @@ public:
 
     class Private;
 
+    /// Constructs a sink.
     AbstractSink
     (
     );
 
+    /// Destroys this object.
     virtual
     ~AbstractSink
     (
@@ -84,13 +86,17 @@ protected:
 
 private:
 
+    /// \cond INTERNAL
     Private*
     d_ptr;
+    /// \endcond
 
 };
 
+/// Alias for a managed sink uniquely owned.
 using UniqueSink = Unique<AbstractSink>;
 
+/// Alias for create_unique<AbstractSink>().
 static
 UniqueSink
 (&create_unique_sink)
@@ -100,10 +106,12 @@ UniqueSink
 
 }
 
+/// \cond INTERNAL
 SB_DECLARE_CLASS(
     sb::AbstractSink,
     "sb.AbstractSink",
     sb::AbstractBlok
 )
+/// \endcond
 
 #endif // SB_ABSTRACTSINK_H

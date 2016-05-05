@@ -30,10 +30,12 @@ public:
 
     class Private;
 
+    /// Constructs a source.
     AbstractSource
     (
     );
 
+    /// Destroys this object.
     virtual
     ~AbstractSource
     (
@@ -62,13 +64,6 @@ protected:
     );
 
     void
-    set_output_format
-    (
-        sb::Index index_,
-        const ObjectFormat& format
-    );
-
-    void
     set_data_key_range
     (
         sb::Index output_,
@@ -84,13 +79,17 @@ protected:
 
 private:
 
+    /// \cond INTERNAL
     Private*
     d_ptr;
+    /// \endcond
 
 };
 
+/// Alias for a managed source uniquely owned.
 using UniqueSource = Unique<AbstractSource>;
 
+/// Alias for create_unique<AbstractSource>().
 static
 UniqueSource
 (&create_unique_source)
@@ -100,10 +99,12 @@ UniqueSource
 
 }
 
+/// \cond INTERNAL
 SB_DECLARE_CLASS(
     sb::AbstractSource,
     "sb.AbstractSource",
     sb::AbstractBlok
 )
+/// \endcond
 
 #endif // SB_ABSTRACTSOURCE_H

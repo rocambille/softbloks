@@ -26,6 +26,9 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
+/// \brief The AbstractBlok class is the base class for dataflow objects.
+///
+/// A dataflow object can be either a source, a filter or a sink.
 class SB_CORE_API AbstractBlok : public sb::AbstractObject
 {
 
@@ -33,10 +36,12 @@ public:
 
     class Private;
 
+    /// Constructs a blok.
     AbstractBlok
     (
     );
 
+    /// Destroys this object.
     virtual
     ~AbstractBlok
     (
@@ -106,13 +111,17 @@ public:
 
 private:
 
+    /// \cond INTERNAL
     Private*
     d_ptr;
+    /// \endcond
 
 };
 
+/// Alias for a managed blok uniquely owned.
 using UniqueBlok = Unique<AbstractBlok>;
 
+/// Alias for create_unique<AbstractBlok>().
 static
 UniqueBlok
 (&create_unique_blok)
@@ -122,11 +131,12 @@ UniqueBlok
 
 }
 
+/// \cond INTERNAL
 SB_DECLARE_CLASS(
     sb::AbstractBlok,
     "sb.AbstractBlok",
     sb::AbstractObject
 )
-
+/// \endcond
 
 #endif // SB_ABSTRACTBLOK_H

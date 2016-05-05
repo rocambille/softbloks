@@ -70,13 +70,6 @@ public:
     );
 
     void
-    set_output_format
-    (
-        Index index_,
-        const ObjectFormat& format_
-    );
-
-    void
     update_outputs_data_key_range
     (
     );

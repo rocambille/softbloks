@@ -43,19 +43,25 @@ namespace sb
 /// {
 ///     Foo()
 ///     {
-///         // register a property on this instance
+///         // register a property of type int on this instance:
+///         // lambdas are used as examples for the accessors
 ///
-///         this->register_property<int>(
-///             "my_property",
-///             sb::READ_WRITE,
-///             [](){ return 0; },  // reading accessor
-///             [](const int&){ }   // writing accessor
+///         // the reading accessor returns an int
+///         auto reading_accessor = [](){ return 0; };
+///
+///         // the writing accessor takes an int as argument
+///         auto writing_accessor = [](const int&){ };
+///
+///         this->register_property<int>( // the type of the property is int
+///             "my_property",      // the name of the property
+///             reading_accessor,   // the function to read it
+///             writing_accessor    // the function to write it
 ///         );
 ///
 ///         // the property can now be accessed using get() and set()
 ///
-///         this->get<int>("my_property");
-///         this->set<int>("my_property", 42);
+///         this->get<int>("my_property");      // executes reading_accessor
+///         this->set<int>("my_property", 42);  // executes writing_accessor
 ///
 ///         // we don't need it anymore: unregister it
 ///
@@ -84,9 +90,8 @@ namespace sb
 ///         foo->register_property<int>(
 ///             this, // we must provide here an ID to protect the property
 ///             "my_property",
-///             sb::READ_WRITE,
-///             [](){ return 0; },  // reading accessor
-///             [](const int&){ }   // writing accessor
+///             reading_accessor,
+///             writing_accessor
 ///         );
 ///
 ///         ...
@@ -105,20 +110,22 @@ namespace sb
 /// lambda expression or a pointer to member -- bound to an instance using
 /// [std::bind()](http://www.cplusplus.com/reference/functional/bind/).
 ///
-/// \sa register_property() and SB_DECLARE_PROPERTIES().
+/// \sa SB_DECLARE_PROPERTIES().
 class SB_CORE_API AbstractObject
 {
 
 public:
 
-    /// Template alias for a reading accessor.
+    /// Template alias for a reading accessor, i.e. a function returning a
+    /// value of type \a T.
     ///
     /// \sa Set, register_property() and
     /// \ref property-system "Softbloks's property system".
     template<typename T>
     using Get = std::function<T(void)>;
 
-    /// Template alias for a writing accessor.
+    /// Template alias for a writing accessor, i.e. a function taking a value
+    /// of type \a T as argument.
     ///
     /// \sa Get, register_property() and
     /// \ref property-system "Softbloks's property system".
@@ -161,7 +168,6 @@ public:
 
     class Private;
 
-    /// \cond INTERNAL
     // deletion of copy-constructor. copy-constructor for a derived class
     // won't work unless it is explicitly defined and it doesn't call this
     // constructor: by default, copy is disabled
@@ -170,7 +176,6 @@ public:
         const AbstractObject& other_
     )
     = delete;
-    /// \endcond
 
     /// Constructs a Softbloks object.
     AbstractObject
@@ -183,7 +188,6 @@ public:
     (
     );
 
-    /// \cond INTERNAL
     // deletion of operator=. operator= for a derived class won't work unless
     // it is explicitly defined and it doesn't call this operator: by default,
     // copy is disabled
@@ -193,7 +197,6 @@ public:
         const AbstractObject& other_
     )
     = delete;
-    /// \endcond
 
     /// Returns the format of this object.
     ///
@@ -250,9 +253,15 @@ public:
             );
         }
 
-        // check access mode
+        // check access rights
 
-        if((wanted_property.format.access_mode & READ_ONLY) == 0)
+        if(
+            sb::bitmask(
+                wanted_property.format.access_rights
+            ).is_set(
+                sb::AccessRights::READ
+            )
+        )
         {
             throw std::invalid_argument(
                 std::string() +
@@ -263,7 +272,7 @@ public:
             );
         }
 
-        // call is valid
+        // call the accessor
 
         return std::static_pointer_cast< Accessors<T> >(
             wanted_property.accessors
@@ -306,9 +315,15 @@ public:
             );
         }
 
-        // check access mode
+        // check access rights
 
-        if((wanted_property.format.access_mode & WRITE_ONLY) == 0)
+        if(
+            sb::bitmask(
+                wanted_property.format.access_rights
+            ).is_set(
+                sb::AccessRights::WRITE
+            )
+        )
         {
             throw std::invalid_argument(
                 std::string() +
@@ -319,7 +334,7 @@ public:
             );
         }
 
-        // call is valid
+        // call the accessor
 
         std::static_pointer_cast< Accessors<T> >(
             wanted_property.accessors
@@ -327,9 +342,6 @@ public:
     }
 
     /// Registers a property of type \a T called \a name_ on this object.
-    ///
-    /// \a access_mode_ specifies how the property can be accessed: read-only,
-    /// write-only or read and write.
     ///
     /// \a get_ points to a reading accessor -- pass \a nullptr for a
     /// write-only property.
@@ -352,7 +364,6 @@ public:
     (
         void* owner_,
         const std::string& name_,
-        AccessMode access_mode_,
         const Get<T>& get_,
         const Set<T>& set_
     )
@@ -367,10 +378,21 @@ public:
             accessors->get = get_;
             accessors->set = set_;
 
+            sb::AccessRights access_rights = sb::AccessRights::NONE;
+
+            if(get_)
+            {
+                sb::bitmask(access_rights).set(sb::AccessRights::READ);
+            }
+            if(set_)
+            {
+                sb::bitmask(access_rights).set(sb::AccessRights::WRITE);
+            }
+
             Property new_property = {
                 owner_,
                 typeid(T),
-                access_mode_,
+                access_rights,
                 std::static_pointer_cast<void>(
                     accessors
                 )
@@ -406,9 +428,11 @@ protected:
     /// This function overloads register_property().
     ///
     /// Registers a property owned by \a this. This is equivalent to:
-    /// ```
-    /// this->register_property(this, name_, access_mode_, get_, set_);
-    /// ```
+    ///
+    /// \code{cpp}
+    /// this->register_property(this, name_, get_, set_);
+    /// \endcode
+    ///
     /// \sa get(), set(), unregister_property() and
     /// \ref property-system "Softbloks's property system".
     template<typename T>
@@ -417,7 +441,6 @@ protected:
     register_property
     (
         const std::string& name_,
-        AccessMode access_mode_,
         const Get<T>& get_,
         const Set<T>& set_
     )
@@ -425,7 +448,6 @@ protected:
         return this->register_property<T>(
             this,
             name_,
-            access_mode_,
             get_,
             set_
         );
@@ -434,9 +456,11 @@ protected:
     /// This function overloads unregister_property().
     ///
     /// Unregisters a property owned by \a this. This is equivalent to:
-    /// ```
+    ///
+    /// \code{cpp}
     /// this->unregister_property(this, name_);
-    /// ```
+    /// \endcode
+    ///
     /// \sa register_property() and
     /// \ref property-system "Softbloks's property system".
     bool
@@ -506,7 +530,7 @@ private:
 
 };
 
-/// Template alias for a managed object with shared ownership.
+/// Alias for a managed object with shared ownership.
 using SharedObject = Shared<AbstractObject>;
 
 /// Returns a managed pointer to an instance of the object designated by
@@ -555,7 +579,7 @@ create_shared
     );
 }
 
-/// Template alias for a managed object uniquely owned.
+/// Alias for a managed object uniquely owned.
 using UniqueObject = Unique<AbstractObject>;
 
 /// Returns a managed pointer to an instance of the object designated by

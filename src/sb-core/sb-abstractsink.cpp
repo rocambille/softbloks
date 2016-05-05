@@ -41,7 +41,7 @@ AbstractSink::~AbstractSink
 SharedDataSet
 AbstractSink::lock_input
 (
-    size_t index_
+    Index index_
 )
 const
 {
@@ -53,7 +53,7 @@ const
 bool
 AbstractSink::set_input
 (
-    size_t index_,
+    Index index_,
     const SharedDataSet& value_
 )
 {
@@ -66,17 +66,17 @@ AbstractSink::set_input
 }
 
 void
-AbstractSink::set_wanted_indices
+AbstractSink::set_wanted_data_keys
 (
-    size_t input_,
-    const IndexCollection& value_
+    Index input_,
+    const DataKeyCollection& value_
 )
 {
     DataSet::Private::from(
         this->lock_input(
             input_
         )
-    )->set_wanted_indices(
+    )->set_wanted_data_keys(
         value_
     );
 }
@@ -84,7 +84,7 @@ AbstractSink::set_wanted_indices
 void
 AbstractSink::set_input_count
 (
-    size_t value_
+    Size value_
 )
 {
     AbstractBlok::Private::from(
@@ -97,8 +97,8 @@ AbstractSink::set_input_count
 void
 AbstractSink::set_input_count
 (
-    size_t minimum_,
-    size_t maximum_
+    Size minimum_,
+    Size maximum_
 )
 {
     AbstractBlok::Private::from(
@@ -112,7 +112,7 @@ AbstractSink::set_input_count
 void
 AbstractSink::set_input_format
 (
-    size_t index_,
+    Index index_,
     const ObjectFormat& format_
 )
 {

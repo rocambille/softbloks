@@ -32,11 +32,11 @@ Application::Application
     );
     this->setApplicationVersion(
         QString("%1.%2 20%3.%4.%5").
-            arg(SB_VERSION_MAJOR).
-            arg(SB_VERSION_MINOR).
-            arg(SB_BUILD_YEAR).
-            arg(SB_BUILD_MONTH).
-            arg(SB_BUILD_DAY)
+            arg(sb::VERSION_MAJOR).
+            arg(sb::VERSION_MINOR).
+            arg(sb::BUILD_YEAR).
+            arg(sb::BUILD_MONTH).
+            arg(sb::BUILD_DAY)
     );
     this->setWindowIcon(
         QIcon(":/software.svg")

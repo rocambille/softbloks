@@ -30,10 +30,12 @@ public:
 
     class Private;
 
+    /// Constructs a sink.
     AbstractSink
     (
     );
 
+    /// Destroys this object.
     virtual
     ~AbstractSink
     (
@@ -42,22 +44,22 @@ public:
     SharedDataSet
     lock_input
     (
-        size_t index_
+        sb::Index index_
     )
     const;
 
     bool
     set_input
     (
-        size_t index_,
+        sb::Index index_,
         const SharedDataSet& value_
     );
 
     void
-    set_wanted_indices
+    set_wanted_data_keys
     (
-        size_t input_,
-        const IndexCollection& value_
+        sb::Index input_,
+        const DataKeyCollection& value_
     );
 
 protected:
@@ -65,32 +67,36 @@ protected:
     void
     set_input_count
     (
-        size_t value_
+        sb::Size value_
     );
 
     void
     set_input_count
     (
-        size_t minimum_,
-        size_t maximum_
+        sb::Size minimum_,
+        sb::Size maximum_
     );
 
     void
     set_input_format
     (
-        size_t index_,
+        sb::Index index_,
         const ObjectFormat& format_
     );
 
 private:
 
+    /// \cond INTERNAL
     Private*
     d_ptr;
+    /// \endcond
 
 };
 
+/// Alias for a managed sink uniquely owned.
 using UniqueSink = Unique<AbstractSink>;
 
+/// Alias for create_unique<AbstractSink>().
 static
 UniqueSink
 (&create_unique_sink)
@@ -100,10 +106,12 @@ UniqueSink
 
 }
 
+/// \cond INTERNAL
 SB_DECLARE_CLASS(
     sb::AbstractSink,
     "sb.AbstractSink",
     sb::AbstractBlok
 )
+/// \endcond
 
 #endif // SB_ABSTRACTSINK_H

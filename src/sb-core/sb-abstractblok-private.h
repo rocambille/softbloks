@@ -39,76 +39,69 @@ public:
     void
     set_input_count
     (
-        size_t value_
+        Size value_
     );
 
     void
     set_input_count
     (
-        size_t minimum_,
-        size_t maximum_
+        Size minimum_,
+        Size maximum_
     );
 
     void
     set_input_format
     (
-        size_t index_,
+        Size index_,
         const ObjectFormat& format_
     );
 
     void
     set_output_count
     (
-        size_t value_
+        Size value_
     );
 
     void
     set_output_count
     (
-        size_t minimum_,
-        size_t maximum_
+        Size minimum_,
+        Size maximum_
     );
 
     void
-    set_output_format
-    (
-        size_t index_,
-        const ObjectFormat& format_
-    );
-
-    void
-    update_outputs_index_range
+    update_outputs_data_key_range
     (
     );
 
     void
-    update_outputs_defined_indices
+    update_outputs_defined_data_keys
     (
     );
 
     void
-    update_inputs_wanted_indices
+    update_inputs_wanted_data_keys
     (
     );
 
     SharedDataSet
     lock_input
     (
-        size_t index_
+        Index index_
     )
     const;
 
     bool
     set_input
     (
-        size_t index_,
+        Index index_,
         const SharedDataSet& value_
     );
 
     void
     unlink_input
     (
-        size_t index_
+        Index index_
     );
 
     static
@@ -130,10 +123,10 @@ public:
     AbstractBlok*
     q_ptr;
 
-    size_t
+    Size
     minimum_input_count;
 
-    size_t
+    Size
     maximum_input_count;
 
     std::vector<WeakDataSet>
@@ -142,23 +135,23 @@ public:
     std::vector<ObjectFormat>
     inputs_format;
 
-    std::vector<IndexCollectionConverter>
-    wanted_indices_converters;
+    std::vector<DataKeyCollectionMapper>
+    wanted_data_keys_mappers;
 
-    size_t
+    Size
     minimum_output_count;
 
-    size_t
+    Size
     maximum_output_count;
 
     std::vector<SharedDataSet>
     outputs;
 
-    std::vector<IndexRangeConverter>
-    index_range_converters;
+    std::vector<DataKeyRangeMapper>
+    data_key_range_mappers;
 
-    std::vector<IndexCollectionConverter>
-    defined_indices_converters;
+    std::vector<DataKeyCollectionMapper>
+    defined_data_keys_mappers;
 
     UniqueExecutive
     executive;

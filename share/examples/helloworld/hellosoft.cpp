@@ -64,7 +64,6 @@ public:
 
         this->register_property<QWidget*>(
             "Qt.mainview",
-            sb::READ_ONLY,
             std::bind(&HelloSoft::get_widget, this),
             nullptr
         );
@@ -183,7 +182,7 @@ SB_DECLARE_CLASS(
 
 SB_DECLARE_PROPERTIES(
     HelloSoft,
-    {"Qt.mainview", {typeid(QWidget*), sb::READ_ONLY}}
+    SB_PROPERTY("Qt.mainview", QWidget*, sb::AccessRights::READ)
 )
 
 SB_DECLARE_MODULE(hellosoft)

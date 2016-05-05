@@ -32,29 +32,31 @@ public:
 
     class Private;
 
+    /// Constructs a data set.
     DataSet
     (
     );
 
+    /// Destroys this object.
     virtual
     ~DataSet
     (
     );
 
-    IndexRange
-    get_index_range
+    DataKeyRange
+    get_data_key_range
     (
     )
     const;
 
-    IndexCollection
-    get_defined_indices
+    DataKeyCollection
+    get_defined_data_keys
     (
     )
     const;
 
-    IndexCollection
-    get_wanted_indices
+    DataKeyCollection
+    get_wanted_data_keys
     (
     )
     const;
@@ -62,26 +64,30 @@ public:
     SharedData
     get_data
     (
-        double index_
+        DataKey data_key_
     )
     const;
 
     void
     set_data
     (
-        double index_,
+        DataKey data_key_,
         const SharedData& value_
     );
 
 private:
 
+    /// \cond INTERNAL
     Private*
     d_ptr;
+    /// \endcond
 
 };
 
+/// Alias for a managed data set with shared ownership.
 using SharedDataSet = Shared<DataSet>;
 
+/// Alias for create_shared<DataSet>().
 static
 SharedDataSet
 (&create_shared_data_set)
@@ -91,10 +97,12 @@ SharedDataSet
 
 }
 
+/// \cond INTERNAL
 SB_DECLARE_CLASS(
     sb::DataSet,
     "sb.DataSet",
     sb::AbstractObject
 )
+/// \endcond
 
 #endif // SB_DATASET_H

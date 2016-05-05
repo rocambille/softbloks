@@ -30,10 +30,12 @@ public:
 
     class Private;
 
+    /// Constructs an executive with push policy.
     PushExecutive
     (
     );
 
+    /// Destroys this object.
     virtual
     ~PushExecutive
     (
@@ -43,7 +45,7 @@ public:
     void
     on_input_pushed
     (
-        size_t index_
+        sb::Index index_
     )
     override;
 
@@ -51,14 +53,16 @@ public:
     void
     on_output_pulled
     (
-        size_t index_
+        sb::Index index_
     )
     override;
 
 private:
 
+    /// \cond INTERNAL
     Private*
     d_ptr;
+    /// \endcond
 
 };
 
@@ -69,10 +73,12 @@ public:
 
     class Private;
 
+    /// Constructs an executive with pull policy.
     PullExecutive
     (
     );
 
+    /// Destroys this object.
     virtual
     ~PullExecutive
     (
@@ -82,7 +88,7 @@ public:
     void
     on_input_pushed
     (
-        size_t index_
+        sb::Index index_
     )
     override;
 
@@ -90,14 +96,16 @@ public:
     void
     on_output_pulled
     (
-        size_t index_
+        sb::Index index_
     )
     override;
 
 private:
 
+    /// \cond INTERNAL
     Private*
     d_ptr;
+    /// \endcond
 
 };
 
@@ -108,10 +116,12 @@ public:
 
     class Private;
 
+    /// Constructs an executive with push/pull policy.
     PushPullExecutive
     (
     );
 
+    /// Destroys this object.
     virtual
     ~PushPullExecutive
     (
@@ -121,7 +131,7 @@ public:
     void
     on_input_pushed
     (
-        size_t index_
+        sb::Index index_
     )
     override;
 
@@ -129,19 +139,22 @@ public:
     void
     on_output_pulled
     (
-        size_t index_
+        sb::Index index_
     )
     override;
 
 private:
 
+    /// \cond INTERNAL
     Private*
     d_ptr;
+    /// \endcond
 
 };
 
 }
 
+/// \cond INTERNAL
 SB_DECLARE_CLASS(
     sb::PushExecutive,
     "sb.PushExecutive",
@@ -157,5 +170,6 @@ SB_DECLARE_CLASS(
     "sb.PushPullExecutive",
     sb::AbstractExecutive
 )
+/// \endcond
 
 #endif // SB_EXECUTIVE_H

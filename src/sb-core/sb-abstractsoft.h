@@ -23,6 +23,9 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
+/// \brief The AbstractSoft class represents a particular program in a Softbloks environment.
+///
+/// Such programs are designed to run in a Softbloks application (e.g. Softrun or Software).
 class SB_CORE_API AbstractSoft : public sb::AbstractObject
 {
 
@@ -30,10 +33,12 @@ public:
 
     class Private;
 
+    /// Constructs a soft.
     AbstractSoft
     (
     );
 
+    /// Destroys this object.
     virtual
     ~AbstractSoft
     (
@@ -41,13 +46,17 @@ public:
 
 private:
 
+    /// \cond INTERNAL
     Private*
     d_ptr;
+    /// \endcond
 
 };
 
+/// Alias for a managed soft with shared ownership.
 using SharedSoft = Shared<AbstractSoft>;
 
+/// Alias for create_shared<AbstractSoft>().
 static
 SharedSoft
 (&create_shared_soft)
@@ -57,10 +66,12 @@ SharedSoft
 
 }
 
+/// \cond INTERNAL
 SB_DECLARE_CLASS(
     sb::AbstractSoft,
     "sb.AbstractSoft",
     sb::AbstractObject
 )
+/// \endcond
 
 #endif // SB_ABSTRACTSOFT_H

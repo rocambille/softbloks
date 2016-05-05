@@ -21,6 +21,7 @@ configure_file(
 )
 
 sb_add_header_only_target(sb-global
+    sb-bitmask.h
     sb-global.h
     "${CMAKE_CURRENT_BINARY_DIR}/sb-version.h"
 )

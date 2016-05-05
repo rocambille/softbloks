@@ -32,10 +32,12 @@ public:
 
     class Private;
 
+    /// Constructs an executive.
     AbstractExecutive
     (
     );
 
+    /// Destroys this object.
     virtual
     ~AbstractExecutive
     (
@@ -45,7 +47,7 @@ public:
     void
     on_input_pushed
     (
-        size_t index_
+        sb::Index index_
     )
     = 0;
 
@@ -53,7 +55,7 @@ public:
     void
     on_output_pulled
     (
-        size_t index_
+        sb::Index index_
     )
     = 0;
 
@@ -72,13 +74,17 @@ protected:
 
 private:
 
+    /// \cond INTERNAL
     Private*
     d_ptr;
+    /// \endcond
 
 };
 
+/// Alias for a managed executive uniquely owned.
 using UniqueExecutive = Unique<AbstractExecutive>;
 
+/// Alias for create_unique<AbstractExecutive>().
 static
 UniqueExecutive
 (&create_unique_executive)
@@ -88,10 +94,12 @@ UniqueExecutive
 
 }
 
+/// \cond INTERNAL
 SB_DECLARE_CLASS(
     sb::AbstractExecutive,
     "sb.AbstractExecutive",
     sb::AbstractObject
 )
+/// \endcond
 
 #endif // SB_ABSTRACTEXECUTIVE_H

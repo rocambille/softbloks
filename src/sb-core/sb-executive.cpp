@@ -38,7 +38,7 @@ PushExecutive::~PushExecutive
 void
 PushExecutive::on_input_pushed
 (
-    size_t /*index_*/
+    Index /*index_*/
 )
 {
     this->execute();
@@ -47,7 +47,7 @@ PushExecutive::on_input_pushed
 void
 PushExecutive::on_output_pulled
 (
-    size_t /*index_*/
+    Index /*index_*/
 )
 {
 }
@@ -79,7 +79,7 @@ PullExecutive::~PullExecutive
 void
 PullExecutive::on_input_pushed
 (
-    size_t /*index_*/
+    Index /*index_*/
 )
 {
 }
@@ -87,7 +87,7 @@ PullExecutive::on_input_pushed
 void
 PullExecutive::on_output_pulled
 (
-    size_t /*index_*/
+    Index /*index_*/
 )
 {
     this->execute();
@@ -120,7 +120,7 @@ PushPullExecutive::~PushPullExecutive
 void
 PushPullExecutive::on_input_pushed
 (
-    size_t /*index_*/
+    Index /*index_*/
 )
 {
     this->execute();
@@ -129,7 +129,7 @@ PushPullExecutive::on_input_pushed
 void
 PushPullExecutive::on_output_pulled
 (
-    size_t /*index_*/
+    Index /*index_*/
 )
 {
     this->execute();

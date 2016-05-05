@@ -35,7 +35,6 @@ public:
         this->get_output(0)->register_property<std::string>(
             this,
             "text",
-            sb::READ_WRITE,
             std::bind(
                 &HelloSource::get_text, this
             ),
@@ -87,10 +86,10 @@ public:
             0,
             {
                 {
-                    sb::get_object_name<sb::DataSet>()
+                    sb::get_type_name<sb::DataSet>()
                 },
                 {
-                    {"text", {typeid(std::string), sb::READ_ONLY}}
+                    SB_PROPERTY("text", std::string, sb::AccessRights::READ)
                 }
             }
         );
@@ -102,7 +101,6 @@ public:
         this->get_output(0)->register_property<int>(
             this,
             "multiplier",
-            sb::READ_WRITE,
             std::bind(
                 &HelloFilter::get_multiplier, this
             ),
@@ -114,7 +112,6 @@ public:
         this->get_output(0)->register_property<std::string>(
             this,
             "text",
-            sb::READ_ONLY,
             std::bind(
                 &HelloFilter::get_text, this
             ),
@@ -207,10 +204,10 @@ public:
             0,
             {
                 {
-                    sb::get_object_name<sb::DataSet>()
+                    sb::get_type_name<sb::DataSet>()
                 },
                 {
-                    {"text", {typeid(std::string), sb::READ_ONLY}}
+                    SB_PROPERTY("text", std::string, sb::AccessRights::READ)
                 }
             }
         );
@@ -218,7 +215,6 @@ public:
         this->register_property< std::function<void(void)> >(
             this,
             "observer",
-            sb::WRITE_ONLY,
             nullptr,
             std::bind(
                 &HelloSink::register_observer, this, _1

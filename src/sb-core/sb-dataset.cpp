@@ -37,51 +37,51 @@ DataSet::~DataSet
     delete d_ptr;
 }
 
-IndexRange
-DataSet::get_index_range
+DataKeyRange
+DataSet::get_data_key_range
 (
 )
 const
 {
-    return d_ptr->index_range;
+    return d_ptr->data_key_range;
 }
 
-IndexCollection
-DataSet::get_defined_indices
+DataKeyCollection
+DataSet::get_defined_data_keys
 (
 )
 const
 {
-    return d_ptr->defined_indices;
+    return d_ptr->defined_data_keys;
 }
 
-IndexCollection
-DataSet::get_wanted_indices
+DataKeyCollection
+DataSet::get_wanted_data_keys
 (
 )
 const
 {
-    return d_ptr->wanted_indices;
+    return d_ptr->wanted_data_keys;
 }
 
 SharedData
 DataSet::get_data
 (
-    double index_
+    DataKey data_key_
 )
 const
 {
-    return d_ptr->data_map.at(index_);
+    return d_ptr->data_map.at(data_key_);
 }
 
 void
 DataSet::set_data
 (
-    double index_,
+    DataKey data_key_,
     const SharedData& value_
 )
 {
-    d_ptr->data_map.at(index_) = value_;
+    d_ptr->data_map.at(data_key_) = value_;
 }
 
 DataSet::Private::Private
@@ -91,16 +91,16 @@ DataSet::Private::Private
     q_ptr       (q_ptr_),
     source_blok (nullptr)
 {
-    this->set_index_range({{0, 0}});
+    this->set_data_key_range({{0, 0}});
 }
 
 void
-DataSet::Private::set_index_range
+DataSet::Private::set_data_key_range
 (
-    const IndexRange& value_
+    const DataKeyRange& value_
 )
 {
-    this->index_range = value_;
+    this->data_key_range = value_;
 
     for(auto follower : this->followers)
     {
@@ -108,60 +108,60 @@ DataSet::Private::set_index_range
 
         AbstractBlok::Private::from(
             Unmapper::blok(follower)
-        )->update_outputs_index_range();
+        )->update_outputs_data_key_range();
     }
 
-    this->defined_indices.clear();
+    this->defined_data_keys.clear();
 
-    this->defined_indices.push_back(
-        this->index_range[0]
+    this->defined_data_keys.push_back(
+        this->data_key_range[0]
     );
 
-    if(this->index_range[0] != this->index_range[1])
+    if(this->data_key_range[0] != this->data_key_range[1])
     {
-        this->defined_indices.push_back(
-            this->index_range[1]
+        this->defined_data_keys.push_back(
+            this->data_key_range[1]
         );
     }
 
-    this->set_defined_indices(
-        this->defined_indices
+    this->set_defined_data_keys(
+        this->defined_data_keys
     );
 }
 
 void
-DataSet::Private::set_defined_indices
+DataSet::Private::set_defined_data_keys
 (
-    const IndexCollection& value_
+    const DataKeyCollection& value_
 )
 {
-    this->defined_indices = value_;
+    this->defined_data_keys = value_;
 
-    if(this->defined_indices.size() > 0)
+    if(this->defined_data_keys.size() > 0)
     {
-        double front_index =
-            this->defined_indices.front();
+        DataKey front_data_key =
+            this->defined_data_keys.front();
 
-        double back_index =
-            this->defined_indices.back();
+        DataKey back_data_key =
+            this->defined_data_keys.back();
 
-        bool index_range_changed = false;
+        bool data_key_range_changed = false;
 
-        if(front_index < this->index_range[0])
+        if(front_data_key < this->data_key_range[0])
         {
-            this->index_range[0] = front_index;
+            this->data_key_range[0] = front_data_key;
 
-            index_range_changed = true;
+            data_key_range_changed = true;
         }
 
-        if(back_index > this->index_range[1])
+        if(back_data_key > this->data_key_range[1])
         {
-            this->index_range[1] = back_index;
+            this->data_key_range[1] = back_data_key;
 
-            index_range_changed = true;
+            data_key_range_changed = true;
         }
 
-        if(index_range_changed)
+        if(data_key_range_changed)
         {
             for(auto follower : this->followers)
             {
@@ -169,18 +169,18 @@ DataSet::Private::set_defined_indices
 
                 AbstractBlok::Private::from(
                     Unmapper::blok(follower)
-                )->update_outputs_index_range();
+                )->update_outputs_data_key_range();
             }
         }
     }
 
-    this->wanted_indices.clear();
-    this->available_indices.clear();
+    this->wanted_data_keys.clear();
+    this->available_data_keys.clear();
     this->data_map.clear();
 
-    for(double index : this->defined_indices)
+    for(DataKey data_key : this->defined_data_keys)
     {
-        this->data_map[index] = nullptr;
+        this->data_map[data_key] = nullptr;
     }
 
     for(auto follower : this->followers)
@@ -189,23 +189,23 @@ DataSet::Private::set_defined_indices
 
         AbstractBlok::Private::from(
             Unmapper::blok(follower)
-        )->update_outputs_defined_indices();
+        )->update_outputs_defined_data_keys();
     }
 }
 
 void
-DataSet::Private::set_wanted_indices
+DataSet::Private::set_wanted_data_keys
 (
-    const IndexCollection& value_
+    const DataKeyCollection& value_
 )
 {
-    this->wanted_indices = value_;
+    this->wanted_data_keys = value_;
 
     // TODO
 
     AbstractBlok::Private::from(
         this->source_blok
-    )->update_inputs_wanted_indices();
+    )->update_inputs_wanted_data_keys();
 }
 
 DataSet::Private*

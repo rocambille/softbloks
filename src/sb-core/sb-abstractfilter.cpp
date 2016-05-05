@@ -40,7 +40,7 @@ AbstractFilter::~AbstractFilter
 SharedDataSet
 AbstractFilter::lock_input
 (
-    size_t index_
+    Index index_
 )
 const
 {
@@ -52,7 +52,7 @@ const
 bool
 AbstractFilter::set_input
 (
-    size_t index_,
+    Index index_,
     const SharedDataSet& value_
 )
 {
@@ -67,7 +67,7 @@ AbstractFilter::set_input
 SharedDataSet
 AbstractFilter::get_output
 (
-    size_t index_
+    Index index_
 )
 const
 {
@@ -79,7 +79,7 @@ const
 void
 AbstractFilter::set_input_count
 (
-    size_t value_
+    Size value_
 )
 {
     AbstractBlok::Private::from(
@@ -92,8 +92,8 @@ AbstractFilter::set_input_count
 void
 AbstractFilter::set_input_count
 (
-    size_t minimum_,
-    size_t maximum_
+    Size minimum_,
+    Size maximum_
 )
 {
     AbstractBlok::Private::from(
@@ -107,7 +107,7 @@ AbstractFilter::set_input_count
 void
 AbstractFilter::set_input_format
 (
-    size_t index_,
+    Index index_,
     const ObjectFormat& format_
 )
 {
@@ -122,7 +122,7 @@ AbstractFilter::set_input_format
 void
 AbstractFilter::set_output_count
 (
-    size_t value_
+    Size value_
 )
 {
     AbstractBlok::Private::from(
@@ -135,8 +135,8 @@ AbstractFilter::set_output_count
 void
 AbstractFilter::set_output_count
 (
-    size_t minimum_,
-    size_t maximum_
+    Size minimum_,
+    Size maximum_
 )
 {
     AbstractBlok::Private::from(
@@ -148,42 +148,27 @@ AbstractFilter::set_output_count
 }
 
 void
-AbstractFilter::set_output_format
+AbstractFilter::set_data_key_range_mapper
 (
-    size_t index_,
-    const ObjectFormat& format_
+    Index output_,
+    const DataKeyRangeMapper& value_
 )
 {
     AbstractBlok::Private::from(
         this
-    )->set_output_format(
-        index_,
-        format_
-    );
+    )->data_key_range_mappers.at(output_) = value_;
 }
 
 void
-AbstractFilter::set_index_range_converter
+AbstractFilter::set_defined_data_keys_mapper
 (
-    size_t output_,
-    const IndexRangeConverter& value_
+    Index output_,
+    const DataKeyCollectionMapper& value_
 )
 {
     AbstractBlok::Private::from(
         this
-    )->index_range_converters.at(output_) = value_;
-}
-
-void
-AbstractFilter::set_defined_indices_converter
-(
-    size_t output_,
-    const IndexCollectionConverter& value_
-)
-{
-    AbstractBlok::Private::from(
-        this
-    )->defined_indices_converters.at(
+    )->defined_data_keys_mappers.at(
         output_
     ) = (
         value_
@@ -191,15 +176,15 @@ AbstractFilter::set_defined_indices_converter
 }
 
 void
-AbstractFilter::set_wanted_indices_converter
+AbstractFilter::set_wanted_data_keys_mapper
 (
-    size_t input_,
-    const IndexCollectionConverter& value_
+    Index input_,
+    const DataKeyCollectionMapper& value_
 )
 {
     AbstractBlok::Private::from(
         this
-    )->wanted_indices_converters.at(
+    )->wanted_data_keys_mappers.at(
         input_
     ) = (
         value_

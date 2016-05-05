@@ -30,10 +30,12 @@ public:
 
     class Private;
 
+    /// Constructs a source.
     AbstractSource
     (
     );
 
+    /// Destroys this object.
     virtual
     ~AbstractSource
     (
@@ -42,7 +44,7 @@ public:
     SharedDataSet
     get_output
     (
-        size_t index_
+        sb::Index index_
     )
     const;
 
@@ -51,46 +53,43 @@ protected:
     void
     set_output_count
     (
-        size_t value_
+        sb::Size value_
     );
 
     void
     set_output_count
     (
-        size_t minimum_,
-        size_t maximum_
+        sb::Size minimum_,
+        sb::Size maximum_
     );
 
     void
-    set_output_format
+    set_data_key_range
     (
-        size_t index_,
-        const ObjectFormat& format
+        sb::Index output_,
+        const DataKeyRange& value_
     );
 
     void
-    set_index_range
+    set_defined_data_keys
     (
-        size_t output_,
-        const IndexRange& value_
-    );
-
-    void
-    set_defined_indices
-    (
-        size_t output_,
-        const IndexCollection& value_
+        sb::Index output_,
+        const DataKeyCollection& value_
     );
 
 private:
 
+    /// \cond INTERNAL
     Private*
     d_ptr;
+    /// \endcond
 
 };
 
+/// Alias for a managed source uniquely owned.
 using UniqueSource = Unique<AbstractSource>;
 
+/// Alias for create_unique<AbstractSource>().
 static
 UniqueSource
 (&create_unique_source)
@@ -100,10 +99,12 @@ UniqueSource
 
 }
 
+/// \cond INTERNAL
 SB_DECLARE_CLASS(
     sb::AbstractSource,
     "sb.AbstractSource",
     sb::AbstractBlok
 )
+/// \endcond
 
 #endif // SB_ABSTRACTSOURCE_H

@@ -29,7 +29,7 @@ if(BUILD_DOCUMENTATION)
             @ONLY
         )
 
-        add_custom_target(doxygen ALL
+        add_custom_target(doc ALL
             COMMAND ${CMAKE_COMMAND} -E remove_directory "${CMAKE_CURRENT_BINARY_DIR}/html"
             COMMAND ${DOXYGEN_EXECUTABLE} "${CMAKE_CURRENT_BINARY_DIR}/softbloks.doxyfile"
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}

@@ -519,14 +519,11 @@ MainWidgetPrivate::create_chooser
     QListWidget* list_widget = new QListWidget;
 
     auto names = sb::get_registered_object_names(
-        {
-            {
-                sb::get_type_name<sb::AbstractSoft>()
-            },
-            {
-                SB_PROPERTY("Qt.mainview", QWidget*, sb::AccessRights::READ)
-            }
-        }
+        sb::ObjectFormat(sb::ANY_SOFT_FORMAT) <<
+            sb::make_property_format<QWidget*>(
+                "Qt.mainview",
+                sb::AccessRights::READ
+            )
     );
 
     for(auto name : names)

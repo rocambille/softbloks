@@ -54,9 +54,9 @@ version_check
 /// the major and the minor.
 ///
 /// \sa version_check(), VERSION_MAJOR, VERSION_MINOR and BUILD.
-const int VERSION = sb::version_check(
-    sb::VERSION_MAJOR,
-    sb::VERSION_MINOR
+const int VERSION = version_check(
+    VERSION_MAJOR,
+    VERSION_MINOR
 );
 
 /// Constant symbolizing Softbloks's build number.
@@ -65,10 +65,10 @@ const int VERSION = sb::version_check(
 /// respectively the year, the month and the day.
 ///
 /// \sa version_check(), BUILD_YEAR, BUILD_MONTH, BUILD_DAY and VERSION.
-const int BUILD = sb::version_check(
-    sb::BUILD_YEAR,
-    sb::BUILD_MONTH,
-    sb::BUILD_DAY
+const int BUILD = version_check(
+    BUILD_YEAR,
+    BUILD_MONTH,
+    BUILD_DAY
 );
 
 }

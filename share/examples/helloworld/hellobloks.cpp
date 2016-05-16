@@ -17,106 +17,30 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <sb-core/sb-core.h>
 
-using namespace std::placeholders;
-
 class HelloSource : public sb::AbstractSource
 {
+    SB_NAME("HelloSource")
+
+    SB_PROPERTIES({
+        "text",
+        &HelloSource::get_text,
+        &HelloSource::set_text
+    })
+
+    SB_OUTPUTS_FORMAT(
+        sb::get_data_format<std::string>()
+    )
 
 public:
 
-    HelloSource
-    (
-    )
-    {
-        this->set_output_count(1);
-
-        this->text = "Hello World!!!";
-
-        this->get_output(0)->register_property<std::string>(
-            this,
-            "text",
-            std::bind(
-                &HelloSource::get_text, this
-            ),
-            std::bind(
-                &HelloSource::set_text, this, _1
-            )
-        );
-    }
-
-    std::string
-    get_text
-    (
-    )
-    const
-    {
-        return this->text;
-    }
-
+    virtual
     void
-    set_text
-    (
-        const std::string& value_
-    )
-    {
-        this->text = value_;
-
-        this->push_output(0);
-    }
-
-private:
-
-    std::string
-    text;
-
-};
-
-class HelloFilter : public sb::AbstractFilter
-{
-
-public:
-
-    HelloFilter
+    init
     (
     )
+    override
     {
-        this->set_input_count(1);
-
-        this->set_input_format(
-            0,
-            {
-                {
-                    sb::get_type_name<sb::DataSet>()
-                },
-                {
-                    SB_PROPERTY("text", std::string, sb::AccessRights::READ)
-                }
-            }
-        );
-
-        this->set_output_count(1);
-
-        this->multiplier = 1;
-
-        this->get_output(0)->register_property<int>(
-            this,
-            "multiplier",
-            std::bind(
-                &HelloFilter::get_multiplier, this
-            ),
-            std::bind(
-                &HelloFilter::set_multiplier, this, _1
-            )
-        );
-
-        this->get_output(0)->register_property<std::string>(
-            this,
-            "text",
-            std::bind(
-                &HelloFilter::get_text, this
-            ),
-            nullptr
-        );
+        this->set_text("Hello World!!!");
     }
 
     virtual
@@ -126,29 +50,144 @@ public:
     )
     override
     {
-        // update this->text
+        this->push_output();
+    }
 
-        this->text = std::string();
+    std::string
+    get_text
+    (
+    )
+    const
+    {
+        return this->get_output()->get<std::string>("value");
+    }
 
-        for(int i = 0; i < this->multiplier; ++i)
+    void
+    set_text
+    (
+        const std::string& value_
+    )
+    {
+        this->get_output()->set("value", value_);
+
+        this->process();
+    }
+
+};
+
+class HelloSink : public sb::AbstractSink
+{
+
+    SB_NAME("HelloSink")
+
+    SB_PROPERTIES({
+        "text",
+        &HelloSink::get_text
+    },{
+        "notifier",
+        &HelloSink::set_notifier
+    })
+
+    SB_INPUTS_FORMAT(
+        sb::get_data_format<std::string>()
+    )
+
+public:
+
+    virtual
+    void
+    process
+    (
+    )
+    override
+    {
+        if(notifier)
         {
-            this->text.append(
-                this->lock_input(0)->get<std::string>("text")
-            ).append(
-                "\n"
-            );
+            notifier();
+        }
+    }
+
+    std::string
+    get_text
+    (
+    )
+    const
+    {
+        return this->lock_input()->get<std::string>("value");
+    }
+
+    void
+    set_notifier
+    (
+        const std::function<void(void)>& value_
+    )
+    {
+        this->notifier = value_;
+    }
+
+private:
+
+    std::function<void(void)>
+    notifier;
+
+};
+
+class HelloFilter : public sb::AbstractFilter
+{
+
+    SB_NAME("HelloFilter")
+
+    SB_PROPERTIES({
+        "multiplier",
+        &HelloFilter::get_multiplier,
+        &HelloFilter::set_multiplier
+    })
+
+    SB_INPUTS_FORMAT(
+        HelloSource::get_outputs_format()
+    )
+
+    SB_OUTPUTS_FORMAT(
+        HelloSink::get_inputs_format()
+    )
+
+public:
+
+    HelloFilter
+    (
+    ):
+        multiplier(1)
+    {
+    }
+
+    virtual
+    void
+    process
+    (
+    )
+    override
+    {
+        // compute output text
+
+        std::string input_text =
+            this->lock_input()->get<std::string>("value") + '\n';
+
+        std::string output_text = input_text;
+
+        for(int i = 1; i < this->multiplier; ++i)
+        {
+            output_text.append(input_text);
         }
 
-        // remove last "\n"
+        // remove last '\n'
 
-        if(this->text.size() > 0)
-        {
-            this->text.pop_back();
-        }
+        output_text.pop_back();
 
-        // push data
+        // update output data
 
-        this->push_output(0);
+        this->get_output()->set("value", output_text);
+
+        this->push_output();
     }
 
     int
@@ -171,109 +210,18 @@ public:
         this->process();
     }
 
-    std::string
-    get_text
-    (
-    )
-    const
-    {
-        return this->text;
-    }
-
 private:
 
     int
     multiplier;
 
-    std::string
-    text;
-
 };
 
-class HelloSink : public sb::AbstractSink
+SB_MODULE(hellobloks)
 {
+    sb::register_data<std::string>();
 
-public:
-
-    HelloSink
-    (
-    )
-    {
-        this->set_input_count(1);
-        this->set_input_format(
-            0,
-            {
-                {
-                    sb::get_type_name<sb::DataSet>()
-                },
-                {
-                    SB_PROPERTY("text", std::string, sb::AccessRights::READ)
-                }
-            }
-        );
-
-        this->register_property< std::function<void(void)> >(
-            this,
-            "observer",
-            nullptr,
-            std::bind(
-                &HelloSink::register_observer, this, _1
-            )
-        );
-    }
-
-    virtual
-    void
-    process
-    (
-    )
-    override
-    {
-        this->pull_input(0);
-
-        for(auto notify : observers)
-        {
-            notify();
-        }
-    }
-
-    void
-    register_observer
-    (
-        const std::function<void(void)>& notify_
-    )
-    {
-        this->observers.push_back(notify_);
-
-        notify_();
-    }
-
-private:
-
-    std::vector< std::function<void(void)> >
-    observers;
-
-};
-
-SB_DECLARE_CLASS(
-    HelloSource,
-    "HelloSource",
-    sb::AbstractSource
-)
-SB_DECLARE_CLASS(
-    HelloFilter,
-    "HelloFilter",
-    sb::AbstractFilter
-)
-SB_DECLARE_CLASS(
-    HelloSink,
-    "HelloSink",
-    sb::AbstractSink
-)
-
-SB_DECLARE_MODULE(hellobloks)
-{
-    sb::register_object<HelloSource>();
-    sb::register_object<HelloFilter>();
-    sb::register_object<HelloSink>();
+    sb::register_blok<HelloSource>();
+    sb::register_blok<HelloFilter>();
+    sb::register_blok<HelloSink>();
 }

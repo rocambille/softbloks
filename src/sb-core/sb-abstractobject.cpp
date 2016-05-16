@@ -103,82 +103,44 @@ AbstractObject::get_instance_format
 )
 const
 {
-    PropertyFormatMap property_format;
-
-    for(auto property : *(this->properties))
-    {
-        property_format.emplace(
-            property.first,
-            property.second.format
-        );
-    }
-
-    ObjectFormat format = {
-        d_ptr->type_names,
-        property_format
-    };
-
-    return format;
-}
-
-bool
-AbstractObject::unregister_property
-(
-    void* owner_,
-    const std::string& name_
-)
-{
-    bool unregistered = false;
-
-    // check if name_ is known and if owner_ matches
-
-    auto find_result = this->properties->find(name_);
-
-    if(
-        find_result != this->properties->end() &&
-        find_result->second.owner == owner_
-    )
-    {
-        // erase property
-
-        this->properties->erase(find_result);
-
-        unregistered = true;
-    }
-
-    return unregistered;
-}
-
-bool
-AbstractObject::unregister_property
-(
-    const std::string& name_
-)
-{
-    return this->unregister_property(
-        this,
-        name_
+    return Global::object_format_map.at(
+        d_ptr->type_names[0]
     );
-}
-
-void
-AbstractObject::set_type_names
-(
-    AbstractObject* this_,
-    std::vector<std::string> names_
-)
-{
-    AbstractObject::Private::from(
-        this_
-    )->type_names = names_;
 }
 
 void
 AbstractObject::init
 (
-    AbstractObject* this_
+    AbstractObject* this_,
+    const StringSequence& type_names_,
+    const PropertySequence& properties_
 )
 {
+    AbstractObject::Private::from(
+        this_
+    )->type_names = type_names_;
+
+    for(auto property : properties_)
+    {
+        if(
+            ! this_->properties->emplace(
+                property.name,
+                property
+            ).second
+        )
+        {
+            // insertion failed, throw an exception
+            throw std::invalid_argument(
+                std::string() +
+                "sb::AbstractBlok::init: " +
+                "failed to insert property " +
+                property.name +
+                "; a property with that name already exists"
+            );
+        }
+    }
+
+    this_->init();
 }
 
 void
@@ -295,7 +257,7 @@ sb::get_registered_object_names
 
     for(auto object : Global::object_format_map)
     {
-        if(Unmapper::format(object) >> filter_)
+        if(Unmapper::format(object).includes(filter_))
         {
             registered_objects.push_back(
                 Unmapper::name(object)

@@ -20,7 +20,6 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb-core/sb-abstractsource-private.h>
 
 #include <sb-core/sb-abstractblok-private.h>
-#include <sb-core/sb-dataset-private.h>
 
 using namespace sb;
 
@@ -38,7 +37,7 @@ AbstractSource::~AbstractSource
     delete d_ptr;
 }
 
-SharedDataSet
+SharedData
 AbstractSource::get_output
 (
     Index index_
@@ -48,66 +47,6 @@ const
     return AbstractBlok::Private::from(
         this
     )->outputs.at(index_);
-}
-
-void
-AbstractSource::set_output_count
-(
-    Size value_
-)
-{
-    AbstractBlok::Private::from(
-        this
-    )->set_output_count(
-        value_
-    );
-}
-
-void
-AbstractSource::set_output_count
-(
-    Size minimum_,
-    Size maximum_
-)
-{
-    AbstractBlok::Private::from(
-        this
-    )->set_output_count(
-        minimum_,
-        maximum_
-    );
-}
-
-void
-AbstractSource::set_data_key_range
-(
-    Index output_,
-    const DataKeyRange& value_
-)
-{
-    DataSet::Private::from(
-        this->get_output(
-            output_
-        )
-    )->set_data_key_range(
-        value_
-    );
-}
-
-void
-AbstractSource::set_defined_data_keys
-(
-    Index output_,
-    const DataKeyCollection& value_
-)
-{
-    DataSet::Private::from(
-        this->get_output(
-            output_
-        )
-    )->set_defined_data_keys(
-        value_
-    );
 }
 
 AbstractSource::Private::Private

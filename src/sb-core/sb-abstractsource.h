@@ -23,8 +23,12 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
-class SB_CORE_API AbstractSource : public sb::AbstractBlok
+class SB_CORE_API AbstractSource : public AbstractBlok
 {
+
+    SB_SELF(sb::AbstractSource)
+
+    SB_NAME("sb.AbstractSource")
 
 public:
 
@@ -41,41 +45,12 @@ public:
     (
     );
 
-    SharedDataSet
+    SharedData
     get_output
     (
-        sb::Index index_
+        Index index_ = 0
     )
     const;
-
-protected:
-
-    void
-    set_output_count
-    (
-        sb::Size value_
-    );
-
-    void
-    set_output_count
-    (
-        sb::Size minimum_,
-        sb::Size maximum_
-    );
-
-    void
-    set_data_key_range
-    (
-        sb::Index output_,
-        const DataKeyRange& value_
-    );
-
-    void
-    set_defined_data_keys
-    (
-        sb::Index output_,
-        const DataKeyCollection& value_
-    );
 
 private:
 
@@ -98,13 +73,5 @@ UniqueSource
 ) = create_unique<AbstractSource>;
 
 }
-
-/// \cond INTERNAL
-SB_DECLARE_CLASS(
-    sb::AbstractSource,
-    "sb.AbstractSource",
-    sb::AbstractBlok
-)
-/// \endcond
 
 #endif // SB_ABSTRACTSOURCE_H

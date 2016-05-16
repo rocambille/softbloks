@@ -20,8 +20,11 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sb-core/sb-abstractobject.h>
 
+#include <sb-core/sb-abstractdata.h>
 #include <sb-core/sb-abstractexecutive.h>
-#include <sb-core/sb-dataset.h>
+#include <sb-core/sb-blokformat.h>
+
+#include <type_traits>
 
 namespace sb
 {
@@ -29,8 +32,31 @@ namespace sb
 /// \brief The AbstractBlok class is the base class for dataflow objects.
 ///
 /// A dataflow object can be either a source, a filter or a sink.
-class SB_CORE_API AbstractBlok : public sb::AbstractObject
+class SB_CORE_API AbstractBlok : public AbstractObject
 {
+
+    SB_SELF(sb::AbstractBlok)
+
+    SB_NAME("sb.AbstractBlok")
+
+public:
+    static
+    ObjectFormatSequence
+    get_inputs_format
+    (
+    )
+    {
+        return { };
+    }
+
+    static
+    ObjectFormatSequence
+    get_outputs_format
+    (
+    )
+    {
+        return { };
+    }
 
 public:
 
@@ -47,37 +73,13 @@ public:
     (
     );
 
-    sb::Size
-    get_minimum_input_count
-    (
-    )
-    const;
-
-    sb::Size
-    get_maximum_input_count
-    (
-    )
-    const;
-
-    sb::Size
+    Size
     get_input_count
     (
     )
     const;
 
-    sb::Size
-    get_minimum_output_count
-    (
-    )
-    const;
-
-    sb::Size
-    get_maximum_output_count
-    (
-    )
-    const;
-
-    sb::Size
+    Size
     get_output_count
     (
     )
@@ -92,13 +94,13 @@ public:
     void
     pull_input
     (
-        sb::Index index_
+        Index index_ = 0
     );
 
     void
     push_output
     (
-        sb::Index index_
+        Index index_ = 0
     );
 
     virtual
@@ -112,10 +114,31 @@ public:
 private:
 
     /// \cond INTERNAL
+    static
+    void
+    init
+    (
+        AbstractBlok* this_,
+        const ObjectFormatSequence& inputs_format_,
+        const ObjectFormatSequence& outputs_format_
+    );
+    /// \endcond
+
+private:
+
+    /// \cond INTERNAL
     Private*
     d_ptr;
     /// \endcond
 
+};
+
+/// Constant value representing the format of a valid blok (inheriting
+/// AbstractBlok).
+const ObjectFormat
+ANY_BLOK_FORMAT = {
+    AbstractBlok::get_type_names(),
+    AbstractBlok::get_properties_format()
 };
 
 /// Alias for a managed blok uniquely owned.
@@ -129,14 +152,146 @@ UniqueBlok
     const std::string& name_
 ) = create_unique<AbstractBlok>;
 
+template<typename T>
+inline
+bool
+register_blok
+(
+)
+{
+    auto factory = (
+        []
+        (
+        )
+        {
+            auto instance = UniqueBlok(
+                new T,
+                []
+                (
+                    AbstractObject* ptr_
+                )
+                {
+                    delete ptr_;
+
+                    AbstractObject::forget(ptr_);
+                }
+            );
+
+            AbstractBlok::init(
+                instance.get(),
+                T::get_inputs_format(),
+                T::get_outputs_format()
+            );
+
+            AbstractObject::init(
+                instance.get(),
+                T::get_type_names(),
+                T::get_properties()
+            );
+
+            return static_move_cast<AbstractObject>(
+                std::move(instance)
+            );
+        }
+    );
+
+    return AbstractObject::register_object(
+        {
+            T::get_type_names(),
+            T::get_properties_format()
+        },
+        factory
+    );
 }
 
-/// \cond INTERNAL
-SB_DECLARE_CLASS(
-    sb::AbstractBlok,
-    "sb.AbstractBlok",
-    sb::AbstractObject
+SB_CORE_API
+bool
+connect
+(
+    AbstractBlok* left_,
+    Index left_index_,
+    AbstractBlok* right_,
+    Index right_index_
+);
+
+template<typename T, typename U>
+inline
+bool
+connect(
+    const T& left_,
+    Index left_index_,
+    U& right_,
+    Index right_index_
 )
-/// \endcond
+{
+    return connect(
+        left_.get(),
+        left_index_,
+        right_.get(),
+        right_index_
+    );
+}
+
+inline
+bool
+connect
+(
+    AbstractBlok* left_,
+    AbstractBlok* right_
+)
+{
+    return connect(left_, 0, right_, 0);
+}
+
+template<typename T, typename U>
+inline
+bool
+connect(
+    const T& left_,
+    U& right_
+)
+{
+    return connect(left_.get(), 0, right_.get(), 0);
+}
+
+}
+
+#define SB_INPUTS_FORMAT(...)\
+    public:\
+        static\
+        sb::ObjectFormatSequence\
+        get_inputs_format\
+        (\
+        )\
+        {\
+            static_assert(\
+                std::is_same<sb::AbstractFilter, Self>::value ||\
+                std::is_base_of<sb::AbstractFilter, Self>::value ||\
+                std::is_same<sb::AbstractSink, Self>::value ||\
+                std::is_base_of<sb::AbstractSink, Self>::value,\
+                "Inputs format declared on a type not derived from "\
+                "sb::AbstractFilter nor sb::AbstractSink"\
+            );\
+            return sb::make_object_format_sequence(__VA_ARGS__);\
+        }
+
+#define SB_OUTPUTS_FORMAT(...)\
+    public:\
+        static\
+        sb::ObjectFormatSequence\
+        get_outputs_format\
+        (\
+        )\
+        {\
+            static_assert(\
+                std::is_same<sb::AbstractFilter, Self>::value ||\
+                std::is_base_of<sb::AbstractFilter, Self>::value ||\
+                std::is_same<sb::AbstractSource, Self>::value ||\
+                std::is_base_of<sb::AbstractSource, Self>::value,\
+                "Outputs format declared on a type not derived from "\
+                "sb::AbstractFilter nor sb::AbstractSource"\
+            );\
+            return sb::make_object_format_sequence(__VA_ARGS__);\
+        }
 
 #endif // SB_ABSTRACTBLOK_H

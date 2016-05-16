@@ -57,10 +57,10 @@ if(BUILD_TESTING)
 
     sb_add_test(sb-core-test
         sb-abstractobject-test.h
+        sb-coredefine-test.h
         sb-core-test.cpp
         sb-fixtures.h
         sb-objectformat-test.h
         sb-propertyformat-test.h
-        sb-static_move_cast-test.h
     )
 endif()

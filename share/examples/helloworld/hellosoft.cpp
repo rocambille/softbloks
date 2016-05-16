@@ -38,41 +38,38 @@ struct SIGNAL
 class HelloSoft : public sb::AbstractSoft
 {
 
+    SB_NAME("HelloSoft")
+
+    SB_PROPERTIES({
+        "Qt.mainview",
+        &HelloSoft::get_qt_mainview
+    })
+
 public:
 
     HelloSoft
     (
     )
     {
-        this->source = sb::create_unique_source("HelloSource");
-
-        this->filter = sb::create_unique_filter("HelloFilter");
-
-        this->filter->set_input(
-            0,
-            this->source->get_output(0)
+        this->source = sb::create_unique_blok(
+            "HelloSource"
+        );
+        this->filter = sb::create_unique_blok(
+            "HelloFilter"
+        );
+        this->sink = sb::create_unique_blok(
+            "HelloSink"
         );
 
-        this->sink = sb::create_unique_sink("HelloSink");
-
-        this->sink->set_input(
-            0,
-            this->filter->get_output(0)
-        );
-
-        this->sink->process();
-
-        this->register_property<QWidget*>(
-            "Qt.mainview",
-            std::bind(&HelloSoft::get_widget, this),
-            nullptr
-        );
+        sb::connect(this->source, this->filter);
+        sb::connect(this->filter, this->sink);
     }
 
     QWidget*
-    get_widget
+    get_qt_mainview
     (
     )
+    const
     {
         QBoxLayout* layout = new QHBoxLayout;
 
@@ -80,7 +77,7 @@ public:
 
         QLineEdit* line_edit = new QLineEdit(
             QString::fromStdString(
-                this->source->get_output(0)->get<std::string>(
+                this->source->get<std::string>(
                     "text"
                 )
             )
@@ -93,7 +90,7 @@ public:
                 const QString& text_
             )
             {
-                this->source->get_output(0)->set<std::string>(
+                this->source->set(
                     "text",
                     text_.toStdString()
                 );
@@ -107,8 +104,9 @@ public:
         // create filter's widget
 
         QSpinBox* spin_box = new QSpinBox;
+        spin_box->setRange(1, 40);
         spin_box->setValue(
-            this->filter->get_output(0)->get<int>(
+            this->filter->get<int>(
                 "multiplier"
             )
         );
@@ -120,7 +118,7 @@ public:
                 int value_
             )
             {
-                this->filter->get_output(0)->set<int>(
+                this->filter->set(
                     "multiplier",
                     value_
                 );
@@ -135,21 +133,26 @@ public:
 
         QLabel* label = new QLabel;
 
-        this->sink->set< std::function<void(void)> >(
-            "observer",
+        std::function<void(void)> label_updater =
             [this, label]
             (
             )
             {
                 label->setText(
                     QString::fromStdString(
-                        this->sink->lock_input(0)->get<std::string>(
+                        this->sink->get<std::string>(
                             "text"
                         )
                     )
                 );
-            }
+            };
+
+        this->sink->set(
+            "notifier",
+            label_updater
         );
+
+        label_updater();
 
         layout->addWidget(label, 1, Qt::AlignLeft | Qt::AlignVCenter);
 
@@ -163,29 +166,18 @@ public:
 
 private:
 
-    sb::UniqueSource
+    sb::UniqueBlok
     source;
 
-    sb::UniqueFilter
+    sb::UniqueBlok
     filter;
 
-    sb::UniqueSink
+    sb::UniqueBlok
     sink;
 
 };
 
-SB_DECLARE_CLASS(
-    HelloSoft,
-    "HelloSoft",
-    sb::AbstractSoft
-)
-
-SB_DECLARE_PROPERTIES(
-    HelloSoft,
-    SB_PROPERTY("Qt.mainview", QWidget*, sb::AccessRights::READ)
-)
-
-SB_DECLARE_MODULE(hellosoft)
+SB_MODULE(hellosoft)
 {
     sb::register_object<HelloSoft>();
 }

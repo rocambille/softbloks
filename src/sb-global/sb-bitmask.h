@@ -31,7 +31,7 @@ namespace sb
 /// with bitwise exclusive values, for which the wrapper provides an object
 /// interface with convenient methods for bitmasks. Note that the enumeration
 /// should declare the necessary bitwise operators, e.g. using
-/// SB_DECLARE_BITMASK_OPERATORS().
+/// SB_BITMASK_OPERATORS().
 ///
 /// An appropriate bitmask wrapper can be constructed with the function
 /// bitmask():
@@ -43,7 +43,7 @@ namespace sb
 ///     BAR = 1 << 1
 /// };
 ///
-/// SB_DECLARE_BITMASK_OPERATORS(MyBitmask)
+/// SB_BITMASK_OPERATORS(MyBitmask)
 ///
 /// ...
 ///
@@ -63,7 +63,6 @@ namespace sb
 ///
 /// sb::bitmask(b).is_set(MyBitmask::FOO); // returns false
 /// sb::bitmask(b).is_set(MyBitmask::BAR); // returns true
-///
 /// \endcode
 ///
 /// \sa make_empty_bitmask().
@@ -177,6 +176,7 @@ public:
 ///
 /// \sa make_empty_bitmask().
 template<typename T>
+inline
 BitmaskWrapper<T>
 bitmask
 (
@@ -197,6 +197,7 @@ template<
     // T should be an enum, disable it otherwise
     typename = typename std::enable_if<std::is_enum<T>::value>::type
 >
+inline
 T
 make_empty_bitmask
 (
@@ -211,8 +212,8 @@ make_empty_bitmask
 /// (&, |, ^, ~, &=, |= and ^=).
 ///
 /// \sa BitmaskWrapper.
-#define SB_DECLARE_BITMASK_OPERATORS(bitmask_)\
-static \
+#define SB_BITMASK_OPERATORS(bitmask_)\
+inline \
 bitmask_ \
 operator&\
 (\
@@ -226,7 +227,7 @@ operator&\
     );\
 }\
 \
-static \
+inline \
 bitmask_ \
 operator|\
 (\
@@ -240,7 +241,7 @@ operator|\
     );\
 }\
 \
-static \
+inline \
 bitmask_ \
 operator^\
 (\
@@ -254,7 +255,7 @@ operator^\
     );\
 }\
 \
-static \
+inline \
 bitmask_ \
 operator~\
 (\
@@ -266,7 +267,7 @@ operator~\
     );\
 }\
 \
-static \
+inline \
 sb::BitmaskWrapper<bitmask_>/*implicitly check bitmask_ is an enum*/\
 operator&=\
 (\
@@ -279,7 +280,7 @@ operator&=\
     return left_;\
 }\
 \
-static \
+inline \
 sb::BitmaskWrapper<bitmask_>/*implicitly check bitmask_ is an enum*/\
 operator|=\
 (\
@@ -292,7 +293,7 @@ operator|=\
     return left_;\
 }\
 \
-static \
+inline \
 sb::BitmaskWrapper<bitmask_>/*implicitly check bitmask_ is an enum*/\
 operator^=\
 (\

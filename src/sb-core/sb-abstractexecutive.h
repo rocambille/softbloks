@@ -25,8 +25,12 @@ namespace sb
 
 class AbstractBlok;
 
-class SB_CORE_API AbstractExecutive : public sb::AbstractObject
+class SB_CORE_API AbstractExecutive : public AbstractObject
 {
+
+    SB_SELF(sb::AbstractExecutive)
+
+    SB_NAME("sb.AbstractExecutive")
 
 public:
 
@@ -47,7 +51,7 @@ public:
     void
     on_input_pushed
     (
-        sb::Index index_
+        Index index_
     )
     = 0;
 
@@ -55,7 +59,7 @@ public:
     void
     on_output_pulled
     (
-        sb::Index index_
+        Index index_
     )
     = 0;
 
@@ -93,13 +97,5 @@ UniqueExecutive
 ) = create_unique<AbstractExecutive>;
 
 }
-
-/// \cond INTERNAL
-SB_DECLARE_CLASS(
-    sb::AbstractExecutive,
-    "sb.AbstractExecutive",
-    sb::AbstractObject
-)
-/// \endcond
 
 #endif // SB_ABSTRACTEXECUTIVE_H

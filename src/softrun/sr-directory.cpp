@@ -137,13 +137,13 @@ const
     return result;
 }
 
-Directory::EntryList
-Directory::get_entry_list
+Directory::EntrySequence
+Directory::get_entry_sequence
 (
 )
 const
 {
-    EntryList entry_list;
+    EntrySequence entry_sequence;
 
     WIN32_FIND_DATAA find_data;
     HANDLE hFind = FindFirstFileA(
@@ -153,13 +153,13 @@ const
 
     if(hFind != INVALID_HANDLE_VALUE)
     {
-        entry_list.push_back(
+        entry_sequence.push_back(
             find_data.cFileName
         );
 
         while(FindNextFileA(hFind, &find_data) != FALSE)
         {
-            entry_list.push_back(
+            entry_sequence.push_back(
                 find_data.cFileName
             );
         }
@@ -168,11 +168,11 @@ const
     FindClose(hFind);
 
     std::sort(
-        entry_list.begin(),
-        entry_list.end()
+        entry_sequence.begin(),
+        entry_sequence.end()
     );
 
-    return entry_list;
+    return entry_sequence;
 }
 
 #else // SB_OS_WIN
@@ -200,13 +200,13 @@ const
     return result;
 }
 
-Directory::EntryList
-Directory::get_entry_list
+Directory::EntrySequence
+Directory::get_entry_sequence
 (
 )
 const
 {
-    EntryList entry_list;
+    EntrySequence entry_sequence;
 
     DIR* dir = opendir(d_ptr->path.c_str());
 
@@ -216,7 +216,7 @@ const
 
         while(entry)
         {
-            entry_list.push_back(entry->d_name);
+            entry_sequence.push_back(entry->d_name);
 
             entry = readdir(dir);
         }
@@ -225,11 +225,11 @@ const
     }
 
     std::sort(
-        entry_list.begin(),
-        entry_list.end()
+        entry_sequence.begin(),
+        entry_sequence.end()
     );
 
-    return entry_list;
+    return entry_sequence;
 }
 
 #endif // SB_OS_WIN

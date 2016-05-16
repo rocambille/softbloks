@@ -15,14 +15,30 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef SB_STATIC_POINTER_CAST_TEST_H
-#define SB_STATIC_POINTER_CAST_TEST_H
+#ifndef SB_BLOKFORMAT_H
+#define SB_BLOKFORMAT_H
 
-#include <gtest/gtest.h>
+#include <sb-core/sb-objectformat.h>
 
-#include <sb-core/sb-coredefine.h>
+namespace sb
+{
 
-using namespace sb;
+/// \brief The ObjectFormat structure describes the format of an
+/// AbstractObject.
+///
+/// The format includes the type name of an object, the type names of its base
+/// classes and a list of properties.
+struct BlokFormat : ObjectFormat
+{
 
+    ObjectFormatSequence
+    inputs_format;
 
-#endif // SB_STATIC_POINTER_CAST_TEST_H
+    ObjectFormatSequence
+    outputs_format;
+
+};
+
+}
+
+#endif // SB_BLOKFORMAT_H

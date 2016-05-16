@@ -26,8 +26,12 @@ namespace sb
 /// \brief The AbstractSoft class represents a particular program in a Softbloks environment.
 ///
 /// Such programs are designed to run in a Softbloks application (e.g. Softrun or Software).
-class SB_CORE_API AbstractSoft : public sb::AbstractObject
+class SB_CORE_API AbstractSoft : public AbstractObject
 {
+
+    SB_SELF(sb::AbstractSoft)
+
+    SB_NAME("sb.AbstractSoft")
 
 public:
 
@@ -53,6 +57,14 @@ private:
 
 };
 
+/// Constant value representing the format of a valid soft (inheriting
+/// AbstractSoft).
+const ObjectFormat
+ANY_SOFT_FORMAT = {
+    AbstractSoft::get_type_names(),
+    AbstractSoft::get_properties_format()
+};
+
 /// Alias for a managed soft with shared ownership.
 using SharedSoft = Shared<AbstractSoft>;
 
@@ -65,13 +77,5 @@ SharedSoft
 ) = create_shared<AbstractSoft>;
 
 }
-
-/// \cond INTERNAL
-SB_DECLARE_CLASS(
-    sb::AbstractSoft,
-    "sb.AbstractSoft",
-    sb::AbstractObject
-)
-/// \endcond
 
 #endif // SB_ABSTRACTSOFT_H

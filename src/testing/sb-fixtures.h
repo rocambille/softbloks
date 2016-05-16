@@ -33,11 +33,10 @@ using InstantiableTypes = ::testing::Types<
     AbstractSink,
     AbstractSoft,
     AbstractSource,
-    DataSet,
+    Data<int>,
     PushExecutive,
     PullExecutive,
-    PushPullExecutive,
-    AbstractObject
+    PushPullExecutive
 >;
 
 class NoRegisteredObject : public ::testing::Test

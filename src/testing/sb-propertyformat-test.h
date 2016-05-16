@@ -20,7 +20,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <gtest/gtest.h>
 
-#include <sb-core/sb-coredefine.h>
+#include <sb-core/sb-propertyformat.h>
 
 namespace sb
 {
@@ -32,6 +32,47 @@ class PropertyFormatTest : public ::testing::Test
 {
 
 public:
+
+    static
+    void
+    SetUpTestCase
+    (
+    )
+    {
+        // test each Property constructors compiles
+
+        /*Property foo1(
+            "foo",
+            static_get_int,
+            static_set_int
+        );
+
+        Property foo2(
+            "foo",
+            &PropertyFormatTest::get_int,
+            &PropertyFormatTest::set_int
+        );
+
+        Property foo3(
+            "foo",
+            static_get_int
+        );
+
+        Property foo4(
+            "foo",
+            &PropertyFormatTest::get_int
+        );
+
+        Property foo5(
+            "foo",
+            static_set_int
+        );
+
+        Property foo6(
+            "foo",
+            &PropertyFormatTest::set_int
+        );*/
+    }
 
     //virtual
     //void
@@ -51,42 +92,73 @@ public:
     //{
     //}
 
-    static
-    const PropertyFormat
-    foo_property_format;
+    int
+    get_int
+    (
+    )
+    const
+    {
+        return 0;
+    }
 
     static
-    const PropertyFormat
-    bar_property_format;
+    int
+    static_get_int
+    (
+        const PropertyFormatTest& /*this_*/
+    )
+    {
+        return 0;
+    }
+
+    void
+    set_int
+    (
+        const int& /*value_*/
+    )
+    {
+    }
+
+    static
+    void
+    static_set_int
+    (
+        PropertyFormatTest& /*this_*/,
+        const int& /*value_*/
+    )
+    {
+    }
 
 };
 
-// create test formats
-
-const PropertyFormat PropertyFormatTest::foo_property_format = {
-    typeid(int), sb::AccessRights::READ
-};
-
-const PropertyFormat PropertyFormatTest::bar_property_format = {
-    typeid(std::string), sb::AccessRights::WRITE
-};
-
-TEST_F(
+TEST(
     PropertyFormatTest,
     Equality
 )
 {
+
+    // create test formats
+
+    PropertyFormat foo_property_format =
+        make_property_format<int>(
+            "foo", AccessRights::READ
+        );
+
+    PropertyFormat bar_property_format =
+        make_property_format<std::string>(
+            "bar", AccessRights::WRITE
+        );
+
+    // perform tests
+
     EXPECT_TRUE(
-        PropertyFormatTest::foo_property_format ==
-        PropertyFormatTest::foo_property_format
+        foo_property_format == foo_property_format
     );
     EXPECT_TRUE(
-        PropertyFormatTest::bar_property_format ==
-        PropertyFormatTest::bar_property_format
+        bar_property_format == bar_property_format
     );
     EXPECT_FALSE(
-        PropertyFormatTest::foo_property_format ==
-        PropertyFormatTest::bar_property_format
+        foo_property_format == bar_property_format
     );
 }
 

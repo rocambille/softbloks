@@ -14,6 +14,24 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
+include(WriteCompilerDetectionHeader)
+
+write_compiler_detection_header(
+    FILE "${CMAKE_CURRENT_BINARY_DIR}/sb-compilerdetection.h"
+    PREFIX SB
+    COMPILERS
+        GNU
+        MSVC
+    FEATURES
+        cxx_constexpr
+        cxx_deleted_functions
+        cxx_final
+        cxx_noexcept
+        cxx_nullptr
+        cxx_override
+        cxx_static_assert
+)
+
 configure_file(
     sb-version.h.in
     "${CMAKE_CURRENT_BINARY_DIR}/sb-version.h"
@@ -23,6 +41,8 @@ configure_file(
 sb_add_header_only_target(sb-global
     sb-bitmask.h
     sb-global.h
+    sb-globaldefine.h
+    "${CMAKE_CURRENT_BINARY_DIR}/sb-compilerdetection.h"
     "${CMAKE_CURRENT_BINARY_DIR}/sb-version.h"
 )
 
@@ -30,6 +50,9 @@ target_include_directories(sb-global INTERFACE
     $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src> # sb-version.h
 )
 install(
-    FILES "${CMAKE_CURRENT_BINARY_DIR}/sb-version.h"
-    DESTINATION ${SB_INSTALL_INCLUDE_DESTINATION}/sb-global
+    FILES
+        "${CMAKE_CURRENT_BINARY_DIR}/sb-compilerdetection.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/sb-version.h"
+    DESTINATION
+        ${SB_INSTALL_INCLUDE_DESTINATION}/sb-global
 )

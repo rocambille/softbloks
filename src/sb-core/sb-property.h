@@ -69,7 +69,7 @@ struct Property : PropertyFormat
     (
         const std::string& name_,
         Get<T, U> get_,
-        Set<T, U> set_ = nullptr
+        Set<T, U> set_ = SB_NULLPTR
     ):
         PropertyFormat{
             typeid(U),
@@ -77,7 +77,9 @@ struct Property : PropertyFormat
             AccessRights::NONE
         }
     {
-        auto get_set = std::make_shared<Accessors<T, U>>();
+        std::shared_ptr< Accessors<T, U> > get_set =
+            std::make_shared< Accessors<T, U> >();
+
         get_set->get = get_;
         get_set->set = set_;
 
@@ -98,7 +100,7 @@ struct Property : PropertyFormat
     (
         const std::string& name_,
         U(T::* get_)() const,
-        void(T::* set_)(const U&) = nullptr
+        void(T::* set_)(const U&) = SB_NULLPTR
     ):
         Property(
             name_,
@@ -120,7 +122,7 @@ struct Property : PropertyFormat
     ):
         Property(
             name_,
-            nullptr,
+            SB_NULLPTR,
             set_
         )
     {
@@ -135,7 +137,7 @@ struct Property : PropertyFormat
         Property(
             name_,
             Get<T, U>(
-                nullptr
+                SB_NULLPTR
             ),
             Set<T, U>(
                 set_

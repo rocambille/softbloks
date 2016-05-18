@@ -43,7 +43,7 @@ public:
     std::string
     path;
 
-#ifdef SB_OS_WIN
+#if SB_OS_IS_WIN
     std::string
     windows_path;
 #endif

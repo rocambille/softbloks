@@ -53,7 +53,7 @@ AbstractBlok::~AbstractBlok
     {
         AbstractData::Private::from(
             output
-        )->source_blok = nullptr;
+        )->source_blok = SB_NULLPTR;
     }
 
     // d_ptr->executive points to this blok:
@@ -234,7 +234,7 @@ AbstractBlok::Private::set_input
     bool ok = false;
 
     if(
-        value_ == nullptr ||
+        value_ == SB_NULLPTR ||
         value_->get_instance_format().includes(
             this->inputs_format.at(index_)
         )

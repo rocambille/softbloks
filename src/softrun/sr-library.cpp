@@ -159,16 +159,16 @@ Library::Private::Private
 {
 }
 
-#ifdef SB_OS_WIN
+#if SB_OS_IS_WIN
 
 #include <windows.h>
 #include <algorithm>
 
-#else // SB_OS_WIN
+#else // SB_OS_IS_WIN
 
 #include <dlfcn.h>
 
-#endif // SB_OS_WIN
+#endif // SB_OS_IS_WIN
 
 bool
 Library::Private::load
@@ -181,7 +181,7 @@ Library::Private::load
 
     if(!already_loaded && !this->file_path.empty())
     {
-#ifdef SB_OS_WIN
+#if SB_OS_IS_WIN
         std::string windows_path = this->file_path;
 
         std::replace(
@@ -196,12 +196,12 @@ Library::Private::load
                 windows_path.c_str()
             )
         );
-#else // SB_OS_WIN
+#else // SB_OS_IS_WIN
         this->handle = dlopen(
             this->file_path.c_str(),
             RTLD_LAZY | RTLD_GLOBAL
         );
-#endif // SB_OS_WIN
+#endif // SB_OS_IS_WIN
 
         loaded = (this->handle != nullptr);
     }
@@ -226,15 +226,15 @@ Library::Private::unload
     if(this->handle != nullptr)
     {
         unloaded = (
-#ifdef SB_OS_WIN
+#if SB_OS_IS_WIN
             FreeLibrary(
                 static_cast<HMODULE>(this->handle)
             ) != FALSE
-#else // SB_OS_WIN
+#else // SB_OS_IS_WIN
             dlclose(
                 this->handle
             ) == 0
-#endif // SB_OS_WIN
+#endif // SB_OS_IS_WIN
         );
 
         this->handle = nullptr;
@@ -259,17 +259,17 @@ Library::Private::resolve
     if(this->handle != nullptr)
     {
         resolved = reinterpret_cast<FunctionPointer>(
-#ifdef SB_OS_WIN
+#if SB_OS_IS_WIN
             GetProcAddress(
                 static_cast<HMODULE>(this->handle),
                 symbol_
             )
-#else // SB_OS_WIN
+#else // SB_OS_IS_WIN
             dlsym(
                 this->handle,
                 symbol_
             )
-#endif // SB_OS_WIN
+#endif // SB_OS_IS_WIN
         );
     }
 

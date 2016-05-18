@@ -159,12 +159,12 @@ register_blok
 (
 )
 {
-    auto factory = (
+    ObjectFactory factory = (
         []
         (
         )
         {
-            auto instance = UniqueBlok(
+            UniqueBlok instance = UniqueBlok(
                 new T,
                 []
                 (
@@ -264,11 +264,13 @@ connect(
         (\
         )\
         {\
-            static_assert(\
-                std::is_same<sb::AbstractFilter, Self>::value ||\
-                std::is_base_of<sb::AbstractFilter, Self>::value ||\
-                std::is_same<sb::AbstractSink, Self>::value ||\
-                std::is_base_of<sb::AbstractSink, Self>::value,\
+            SB_STATIC_ASSERT_MSG(\
+                SB_EVAL(\
+                    std::is_same<sb::AbstractFilter, Self>::value ||\
+                    std::is_base_of<sb::AbstractFilter, Self>::value ||\
+                    std::is_same<sb::AbstractSink, Self>::value ||\
+                    std::is_base_of<sb::AbstractSink, Self>::value\
+                ),\
                 "Inputs format declared on a type not derived from "\
                 "sb::AbstractFilter nor sb::AbstractSink"\
             );\
@@ -283,11 +285,13 @@ connect(
         (\
         )\
         {\
-            static_assert(\
-                std::is_same<sb::AbstractFilter, Self>::value ||\
-                std::is_base_of<sb::AbstractFilter, Self>::value ||\
-                std::is_same<sb::AbstractSource, Self>::value ||\
-                std::is_base_of<sb::AbstractSource, Self>::value,\
+            SB_STATIC_ASSERT_MSG(\
+                SB_EVAL(\
+                    std::is_same<sb::AbstractFilter, Self>::value ||\
+                    std::is_base_of<sb::AbstractFilter, Self>::value ||\
+                    std::is_same<sb::AbstractSource, Self>::value ||\
+                    std::is_base_of<sb::AbstractSource, Self>::value\
+                ),\
                 "Outputs format declared on a type not derived from "\
                 "sb::AbstractFilter nor sb::AbstractSource"\
             );\

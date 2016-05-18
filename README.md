@@ -281,8 +281,9 @@ How to set up the build system?
 
 System requirements:
 
-* [CMake](http://cmake.org/) 3.0.0 or newer;
-* A C++11-standard-compliant compiler.
+* [CMake](http://cmake.org/) 3.1.0 or newer;
+* A C++11-standard-compliant compiler (compliance is tested with CMake using
+  [target_compile_features()](http://cmake.org/cmake/help/v3.1/command/target_compile_features.html)).
 
 Optional requirements:
 

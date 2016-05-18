@@ -135,11 +135,11 @@ TEST_F(
         // assertions before cast
 
         EXPECT_NE( // a is not null
-            nullptr,
+            SB_NULLPTR,
             a.get()
         );
         EXPECT_EQ( // b is null
-            nullptr,
+            SB_NULLPTR,
             b.get()
         );
         EXPECT_EQ( // a points to c
@@ -154,11 +154,11 @@ TEST_F(
         // assertions after cast
 
         EXPECT_EQ( // a is null
-            nullptr,
+            SB_NULLPTR,
             a.get()
         );
         EXPECT_NE( // b is not null
-            nullptr,
+            SB_NULLPTR,
             b.get()
         );
         EXPECT_EQ( // b points to c

@@ -111,7 +111,7 @@ TEST_F(
 )
 {
     EXPECT_EQ(
-        nullptr,
+        SB_NULLPTR,
         create_unique_object(
             "foo"
         ).get()
@@ -125,7 +125,7 @@ TYPED_TEST(
 )
 {
     EXPECT_NE(
-        nullptr,
+        SB_NULLPTR,
         create_unique<TypeParam>(
             get_type_name<TypeParam>()
         ).get()
@@ -144,7 +144,7 @@ TEST_F(
 )
 {
     EXPECT_EQ(
-        nullptr,
+        SB_NULLPTR,
         create_shared_object(
             "foo"
         ).get()
@@ -158,7 +158,7 @@ TYPED_TEST(
 )
 {
     EXPECT_NE(
-        nullptr,
+        SB_NULLPTR,
         create_shared<TypeParam>(
             get_type_name<TypeParam>()
         )

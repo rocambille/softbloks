@@ -22,8 +22,6 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
-using ObjectFactory = std::function<UniqueObject(void)>;
-
 using ObjectFactoryMap = std::map<std::string, ObjectFactory>;
 
 using ObjectFormatMap = std::map<std::string, ObjectFormat>;

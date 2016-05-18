@@ -18,6 +18,8 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SB_BITMASK_H
 #define SB_BITMASK_H
 
+#include <sb-global/sb-globaldefine.h>
+
 #include <functional>
 #include <type_traits>
 
@@ -25,12 +27,12 @@ namespace sb
 {
 
 /// \brief The BitmaskWrapper template class can be used as a reference
-/// wrapper for an enumeration of type \a T.
+/// wrapper for the enumeration type \a T.
 ///
 /// The enumeration is considered to be a bitmask type, i.e. an enumeration
-/// with bitwise exclusive values, for which the wrapper provides an object
-/// interface with convenient methods for bitmasks. Note that the enumeration
-/// should declare the necessary bitwise operators, e.g. using
+/// with bitwise exclusive values. The wrapper provides an object interface
+/// with convenient methods for bitmasks. Note that the enumeration  should
+/// declare the necessary bitwise operators, e.g. using
 /// SB_BITMASK_OPERATORS().
 ///
 /// An appropriate bitmask wrapper can be constructed with the function
@@ -94,6 +96,7 @@ public:
     bool
     (
     )
+    const
     {
         return static_cast<UnderlyingType>(
             this->get()
@@ -106,6 +109,7 @@ public:
     is_empty
     (
     )
+    const
     {
         return static_cast<UnderlyingType>(
             this->get()
@@ -125,6 +129,7 @@ public:
     (
         T value_
     )
+    const
     {
         return ( (*this) & value_ ) == value_;
     }
@@ -197,7 +202,7 @@ template<
     // T should be an enum, disable it otherwise
     typename = typename std::enable_if<std::is_enum<T>::value>::type
 >
-inline
+SB_CONSTEXPR_FUNCTION
 T
 make_empty_bitmask
 (
@@ -213,7 +218,11 @@ make_empty_bitmask
 ///
 /// \sa BitmaskWrapper.
 #define SB_BITMASK_OPERATORS(bitmask_)\
-inline \
+SB_STATIC_ASSERT_MSG(\
+    std::is_enum<bitmask_>::value,\
+    "Declaration of bitmask operators on non enum type"\
+);\
+SB_CONSTEXPR_FUNCTION \
 bitmask_ \
 operator&\
 (\
@@ -227,7 +236,7 @@ operator&\
     );\
 }\
 \
-inline \
+SB_CONSTEXPR_FUNCTION \
 bitmask_ \
 operator|\
 (\
@@ -241,7 +250,7 @@ operator|\
     );\
 }\
 \
-inline \
+SB_CONSTEXPR_FUNCTION \
 bitmask_ \
 operator^\
 (\
@@ -255,7 +264,7 @@ operator^\
     );\
 }\
 \
-inline \
+SB_CONSTEXPR_FUNCTION \
 bitmask_ \
 operator~\
 (\
@@ -268,7 +277,7 @@ operator~\
 }\
 \
 inline \
-sb::BitmaskWrapper<bitmask_>/*implicitly check bitmask_ is an enum*/\
+bitmask_& \
 operator&=\
 (\
     bitmask_& left_,\
@@ -281,7 +290,7 @@ operator&=\
 }\
 \
 inline \
-sb::BitmaskWrapper<bitmask_>/*implicitly check bitmask_ is an enum*/\
+bitmask_& \
 operator|=\
 (\
     bitmask_& left_,\
@@ -294,7 +303,7 @@ operator|=\
 }\
 \
 inline \
-sb::BitmaskWrapper<bitmask_>/*implicitly check bitmask_ is an enum*/\
+bitmask_& \
 operator^=\
 (\
     bitmask_& left_,\

@@ -28,6 +28,8 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
+using ObjectFactory = std::function<Unique<AbstractObject>(void)>;
+
 /// \brief The AbstractObject class is the base class for all Softbloks
 /// objects.
 ///
@@ -36,7 +38,7 @@ namespace sb
 /// \anchor property-system
 /// ### The Property System ###
 ///
-/// Properties can be associated to a Softbloks object during declaration:
+/// Properties can be associated to a Softbloks object in class declaration:
 ///
 /// \code{cpp}
 /// class Foo : public sb::AbstractObject
@@ -150,7 +152,7 @@ public:
     (
         const AbstractObject& other_
     )
-    = delete;
+    SB_DELETED_FUNCTION;
 
     /// Constructs a Softbloks object.
     AbstractObject
@@ -171,7 +173,7 @@ public:
     (
         const AbstractObject& other_
     )
-    = delete;
+    SB_DELETED_FUNCTION;
 
     virtual
     void
@@ -340,7 +342,7 @@ private:
     register_object
     (
         const ObjectFormat& format_,
-        const std::function<Unique<AbstractObject>(void)>& factory_
+        const ObjectFactory& factory_
     );
     /// \endcond
 
@@ -468,12 +470,12 @@ register_object
 (
 )
 {
-    auto factory = (
+    ObjectFactory factory = (
         []
         (
         )
         {
-            auto instance = UniqueObject(
+            UniqueObject instance = UniqueObject(
                 new T,
                 []
                 (
@@ -584,12 +586,14 @@ unregister_all_objects
         (\
         )\
         {\
-            static_assert(\
-                std::is_same<sb::AbstractObject, Self>::value ||\
-                std::is_base_of<sb::AbstractObject, Self>::value,\
+            SB_STATIC_ASSERT_MSG(\
+                SB_EVAL(\
+                    std::is_same<sb::AbstractObject, Self>::value ||\
+                    std::is_base_of<sb::AbstractObject, Self>::value\
+                ),\
                 "Name declared on a type not derived from sb::AbstractObject"\
             );\
-            auto type_names = (\
+            sb::StringSequence type_names = (\
                 Self::get_type_names == get_type_names\
             ) ? (\
                 Base::get_type_names()\
@@ -608,13 +612,15 @@ unregister_all_objects
         (\
         )\
         {\
-            static_assert(\
-                std::is_same<sb::AbstractObject, Self>::value ||\
-                std::is_base_of<sb::AbstractObject, Self>::value,\
+            SB_STATIC_ASSERT_MSG(\
+                SB_EVAL(\
+                    std::is_same<sb::AbstractObject, Self>::value ||\
+                    std::is_base_of<sb::AbstractObject, Self>::value\
+                ),\
                 "Properties declared on a type not derived from sb::AbstractObject"\
             );\
             sb::PropertySequence properties = {__VA_ARGS__};\
-            auto base_properties = (\
+            sb::PropertySequence base_properties = (\
                 Self::get_properties == get_properties\
             ) ? (\
                 Base::get_properties()\

@@ -80,7 +80,7 @@ Directory::set_path
     if(d_ptr->path.size() > 0)
     {
         if(
-#ifdef SB_OS_WIN
+#if SB_OS_IS_WIN
             d_ptr->path[d_ptr->path.size()-1] != '\\' ||
 #endif
             d_ptr->path[d_ptr->path.size()-1] != '/'
@@ -89,7 +89,7 @@ Directory::set_path
             d_ptr->path.append("/");
         }
 
-#ifdef SB_OS_WIN
+#if SB_OS_IS_WIN
         std::replace(
             d_ptr->path.begin(),
             d_ptr->path.end(),
@@ -110,7 +110,7 @@ Directory::set_path
 }
 
 
-#ifdef SB_OS_WIN
+#if SB_OS_IS_WIN
 
 #include <windows.h>
 
@@ -175,7 +175,7 @@ const
     return entry_sequence;
 }
 
-#else // SB_OS_WIN
+#else // SB_OS_IS_WIN
 
 #include <sys/types.h>
 #include <dirent.h>
@@ -232,7 +232,7 @@ const
     return entry_sequence;
 }
 
-#endif // SB_OS_WIN
+#endif // SB_OS_IS_WIN
 
 Directory::Private::Private
 (

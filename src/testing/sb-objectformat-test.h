@@ -38,7 +38,7 @@ public:
     SetUp
     (
     )
-    override
+    SB_OVERRIDE
     {
         // create a test format
         foo_object_format =
@@ -57,7 +57,7 @@ public:
     //TearDown
     //(
     //)
-    //override
+    //SB_OVERRIDE
     //{
     //}
 

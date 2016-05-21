@@ -18,6 +18,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SB_GLOBAL_H
 #define SB_GLOBAL_H
 
+#include <sb-global/sb-any.h>
 #include <sb-global/sb-bitmask.h>
 #include <sb-global/sb-compilerdetection.h>
 #include <sb-global/sb-globaldefine.h>

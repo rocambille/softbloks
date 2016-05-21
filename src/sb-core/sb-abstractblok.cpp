@@ -146,19 +146,19 @@ void
 AbstractBlok::init
 (
     AbstractBlok* this_,
-    const ObjectFormatSequence& inputs_format_,
-    const ObjectFormatSequence& outputs_format_
+    const ObjectFormatSequence& inputs_formats_,
+    const StringSequence& output_type_names_
 )
 {
     auto d_ptr = AbstractBlok::Private::from(
         this_
     );
 
-    d_ptr->set_inputs_format(
-        inputs_format_
+    d_ptr->set_inputs_formats(
+        inputs_formats_
     );
-    d_ptr->set_outputs_format(
-        outputs_format_
+    d_ptr->set_outputs_type_names(
+        output_type_names_
     );
 }
 
@@ -171,34 +171,39 @@ AbstractBlok::Private::Private
 }
 
 void
-AbstractBlok::Private::set_inputs_format
+AbstractBlok::Private::set_inputs_formats
 (
-    const std::vector<ObjectFormat>& value_
+    const ObjectFormatSequence& value_
 )
 {
-    this->inputs_format = value_;
+    this->inputs_formats = value_;
 
     this->inputs.resize(
-        this->inputs_format.size()
+        this->inputs_formats.size()
     );
 }
 
 void
-AbstractBlok::Private::set_outputs_format
+AbstractBlok::Private::set_outputs_type_names
 (
-    const std::vector<ObjectFormat>& value_
+    const StringSequence& value_
 )
 {
-    this->outputs_format = value_;
-
+    this->outputs_formats.resize(
+        value_.size()
+    );
     this->outputs.resize(
-        this->outputs_format.size()
+        value_.size()
     );
 
-    for(Index i(0); i < this->outputs.size(); ++i)
+    for(Index i(0); i < value_.size(); ++i)
     {
+        this->outputs_formats[i] = get_object_format(
+            value_[i]
+        );
+
         SharedData data = create_shared_data(
-            this->outputs_format[i].type_names[0]
+            value_[i]
         );
 
         auto data_d_ptr = AbstractData::Private::from(
@@ -235,8 +240,8 @@ AbstractBlok::Private::set_input
 
     if(
         value_ == SB_NULLPTR ||
-        value_->get_instance_format().includes(
-            this->inputs_format.at(index_)
+        value_->get_format().includes(
+            this->inputs_formats.at(index_)
         )
     )
     {

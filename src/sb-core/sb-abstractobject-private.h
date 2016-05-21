@@ -23,6 +23,8 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
+using NameToPropertyMap = std::map<std::string, ObjectProperty>;
+
 class SB_DECL_HIDDEN AbstractObject::Private
 {
 
@@ -52,8 +54,11 @@ public:
     AbstractObject*
     q_ptr;
 
-    std::vector<std::string>
+    StringSequence
     type_names;
+
+    NameToPropertyMap
+    properties;
 
 };
 

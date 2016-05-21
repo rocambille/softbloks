@@ -38,7 +38,7 @@ public:
     SetUp
     (
     )
-    override
+    SB_OVERRIDE
     {
         this->destruction_progress = 0;
     }
@@ -48,7 +48,7 @@ public:
     //TearDown
     //(
     //)
-    //override
+    //SB_OVERRIDE
     //{
     //}
 

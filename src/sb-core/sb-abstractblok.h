@@ -22,7 +22,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sb-core/sb-abstractdata.h>
 #include <sb-core/sb-abstractexecutive.h>
-#include <sb-core/sb-blokformat.h>
+#include <sb-core/sb-data.h>
 
 #include <type_traits>
 
@@ -38,25 +38,6 @@ class SB_CORE_API AbstractBlok : public AbstractObject
     SB_SELF(sb::AbstractBlok)
 
     SB_NAME("sb.AbstractBlok")
-
-public:
-    static
-    ObjectFormatSequence
-    get_inputs_format
-    (
-    )
-    {
-        return { };
-    }
-
-    static
-    ObjectFormatSequence
-    get_outputs_format
-    (
-    )
-    {
-        return { };
-    }
 
 public:
 
@@ -111,6 +92,52 @@ public:
     {
     }
 
+    static
+    ObjectFormatSequence
+    get_inputs_formats
+    (
+    )
+    {
+        return { };
+    }
+
+    static
+    StringSequence
+    get_outputs_type_names
+    (
+    )
+    {
+        return { };
+    }
+
+    static
+    ObjectFormatSequence
+    get_outputs_formats
+    (
+    )
+    {
+        return { };
+    }
+
+    /// \cond INTERNAL
+    template<typename T>
+    static
+    void
+    on_creation
+    (
+        AbstractBlok* this_
+    )
+    {
+        AbstractBlok::init(
+            this_,
+            T::get_inputs_formats(),
+            T::get_outputs_type_names()
+        );
+
+        AbstractObject::on_creation<T>(this_);
+    }
+    /// \endcond
+
 private:
 
     /// \cond INTERNAL
@@ -119,8 +146,8 @@ private:
     init
     (
         AbstractBlok* this_,
-        const ObjectFormatSequence& inputs_format_,
-        const ObjectFormatSequence& outputs_format_
+        const ObjectFormatSequence& inputs_formats_,
+        const StringSequence& outputs_type_names_
     );
     /// \endcond
 
@@ -138,7 +165,7 @@ private:
 const ObjectFormat
 ANY_BLOK_FORMAT = {
     AbstractBlok::get_type_names(),
-    AbstractBlok::get_properties_format()
+    AbstractBlok::get_properties()
 };
 
 /// Alias for a managed blok uniquely owned.
@@ -151,58 +178,6 @@ UniqueBlok
 (
     const std::string& name_
 ) = create_unique<AbstractBlok>;
-
-template<typename T>
-inline
-bool
-register_blok
-(
-)
-{
-    ObjectFactory factory = (
-        []
-        (
-        )
-        {
-            UniqueBlok instance = UniqueBlok(
-                new T,
-                []
-                (
-                    AbstractObject* ptr_
-                )
-                {
-                    delete ptr_;
-
-                    AbstractObject::forget(ptr_);
-                }
-            );
-
-            AbstractBlok::init(
-                instance.get(),
-                T::get_inputs_format(),
-                T::get_outputs_format()
-            );
-
-            AbstractObject::init(
-                instance.get(),
-                T::get_type_names(),
-                T::get_properties()
-            );
-
-            return static_move_cast<AbstractObject>(
-                std::move(instance)
-            );
-        }
-    );
-
-    return AbstractObject::register_object(
-        {
-            T::get_type_names(),
-            T::get_properties_format()
-        },
-        factory
-    );
-}
 
 SB_CORE_API
 bool
@@ -256,11 +231,11 @@ connect(
 
 }
 
-#define SB_INPUTS_FORMAT(...)\
+#define SB_INPUTS_FORMATS(...)\
     public:\
         static\
         sb::ObjectFormatSequence\
-        get_inputs_format\
+        get_inputs_formats\
         (\
         )\
         {\
@@ -271,17 +246,38 @@ connect(
                     std::is_same<sb::AbstractSink, Self>::value ||\
                     std::is_base_of<sb::AbstractSink, Self>::value\
                 ),\
-                "Inputs format declared on a type not derived from "\
+                "inputs formats declared on a type not derived from "\
                 "sb::AbstractFilter nor sb::AbstractSink"\
             );\
             return sb::make_object_format_sequence(__VA_ARGS__);\
         }
 
-#define SB_OUTPUTS_FORMAT(...)\
+#define SB_INPUTS_TYPES(...)\
     public:\
         static\
         sb::ObjectFormatSequence\
-        get_outputs_format\
+        get_inputs_formats\
+        (\
+        )\
+        {\
+            SB_STATIC_ASSERT_MSG(\
+                SB_EVAL(\
+                    std::is_same<sb::AbstractFilter, Self>::value ||\
+                    std::is_base_of<sb::AbstractFilter, Self>::value ||\
+                    std::is_same<sb::AbstractSink, Self>::value ||\
+                    std::is_base_of<sb::AbstractSink, Self>::value\
+                ),\
+                "inputs formats declared on a type not derived from "\
+                "sb::AbstractFilter nor sb::AbstractSink"\
+            );\
+            return sb::make_object_format_sequence<__VA_ARGS__>();\
+        }
+
+#define SB_OUTPUTS_TYPES(...)\
+    public:\
+        static\
+        sb::StringSequence\
+        get_outputs_type_names\
         (\
         )\
         {\
@@ -292,10 +288,18 @@ connect(
                     std::is_same<sb::AbstractSource, Self>::value ||\
                     std::is_base_of<sb::AbstractSource, Self>::value\
                 ),\
-                "Outputs format declared on a type not derived from "\
+                "outputs type names declared on a type not derived from "\
                 "sb::AbstractFilter nor sb::AbstractSource"\
             );\
-            return sb::make_object_format_sequence(__VA_ARGS__);\
+            return sb::make_type_name_sequence<__VA_ARGS__>();\
+        }\
+        static\
+        sb::ObjectFormatSequence\
+        get_outputs_formats\
+        (\
+        )\
+        {\
+            return sb::make_object_format_sequence<__VA_ARGS__>();\
         }
 
 #endif // SB_ABSTRACTBLOK_H

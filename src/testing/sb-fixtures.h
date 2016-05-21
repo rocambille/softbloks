@@ -49,7 +49,7 @@ public:
     SetUp
     (
     )
-    override
+    SB_OVERRIDE
     {
         unregister_all_objects();
     }
@@ -59,7 +59,7 @@ public:
     //TearDown
     //(
     //)
-    //override
+    //SB_OVERRIDE
     //{
     //}
 
@@ -76,7 +76,7 @@ public:
     SetUp
     (
     )
-    override
+    SB_OVERRIDE
     {
         unregister_all_objects();
     }
@@ -86,7 +86,7 @@ public:
     //TearDown
     //(
     //)
-    //override
+    //SB_OVERRIDE
     //{
     //}
 
@@ -105,7 +105,7 @@ public:
     SetUp
     (
     )
-    override
+    SB_OVERRIDE
     {
         unregister_all_objects();
 
@@ -117,7 +117,7 @@ public:
     //TearDown
     //(
     //)
-    //override
+    //SB_OVERRIDE
     //{
     //}
 
@@ -136,7 +136,7 @@ public:
     SetUp
     (
     )
-    override
+    SB_OVERRIDE
     {
         unregister_all_objects();
 
@@ -152,7 +152,7 @@ public:
     //TearDown
     //(
     //)
-    //override
+    //SB_OVERRIDE
     //{
     //}
 

@@ -20,6 +20,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sb-core/sb-coredefine.h>
 
+#include <string>
 #include <typeindex>
 #include <vector>
 

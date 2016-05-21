@@ -19,6 +19,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 class HelloSource : public sb::AbstractSource
 {
+
     SB_NAME("HelloSource")
 
     SB_PROPERTIES({
@@ -27,8 +28,8 @@ class HelloSource : public sb::AbstractSource
         &HelloSource::set_text
     })
 
-    SB_OUTPUTS_FORMAT(
-        sb::get_data_format<std::string>()
+    SB_OUTPUTS_TYPES(
+        std::string
     )
 
 public:
@@ -38,7 +39,7 @@ public:
     init
     (
     )
-    override
+    SB_OVERRIDE
     {
         this->set_text("Hello World!!!");
     }
@@ -48,7 +49,7 @@ public:
     process
     (
     )
-    override
+    SB_OVERRIDE
     {
         this->push_output();
     }
@@ -75,63 +76,6 @@ public:
 
 };
 
-class HelloSink : public sb::AbstractSink
-{
-
-    SB_NAME("HelloSink")
-
-    SB_PROPERTIES({
-        "text",
-        &HelloSink::get_text
-    },{
-        "notifier",
-        &HelloSink::set_notifier
-    })
-
-    SB_INPUTS_FORMAT(
-        sb::get_data_format<std::string>()
-    )
-
-public:
-
-    virtual
-    void
-    process
-    (
-    )
-    override
-    {
-        if(notifier)
-        {
-            notifier();
-        }
-    }
-
-    std::string
-    get_text
-    (
-    )
-    const
-    {
-        return this->lock_input()->get<std::string>("value");
-    }
-
-    void
-    set_notifier
-    (
-        const std::function<void(void)>& value_
-    )
-    {
-        this->notifier = value_;
-    }
-
-private:
-
-    std::function<void(void)>
-    notifier;
-
-};
-
 class HelloFilter : public sb::AbstractFilter
 {
 
@@ -143,12 +87,12 @@ class HelloFilter : public sb::AbstractFilter
         &HelloFilter::set_multiplier
     })
 
-    SB_INPUTS_FORMAT(
-        HelloSource::get_outputs_format()
+    SB_INPUTS_FORMATS(
+        HelloSource::get_outputs_formats()
     )
 
-    SB_OUTPUTS_FORMAT(
-        HelloSink::get_inputs_format()
+    SB_OUTPUTS_TYPES(
+        std::string
     )
 
 public:
@@ -165,7 +109,7 @@ public:
     process
     (
     )
-    override
+    SB_OVERRIDE
     {
         // compute output text
 
@@ -217,11 +161,68 @@ private:
 
 };
 
+class HelloSink : public sb::AbstractSink
+{
+
+    SB_NAME("HelloSink")
+
+    SB_PROPERTIES({
+        "text",
+        &HelloSink::get_text
+    },{
+        "notifier",
+        &HelloSink::set_notifier
+    })
+
+    SB_INPUTS_FORMATS(
+        HelloFilter::get_outputs_formats()
+    )
+
+public:
+
+    virtual
+    void
+    process
+    (
+    )
+    SB_OVERRIDE
+    {
+        if(notifier)
+        {
+            notifier();
+        }
+    }
+
+    std::string
+    get_text
+    (
+    )
+    const
+    {
+        return this->lock_input()->get<std::string>("value");
+    }
+
+    void
+    set_notifier
+    (
+        const std::function<void(void)>& value_
+    )
+    {
+        this->notifier = value_;
+    }
+
+private:
+
+    std::function<void(void)>
+    notifier;
+
+};
+
 SB_MODULE(hellobloks)
 {
     sb::register_data<std::string>();
 
-    sb::register_blok<HelloSource>();
-    sb::register_blok<HelloFilter>();
-    sb::register_blok<HelloSink>();
+    sb::register_object<HelloSource>();
+    sb::register_object<HelloFilter>();
+    sb::register_object<HelloSink>();
 }

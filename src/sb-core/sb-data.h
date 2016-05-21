@@ -72,27 +72,6 @@ private:
 };
 
 template<typename T>
-inline
-std::string
-get_data_name
-(
-)
-{
-    return Data<T>::get_type_names()[0];
-}
-
-template<typename T>
-ObjectFormat
-get_data_format
-(
-)
-{
-    return get_object_format(
-        get_data_name<T>()
-    );
-}
-
-template<typename T>
 bool
 register_data
 (

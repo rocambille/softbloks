@@ -26,7 +26,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb-core/sb-abstractsink.h>
 #include <sb-core/sb-abstractsoft.h>
 #include <sb-core/sb-abstractsource.h>
-#include <sb-core/sb-blokformat.h>
+#include <sb-core/sb-coredefine.h>
 #include <sb-core/sb-data.h>
 #include <sb-core/sb-executive.h>
 #include <sb-core/sb-objectformat.h>

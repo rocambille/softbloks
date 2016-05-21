@@ -26,7 +26,6 @@ write_compiler_detection_header(
         cxx_constexpr
         cxx_deleted_functions
         cxx_final
-        cxx_noexcept
         cxx_nullptr
         cxx_override
         cxx_static_assert
@@ -39,6 +38,7 @@ configure_file(
 )
 
 sb_add_header_only_target(sb-global
+    sb-any.h
     sb-bitmask.h
     sb-global.h
     sb-globaldefine.h

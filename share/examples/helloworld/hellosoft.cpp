@@ -20,19 +20,22 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #include <QtWidgets>
 
 template<typename... Args>
-struct SIGNAL
+struct OVERLOAD
 {
-    template<typename C, typename R> 
+
+    template<typename C, typename R>
     static
+    SB_CONSTEXPR_FUNCTION
     auto
-    FOR
+    OF
     (
         R (C::*method_)(Args...)
     )
     -> decltype(method_)
-    { 
+    {
         return method_;
-    } 
+    }
+
 };
 
 class HelloSoft : public sb::AbstractSoft
@@ -112,7 +115,7 @@ public:
         );
 
         QObject::connect(
-            spin_box, SIGNAL<int>::FOR(&QSpinBox::valueChanged),
+            spin_box, OVERLOAD<int>::OF(&QSpinBox::valueChanged),
             [this]
             (
                 int value_

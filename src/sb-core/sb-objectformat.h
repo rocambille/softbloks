@@ -18,7 +18,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SB_OBJECTFORMAT_H
 #define SB_OBJECTFORMAT_H
 
-#include <sb-core/sb-propertyformat.h>
+#include <sb-core/sb-property.h>
 
 #include <algorithm>
 
@@ -33,22 +33,46 @@ namespace sb
 struct ObjectFormat
 {
 
-    /// This attribute holds a list of type names.
+    /// This attribute holds a sequence of type names.
     ///
-    /// The first one in the the list describes the type of the object. Next
-    /// in the list are the types of the object's base class(es), the base(s)
-    /// of the base(s) and so on, listing the complete inheritance tree of the
-    /// object.
+    /// The first one in the the sequence describes the type of the object.
+    /// Next in the sequence are the types of the object's base class(es), the
+    /// base(s) of the base(s) and so on, listing the complete inheritance
+    /// tree of the object.
     ///
     /// \sa SB_NAME().
     StringSequence
     type_names;
 
-    /// This attribute holds a list of properties.
+    /// This attribute holds a sequence of properties.
     ///
     /// \sa SB_PROPERTIES().
     PropertyFormatSequence
-    properties_format;
+    properties_formats;
+
+    ObjectFormat
+    (
+        const StringSequence& type_names_ = StringSequence(),
+        const PropertyFormatSequence& properties_formats_ = PropertyFormatSequence()
+    ):
+        type_names(type_names_),
+        properties_formats(properties_formats_)
+    {
+    }
+
+    template<typename T>
+    ObjectFormat
+    (
+        const StringSequence& type_names_,
+        const PropertySequence<T>& properties_
+    ):
+        type_names(type_names_),
+        properties_formats(
+            properties_.begin(),
+            properties_.end()
+        )
+    {
+    }
 
     inline
     bool
@@ -95,25 +119,25 @@ struct ObjectFormat
 
         if(is_included)
         {
-            PropertyFormatSequence this_properties_format =
-                this->properties_format;
+            PropertyFormatSequence this_properties_formats =
+                this->properties_formats;
             std::sort(
-                this_properties_format.begin(),
-                this_properties_format.end()
+                this_properties_formats.begin(),
+                this_properties_formats.end()
             );
 
-            PropertyFormatSequence other_properties_format =
-                other_.properties_format;
+            PropertyFormatSequence other_properties_formats =
+                other_.properties_formats;
             std::sort(
-                other_properties_format.begin(),
-                other_properties_format.end()
+                other_properties_formats.begin(),
+                other_properties_formats.end()
             );
 
             is_included = std::includes(
-                this_properties_format.begin(),
-                this_properties_format.end(),
-                other_properties_format.begin(),
-                other_properties_format.end()
+                this_properties_formats.begin(),
+                this_properties_formats.end(),
+                other_properties_formats.begin(),
+                other_properties_formats.end()
             );
         }
 
@@ -140,7 +164,7 @@ operator==
     return (
         left_.type_names == right_.type_names
     ) && (
-        left_.properties_format == right_.properties_format
+        left_.properties_formats == right_.properties_formats
     );
 }
 
@@ -175,7 +199,7 @@ operator<<
     const PropertyFormat& property_format_
 )
 {
-    format_.properties_format.push_back(property_format_);
+    format_.properties_formats.push_back(property_format_);
     return format_;
 }
 
@@ -192,6 +216,65 @@ operator<<
 
 using ObjectFormatSequence = std::vector<ObjectFormat>;
 
+template<typename Type>
+class Data;
+
+template<typename T>
+inline
+std::string
+get_type_name
+(
+);
+
+template<typename T>
+inline
+ObjectFormat
+get_object_format
+(
+);
+
+/// \cond INTERNAL
+template<typename ...Types>
+inline
+StringSequence
+make_type_name_sequence
+(
+)
+{
+    return {
+        get_type_name<
+            typename std::conditional<
+                std::is_same<AbstractObject, Types>::value ||
+                std::is_base_of<AbstractObject, Types>::value,
+                Types,
+                Data<Types>
+            >::type
+        >()...
+    };
+}
+/// \endcond
+
+/// \cond INTERNAL
+template<typename ...Types>
+inline
+ObjectFormatSequence
+make_object_format_sequence
+(
+)
+{
+    return {
+        get_object_format<
+            typename std::conditional<
+                std::is_same<AbstractObject, Types>::value ||
+                std::is_base_of<AbstractObject, Types>::value,
+                Types,
+                Data<Types>
+            >::type
+        >()...
+    };
+}
+/// \endcond
+
 /// \cond INTERNAL
 template<typename... Types>
 inline
@@ -203,7 +286,9 @@ make_object_format_sequence
 {
     return { args_... };
 }
+/// \endcond
 
+/// \cond INTERNAL
 template<>
 inline
 ObjectFormatSequence

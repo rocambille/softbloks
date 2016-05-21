@@ -435,7 +435,7 @@ public:
     SvgWidget
     (
         const QString& file_,
-        QWidget* parent_ = nullptr
+        QWidget* parent_ = SB_NULLPTR
     ):
         QSvgWidget(file_, parent_)
     {
@@ -450,7 +450,7 @@ protected:
     (
         QResizeEvent* event_
     )
-    override
+    SB_OVERRIDE
     {
         QSize view_box_size = event_->size().scaled(
             this->initial_default_size,

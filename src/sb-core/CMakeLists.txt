@@ -39,7 +39,6 @@ sb_add_library(sb-core
     sb-abstractsource.cpp
     sb-abstractsource.h
     sb-abstractsource-private.h
-    sb-blokformat.h
     sb-core.h
     sb-coredefine.h
     sb-data.h

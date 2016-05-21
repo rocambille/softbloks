@@ -79,7 +79,7 @@ public:
     //SetUp
     //(
     //)
-    //override
+    //SB_OVERRIDE
     //{
     //}
 
@@ -88,7 +88,7 @@ public:
     //TearDown
     //(
     //)
-    //override
+    //SB_OVERRIDE
     //{
     //}
 

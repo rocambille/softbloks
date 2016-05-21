@@ -19,7 +19,6 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #define SB_COREDEFINE_H
 
 #include <sb-global/sb-global.h>
-#include <sb-global/sb-bitmask.h>
 
 #include <limits>
 #include <memory>
@@ -115,19 +114,6 @@ static_move_cast
     unique_pointer_.release();
 
     return moved_pointer;
-}
-
-/// Returns the type name for the type \a T.
-///
-/// \sa SB_NAME() and get_object_format().
-template<typename T>
-inline
-std::string
-get_type_name
-(
-)
-{
-    return T::get_type_names()[0];
 }
 
 }

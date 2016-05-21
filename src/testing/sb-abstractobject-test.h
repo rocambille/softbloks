@@ -198,7 +198,7 @@ TYPED_TEST(
     );
 
     EXPECT_TRUE(
-        this->instance->get_instance_format().includes(object_format)
+        this->instance->get_format().includes(object_format)
     );
 }
 

@@ -36,15 +36,15 @@ public:
     );
 
     void
-    set_inputs_format
+    set_inputs_formats
     (
-        const std::vector<ObjectFormat>& value_
+        const ObjectFormatSequence& value_
     );
 
     void
-    set_outputs_format
+    set_outputs_type_names
     (
-        const std::vector<ObjectFormat>& value_
+        const StringSequence& value_
     );
 
     SharedData
@@ -86,14 +86,14 @@ public:
     AbstractBlok*
     q_ptr;
 
-    std::vector<ObjectFormat>
-    inputs_format;
+    ObjectFormatSequence
+    inputs_formats;
 
     std::vector<WeakData>
     inputs;
 
-    std::vector<ObjectFormat>
-    outputs_format;
+    ObjectFormatSequence
+    outputs_formats;
 
     std::vector<SharedData>
     outputs;

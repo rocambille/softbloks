@@ -69,13 +69,11 @@ namespace sb
 ///
 /// \sa make_empty_bitmask().
 template<typename T>
-class BitmaskWrapper : public std::reference_wrapper<
+struct BitmaskWrapper : public std::reference_wrapper<
     // T should be an enum, disable it otherwise
     typename std::enable_if<std::is_enum<T>::value, T>::type
 >
 {
-
-public:
 
     /// Alias for the underlying type of \a T.
     using UnderlyingType = typename std::underlying_type<T>::type;
@@ -220,7 +218,7 @@ make_empty_bitmask
 #define SB_BITMASK_OPERATORS(bitmask_)\
 SB_STATIC_ASSERT_MSG(\
     std::is_enum<bitmask_>::value,\
-    "Declaration of bitmask operators on non enum type"\
+    "declared bitmask operators on non enum type"\
 );\
 SB_CONSTEXPR_FUNCTION \
 bitmask_ \

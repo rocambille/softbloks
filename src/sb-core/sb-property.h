@@ -20,69 +20,40 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sb-core/sb-propertyformat.h>
 
-#include <functional>
-#include <map>
-#include <memory>
-#include <vector>
-
 namespace sb
 {
 
-template<
-    typename T,
-    typename U,
-    typename = typename std::enable_if<std::is_base_of<AbstractObject, T>::value>::type
->
-using Get = std::function<U(const T&)>;
-
-template<
-    typename T,
-    typename U,
-    typename = typename std::enable_if<std::is_base_of<AbstractObject, T>::value>::type
->
-using Set = std::function<void(T&, const U&)>;
-
-/// \cond INTERNAL
-template<typename T, typename U>
-struct Accessors
-{
-
-    Get<T, U>
-    get;
-
-    Set<T, U>
-    set;
-
-};
-/// \endcond
-
+template<typename Base>
 struct Property : PropertyFormat
 {
 
-    /// \cond INTERNAL
-    std::shared_ptr<void>
-    accessors;
-    /// \endcond
+    template<typename Derived, typename Type>
+    using Get = std::function<Type(const Derived&)>;
 
-    template<typename T, typename U>
+    Get<Base, Any>
+    get;
+
+    template<typename Derived, typename Type>
+    using Set = std::function<void(Derived&, const Type&)>;
+
+    Set<Base, Any>
+    set;
+
+    template<typename Derived, typename Type>
     Property
     (
         const std::string& name_,
-        Get<T, U> get_,
-        Set<T, U> set_ = SB_NULLPTR
+        Get<Derived, Type> get_,
+        Set<Derived, Type> set_ = SB_NULLPTR
     ):
         PropertyFormat{
-            typeid(U),
+            typeid(Type),
             name_,
             AccessRights::NONE
-        }
+        },
+        get(Caller<Derived, Type>(get_)),
+        set(Caller<Derived, Type>(set_))
     {
-        std::shared_ptr< Accessors<T, U> > get_set =
-            std::make_shared< Accessors<T, U> >();
-
-        get_set->get = get_;
-        get_set->set = set_;
-
         if(get_)
         {
             bitmask(this->access_rights).set(AccessRights::READ);
@@ -91,34 +62,32 @@ struct Property : PropertyFormat
         {
             bitmask(this->access_rights).set(AccessRights::WRITE);
         }
-
-        this->accessors = std::static_pointer_cast<void>(get_set);
     }
 
-    template<typename T, typename U>
+    template<typename Derived, typename Type>
     Property
     (
         const std::string& name_,
-        U(T::* get_)() const,
-        void(T::* set_)(const U&) = SB_NULLPTR
+        Type(Derived::* get_)() const,
+        void(Derived::* set_)(const Type&) = SB_NULLPTR
     ):
         Property(
             name_,
-            Get<T, U>(
+            Get<Derived, Type>(
                 get_
             ),
-            Set<T, U>(
+            Set<Derived, Type>(
                 set_
             )
         )
     {
     }
 
-    template<typename T, typename U>
+    template<typename Derived, typename Type>
     Property
     (
         const std::string& name_,
-        Set<T, U> set_
+        Set<Derived, Type> set_
     ):
         Property(
             name_,
@@ -128,31 +97,84 @@ struct Property : PropertyFormat
     {
     }
 
-    template<typename T, typename U>
+    template<typename Derived, typename Type>
     Property
     (
         const std::string& name_,
-        void(T::* set_)(const U&)
+        void(Derived::* set_)(const Type&)
     ):
         Property(
             name_,
-            Get<T, U>(
+            Get<Derived, Type>(
                 SB_NULLPTR
             ),
-            Set<T, U>(
+            Set<Derived, Type>(
                 set_
             )
         )
     {
     }
 
+private:
+
+    template<typename Derived, typename Type>
+    struct Caller
+    {
+
+        Get<Derived, Type>
+        get;
+
+        Set<Derived, Type>
+        set;
+
+        Caller
+        (
+            Get<Derived, Type> get_
+        ):
+            get(get_)
+        {
+        }
+
+        Caller
+        (
+            Set<Derived, Type> set_
+        ):
+            set(set_)
+        {
+        }
+
+        Any
+        operator()
+        (
+            const Base& object_
+        )
+        {
+            return Any(
+                this->get(
+                    static_cast<const Derived&>(object_)
+                )
+            );
+        }
+
+        void
+        operator()
+        (
+            Base& object_,
+            const Any& value_
+        )
+        {
+            this->set(
+                static_cast<Derived&>(object_),
+                any_cast<Type>(value_)
+            );
+        }
+
+    };
+
 };
 
-/// \cond INTERNAL
-using PropertySequence = std::vector<Property>;
-
-using PropertyMap = std::map<std::string, Property>;
-/// \endcond
+template<typename T>
+using PropertySequence = std::vector<Property<T>>;
 
 }
 

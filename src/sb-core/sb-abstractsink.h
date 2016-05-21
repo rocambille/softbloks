@@ -23,74 +23,55 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
-class SB_CORE_API AbstractSink : public sb::AbstractBlok
+class SB_CORE_API AbstractSink : public AbstractBlok
 {
+
+    SB_SELF(sb::AbstractSink)
+
+    SB_NAME("sb.AbstractSink")
 
 public:
 
     class Private;
 
+    /// Constructs a sink.
     AbstractSink
     (
     );
 
+    /// Destroys this object.
     virtual
     ~AbstractSink
     (
     );
 
-    SharedDataSet
+    SharedData
     lock_input
     (
-        size_t index_
+        Index index_ = 0
     )
     const;
 
     bool
     set_input
     (
-        size_t index_,
-        const SharedDataSet& value_
-    );
-
-    void
-    set_wanted_indices
-    (
-        size_t input_,
-        const IndexCollection& value_
-    );
-
-protected:
-
-    void
-    set_input_count
-    (
-        size_t value_
-    );
-
-    void
-    set_input_count
-    (
-        size_t minimum_,
-        size_t maximum_
-    );
-
-    void
-    set_input_format
-    (
-        size_t index_,
-        const ObjectFormat& format_
+        Index index_,
+        const SharedData& value_
     );
 
 private:
 
+    /// \cond INTERNAL
     Private*
     d_ptr;
+    /// \endcond
 
 };
 
+/// Alias for a managed sink uniquely owned.
 using UniqueSink = Unique<AbstractSink>;
 
+/// Alias for create_unique<AbstractSink>().
 static
 UniqueSink
 (&create_unique_sink)
@@ -99,11 +80,5 @@ UniqueSink
 ) = create_unique<AbstractSink>;
 
 }
-
-SB_DECLARE_CLASS(
-    sb::AbstractSink,
-    "sb.AbstractSink",
-    sb::AbstractBlok
-)
 
 #endif // SB_ABSTRACTSINK_H

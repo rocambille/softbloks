@@ -42,7 +42,7 @@ TYPED_TEST(
     ) << (
         "Failed to register "
     ) << (
-        get_object_name<TypeParam>()
+        get_type_name<TypeParam>()
     );
 }
 TEST_F(
@@ -55,7 +55,7 @@ TEST_F(
     ) << (
         "Failed to register "
     ) << (
-        get_object_name<AbstractObject>()
+        get_type_name<AbstractObject>()
     );
 
     EXPECT_FALSE(
@@ -72,13 +72,13 @@ TEST_F(
     get_registered_object_names
 )
 {
-    auto name_list = get_registered_object_names();
+    auto name_sequence = get_registered_object_names();
 
     EXPECT_EQ(
         0,
-        name_list.size()
+        name_sequence.size()
     ) << (
-        "Found registered names while no object is registered"
+        "Found registered names while no objects are registered"
     );
 }
 TYPED_TEST(
@@ -86,18 +86,18 @@ TYPED_TEST(
     get_registered_object_names
 )
 {
-    auto name_list = get_registered_object_names();
+    auto name_sequence = get_registered_object_names();
 
     EXPECT_TRUE(
         std::find(
-            name_list.begin(),
-            name_list.end(),
-            get_object_name<TypeParam>()
-        ) !=  name_list.end()
+            name_sequence.begin(),
+            name_sequence.end(),
+            get_type_name<TypeParam>()
+        ) !=  name_sequence.end()
     ) << (
         "Registered name "
     ) << (
-        get_object_name<TypeParam>()
+        get_type_name<TypeParam>()
     ) << (
         "can not be found"
     );
@@ -111,7 +111,7 @@ TEST_F(
 )
 {
     EXPECT_EQ(
-        nullptr,
+        SB_NULLPTR,
         create_unique_object(
             "foo"
         ).get()
@@ -125,14 +125,14 @@ TYPED_TEST(
 )
 {
     EXPECT_NE(
-        nullptr,
+        SB_NULLPTR,
         create_unique<TypeParam>(
-            get_object_name<TypeParam>()
+            get_type_name<TypeParam>()
         ).get()
     ) << (
         "Failed to create unique "
     ) << (
-        get_object_name<TypeParam>()
+        get_type_name<TypeParam>()
     );
 }
 
@@ -144,7 +144,7 @@ TEST_F(
 )
 {
     EXPECT_EQ(
-        nullptr,
+        SB_NULLPTR,
         create_shared_object(
             "foo"
         ).get()
@@ -158,14 +158,14 @@ TYPED_TEST(
 )
 {
     EXPECT_NE(
-        nullptr,
+        SB_NULLPTR,
         create_shared<TypeParam>(
-            get_object_name<TypeParam>()
+            get_type_name<TypeParam>()
         )
     ) << (
         "Failed to create shared "
     ) << (
-        get_object_name<TypeParam>()
+        get_type_name<TypeParam>()
     );
 }
 
@@ -177,7 +177,7 @@ TEST_F(
 )
 {
     EXPECT_TRUE(
-        get_object_format("foo") == undefined_object_format
+        UNDEFINED_OBJECT_FORMAT == get_object_format("foo")
     );
 }
 class Object : public AbstractObject
@@ -189,16 +189,16 @@ TYPED_TEST(
 )
 {
     Object object;
-    auto object_format = undefined_object_format;
+    auto object_format = UNDEFINED_OBJECT_FORMAT;
 
     ASSERT_NO_THROW(
         object_format = get_object_format(
-            get_object_name<TypeParam>()
+            get_type_name<TypeParam>()
         )
     );
 
     EXPECT_TRUE(
-        this->instance->get_instance_format() >> object_format
+        this->instance->get_format().includes(object_format)
     );
 }
 

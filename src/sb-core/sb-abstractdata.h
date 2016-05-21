@@ -23,17 +23,25 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
-class SB_CORE_API AbstractData : public sb::AbstractObject
+/// \brief The AbstractData class represents a piece of data for use with the
+/// DataSet class.
+class SB_CORE_API AbstractData : public AbstractObject
 {
+
+    SB_SELF(sb::AbstractData)
+
+    SB_NAME("sb.AbstractData")
 
 public:
 
     class Private;
 
+    /// Constructs a data.
     AbstractData
     (
     );
 
+    /// Destroys this object.
     virtual
     ~AbstractData
     (
@@ -41,13 +49,27 @@ public:
 
 private:
 
+    /// \cond INTERNAL
     Private*
     d_ptr;
+    /// \endcond
 
 };
+/// Constant value representing the format of a valid data (inheriting
+/// AbstractData).
+const ObjectFormat
+ANY_DATA_FORMAT = {
+    AbstractData::get_type_names(),
+    AbstractData::get_properties()
+};
 
+/// Alias for a managed data with shared ownership.
 using SharedData = Shared<AbstractData>;
 
+/// Alias for a weakly managed data.
+using WeakData = Weak<AbstractData>;
+
+/// Alias for create_shared<AbstractData>().
 static
 SharedData
 (&create_shared_data)
@@ -56,11 +78,5 @@ SharedData
 ) = create_shared<AbstractData>;
 
 }
-
-SB_DECLARE_CLASS(
-    sb::AbstractData,
-    "sb.AbstractData",
-    sb::AbstractObject
-)
 
 #endif // SB_ABSTRACTDATA_H

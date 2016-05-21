@@ -20,8 +20,39 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sb-core/sb-abstractdata.h>
 
+#include <sb-core/sb-abstractblok.h>
+
+#include <unordered_map>
+
 namespace sb
 {
+
+using FollowerCollection = std::unordered_multimap<AbstractBlok*, Index>;
+
+namespace Unmapper
+{
+
+    inline
+    AbstractBlok*
+    blok
+    (
+        const FollowerCollection::value_type& value_
+    )
+    {
+        return value_.first;
+    }
+
+    inline
+    Index
+    input_index
+    (
+        const FollowerCollection::value_type& value_
+    )
+    {
+        return value_.second;
+    }
+
+}
 
 class SB_DECL_HIDDEN AbstractData::Private
 {
@@ -33,10 +64,33 @@ public:
         AbstractData* q_ptr_
     );
 
+    static
+    Private*
+    from
+    (
+        const AbstractData* this_
+    );
+
+    static
+    Private*
+    from
+    (
+        const SharedData& this_
+    );
+
 public:
 
     AbstractData*
     q_ptr;
+
+    AbstractBlok*
+    source_blok;
+
+    Index
+    source_index;
+
+    FollowerCollection
+    followers;
 
 };
 

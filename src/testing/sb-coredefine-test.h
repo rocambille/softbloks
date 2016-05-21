@@ -25,10 +25,10 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
-namespace StaticPointerCastTest
+namespace StaticMoveCastTest
 {
 
-class StaticPointerCastTest : public ::testing::Test
+class StaticMoveCastTest : public ::testing::Test
 {
 
 public:
@@ -38,7 +38,7 @@ public:
     SetUp
     (
     )
-    override
+    SB_OVERRIDE
     {
         this->destruction_progress = 0;
     }
@@ -48,7 +48,7 @@ public:
     //TearDown
     //(
     //)
-    //override
+    //SB_OVERRIDE
     //{
     //}
 
@@ -110,8 +110,8 @@ template<typename T>
 using Unique = std::unique_ptr<T, std::function<void(A*)>>;
 
 TEST_F(
-    StaticPointerCastTest,
-    StaticPointerCast
+    StaticMoveCastTest,
+    StaticMoveCast
 )
 {
     {
@@ -135,11 +135,11 @@ TEST_F(
         // assertions before cast
 
         EXPECT_NE( // a is not null
-            nullptr,
+            SB_NULLPTR,
             a.get()
         );
         EXPECT_EQ( // b is null
-            nullptr,
+            SB_NULLPTR,
             b.get()
         );
         EXPECT_EQ( // a points to c
@@ -149,16 +149,16 @@ TEST_F(
 
         // cast unique_ptr
 
-        b = static_pointer_cast<B>(std::move(a));
+        b = static_move_cast<B>(std::move(a));
 
         // assertions after cast
 
         EXPECT_EQ( // a is null
-            nullptr,
+            SB_NULLPTR,
             a.get()
         );
         EXPECT_NE( // b is not null
-            nullptr,
+            SB_NULLPTR,
             b.get()
         );
         EXPECT_EQ( // b points to c
@@ -167,233 +167,13 @@ TEST_F(
         );
     }
 
-    // check destruction was performed at 100% :
+    // check destruction was performed at 100%:
     // destructors were effectively called through
     // the deleter passed on construction
 
     EXPECT_EQ(
         100,
         this->destruction_progress
-    );
-}
-
-}
-
-namespace PropertyFormatTest
-{
-
-class PropertyFormatTest : public ::testing::Test
-{
-
-public:
-
-    //virtual
-    //void
-    //SetUp
-    //(
-    //)
-    //override
-    //{
-    //}
-
-    //virtual
-    //void
-    //TearDown
-    //(
-    //)
-    //override
-    //{
-    //}
-
-    static
-    const PropertyFormat
-    foo_property_format;
-
-    static
-    const PropertyFormat
-    bar_property_format;
-
-};
-
-// create test formats
-
-const PropertyFormat PropertyFormatTest::foo_property_format = {
-    typeid(int), sb::READ_ONLY
-};
-
-const PropertyFormat PropertyFormatTest::bar_property_format = {
-    typeid(std::string), sb::WRITE_ONLY
-};
-
-TEST_F(
-    PropertyFormatTest,
-    Equality
-)
-{
-    EXPECT_TRUE(
-        PropertyFormatTest::foo_property_format == PropertyFormatTest::foo_property_format
-    );
-    EXPECT_TRUE(
-        PropertyFormatTest::bar_property_format == PropertyFormatTest::bar_property_format
-    );
-    EXPECT_FALSE(
-        PropertyFormatTest::foo_property_format == PropertyFormatTest::bar_property_format
-    );
-}
-
-}
-
-namespace ObjectFormatTest
-{
-
-class ObjectFormatTest : public ::testing::Test
-{
-
-public:
-
-    //virtual
-    //void
-    //SetUp
-    //(
-    //)
-    //override
-    //{
-    //}
-
-    //virtual
-    //void
-    //TearDown
-    //(
-    //)
-    //override
-    //{
-    //}
-
-    static
-    const ObjectFormat
-    foo_object_format;
-
-};
-
-// create a test format
-const ObjectFormat ObjectFormatTest::foo_object_format = {
-    { // of type "foo" derived from sb::AbstractObject
-        "sb.AbstractObject", "foo"
-    },
-    { // with a dummy property "bar" of type int in read/write mode
-        {"bar", {typeid(int), sb::READ_WRITE}}
-    }
-};
-
-TEST_F(
-    ObjectFormatTest,
-    Equality
-)
-{
-    EXPECT_TRUE(
-        undefined_object_format == undefined_object_format
-    );
-    EXPECT_TRUE(
-        any_object_format == any_object_format
-    );
-    EXPECT_TRUE(
-        ObjectFormatTest::foo_object_format == ObjectFormatTest::foo_object_format
-    );
-}
-
-TEST_F(
-    ObjectFormatTest,
-    ExtractUndefinedFormat
-)
-{
-    EXPECT_FALSE(
-        undefined_object_format >> undefined_object_format
-    );
-    EXPECT_FALSE(
-        any_object_format >> undefined_object_format
-    );
-    EXPECT_FALSE(
-        ObjectFormatTest::foo_object_format >> undefined_object_format
-    );
-}
-
-TEST_F(
-    ObjectFormatTest,
-    ExtractAnyObjectFormat
-)
-{
-    EXPECT_FALSE(
-        undefined_object_format >> any_object_format
-    );
-    EXPECT_TRUE(
-        any_object_format >> any_object_format
-    );
-    EXPECT_TRUE(
-        ObjectFormatTest::foo_object_format >> any_object_format
-    );
-}
-
-TEST_F(
-    ObjectFormatTest,
-    ExtractDummyFormat
-)
-{
-    EXPECT_FALSE(
-        undefined_object_format >> ObjectFormatTest::foo_object_format
-    );
-    EXPECT_FALSE(
-        any_object_format >> ObjectFormatTest::foo_object_format
-    );
-    EXPECT_TRUE(
-        ObjectFormatTest::foo_object_format >> ObjectFormatTest::foo_object_format
-    );
-}
-
-TEST_F(
-    ObjectFormatTest,
-    InjectUndefinedFormat
-)
-{
-    EXPECT_FALSE(
-        undefined_object_format << undefined_object_format
-    );
-    EXPECT_FALSE(
-        undefined_object_format << any_object_format
-    );
-    EXPECT_FALSE(
-        undefined_object_format << ObjectFormatTest::foo_object_format
-    );
-}
-
-TEST_F(
-    ObjectFormatTest,
-    InjectAnyObjectFormat
-)
-{
-    EXPECT_FALSE(
-        any_object_format << undefined_object_format
-    );
-    EXPECT_TRUE(
-        any_object_format << any_object_format
-    );
-    EXPECT_TRUE(
-        any_object_format << ObjectFormatTest::foo_object_format
-    );
-}
-
-TEST_F(
-    ObjectFormatTest,
-    InjectDummyFormat
-)
-{
-    EXPECT_FALSE(
-        ObjectFormatTest::foo_object_format << undefined_object_format
-    );
-    EXPECT_FALSE(
-        ObjectFormatTest::foo_object_format << any_object_format
-    );
-    EXPECT_TRUE(
-        ObjectFormatTest::foo_object_format << ObjectFormatTest::foo_object_format
     );
 }
 

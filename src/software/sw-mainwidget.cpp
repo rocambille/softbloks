@@ -435,7 +435,7 @@ public:
     SvgWidget
     (
         const QString& file_,
-        QWidget* parent_ = nullptr
+        QWidget* parent_ = SB_NULLPTR
     ):
         QSvgWidget(file_, parent_)
     {
@@ -450,7 +450,7 @@ protected:
     (
         QResizeEvent* event_
     )
-    override
+    SB_OVERRIDE
     {
         QSize view_box_size = event_->size().scaled(
             this->initial_default_size,
@@ -519,14 +519,11 @@ MainWidgetPrivate::create_chooser
     QListWidget* list_widget = new QListWidget;
 
     auto names = sb::get_registered_object_names(
-        {
-            {
-                sb::get_object_name<sb::AbstractSoft>()
-            },
-            {
-                {"Qt.mainview", {typeid(QWidget*), sb::READ_ONLY}}
-            }
-        }
+        sb::ObjectFormat(sb::ANY_SOFT_FORMAT) <<
+            sb::make_property_format<QWidget*>(
+                "Qt.mainview",
+                sb::AccessRights::READ
+            )
     );
 
     for(auto name : names)
@@ -553,7 +550,7 @@ MainWidgetPrivate::create_chooser
 
             // replace it with soft's widget
 
-            auto soft = sb::create_shared_object(
+            auto soft = sb::create_shared_soft(
                 item_->text().toStdString()
             );
 

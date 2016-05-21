@@ -23,17 +23,21 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
-class SB_CORE_API PushExecutive : public sb::AbstractExecutive
+class SB_CORE_API PushExecutive : public AbstractExecutive
 {
+
+    SB_NAME("sb.PushExecutive")
 
 public:
 
     class Private;
 
+    /// Constructs an executive with push policy.
     PushExecutive
     (
     );
 
+    /// Destroys this object.
     virtual
     ~PushExecutive
     (
@@ -43,36 +47,42 @@ public:
     void
     on_input_pushed
     (
-        size_t index_
+        Index index_
     )
-    override;
+    SB_OVERRIDE;
 
     virtual
     void
     on_output_pulled
     (
-        size_t index_
+        Index index_
     )
-    override;
+    SB_OVERRIDE;
 
 private:
 
+    /// \cond INTERNAL
     Private*
     d_ptr;
+    /// \endcond
 
 };
 
-class SB_CORE_API PullExecutive : public sb::AbstractExecutive
+class SB_CORE_API PullExecutive : public AbstractExecutive
 {
+
+    SB_NAME("sb.PullExecutive")
 
 public:
 
     class Private;
 
+    /// Constructs an executive with pull policy.
     PullExecutive
     (
     );
 
+    /// Destroys this object.
     virtual
     ~PullExecutive
     (
@@ -82,36 +92,42 @@ public:
     void
     on_input_pushed
     (
-        size_t index_
+        Index index_
     )
-    override;
+    SB_OVERRIDE;
 
     virtual
     void
     on_output_pulled
     (
-        size_t index_
+        Index index_
     )
-    override;
+    SB_OVERRIDE;
 
 private:
 
+    /// \cond INTERNAL
     Private*
     d_ptr;
+    /// \endcond
 
 };
 
-class SB_CORE_API PushPullExecutive : public sb::AbstractExecutive
+class SB_CORE_API PushPullExecutive : public AbstractExecutive
 {
+
+    SB_NAME("sb.PushPullExecutive")
 
 public:
 
     class Private;
 
+    /// Constructs an executive with push/pull policy.
     PushPullExecutive
     (
     );
 
+    /// Destroys this object.
     virtual
     ~PushPullExecutive
     (
@@ -121,41 +137,27 @@ public:
     void
     on_input_pushed
     (
-        size_t index_
+        Index index_
     )
-    override;
+    SB_OVERRIDE;
 
     virtual
     void
     on_output_pulled
     (
-        size_t index_
+        Index index_
     )
-    override;
+    SB_OVERRIDE;
 
 private:
 
+    /// \cond INTERNAL
     Private*
     d_ptr;
+    /// \endcond
 
 };
 
 }
-
-SB_DECLARE_CLASS(
-    sb::PushExecutive,
-    "sb.PushExecutive",
-    sb::AbstractExecutive
-)
-SB_DECLARE_CLASS(
-    sb::PullExecutive,
-    "sb.PullExecutive",
-    sb::AbstractExecutive
-)
-SB_DECLARE_CLASS(
-    sb::PushPullExecutive,
-    "sb.PushPullExecutive",
-    sb::AbstractExecutive
-)
 
 #endif // SB_EXECUTIVE_H

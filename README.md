@@ -1,5 +1,17 @@
-Softbloks Version 0.2 19/02/2016
+Softbloks Version 0.3 21/05/2016
 ================================
+
+README contents
+---------------
+
+* What is Softbloks?
+* How to get the source code?
+* How the repository is structured?
+* How to set up the build system?
+* How to run a build?
+* How to help this project?
+* Links
+* Licensing
 
 What is Softbloks?
 ------------------
@@ -9,7 +21,7 @@ Softbloks is a free/libre cross-platform application framework written in C++.
 The aim of Softbloks is to provide a continuum between bottom-up and top-down
 design.
 
-### The bottom-up-top-down continuum
+### The bottom-up-top-down continuum ###
 
 In a perfect world, a developer will always be provided with a perfect
 functional definition from which (s)he will gain a perfect understanding of
@@ -43,7 +55,7 @@ function with a *module* declaration:
 ```c++
 #include "sb-core.h"
 
-SB_DECLARE_MODULE(/*a description should go here*/)
+SB_MODULE(/*a description should go here*/)
 {
     // do something
 }
@@ -60,12 +72,14 @@ initialization and finalization or to manage global resources, like in:
 ```c++
 class MainObject
 {
-    public:
+
+public:
 
     MainObject()
     {
         // do something
     }
+
 };
 
 int main(...)
@@ -84,23 +98,21 @@ modifications:
 
 class MainObject : public sb::AbstractSoft
 {
-    public:
+
+    // 2) associate a name to the class
+
+    SB_NAME("MainObject")
+
+public:
 
     MainObject()
     {
         // do something
     }
+
 };
 
-// 2) declare the class to Softbloks
-
-SB_DECLARE_CLASS(
-    MainObject,
-    "MainObject",
-    sb::AbstractSoft
-)
-
-SB_DECLARE_MODULE(/*a description should go here*/)
+SB_MODULE(/*a description should go here*/)
 {
     // 3) register your object when declaring your module
 
@@ -117,44 +129,32 @@ your soft:
 ```c++
 class MainObject : public sb::AbstractSoft
 {
-    public:
+
+    SB_NAME("MainObject")
+
+    // 1) declare a property Qt.mainview bound to the method get_qt_mainview()
+
+    SB_PROPERTIES({
+        "Qt.mainview",
+        &MainObject::get_qt_mainview
+    })
+
+public:
 
     MainObject()
     {
-        // 1) register the property Qt.mainview in read-only mode
-
-        // - the method get_widget is passed as reading accessor (std::bind is
-        //   used to convert the method into a std::function bound to this)
-        // - empty value (nullptr) is passed as writing accessor
-
-        this->register_property<QWidget*>(
-            "Qt.mainview",
-            sb::READ_ONLY,
-            std::bind(&MySoft::get_widget, this),
-            nullptr
-        );
     }
 
-    QWidget* get_widget()
+    // 2) implement the accessor
+
+    QWidget* get_qt_mainview() const
     {
         return new QLabel("Hello World!!!");
     }
+
 };
 
-SB_DECLARE_CLASS(
-    MainObject,
-    "MainObject",
-    sb::AbstractSoft
-)
-
-// 2) declare the properties of the class
-
-SB_DECLARE_PROPERTIES(
-    MainObject,
-    {"Qt.mainview", {typeid(QWidget*), sb::READ_ONLY}}
-)
-
-SB_DECLARE_MODULE(/*a description should go here*/)
+SB_MODULE(/*a description should go here*/)
 {
     sb::register_object<MainObject>();
 }
@@ -169,64 +169,128 @@ available tools and, once your structures have emerged, transform them into
 
 class Foo : public sb::AbstractSource // inherit a blok interface
 {
-    public:
+
+    // declare the class
+
+    SB_NAME("Foo")
+
+    // declare the types of the outputs:
+    // any existing type can be used, even a non Softbloks type
+
+    SB_OUTPUTS_TYPES(
+        std::string,    /* 1st output is of type std::string */
+        MyType::Pointer /* 2nd output is a pointer to a user-defined object */
+    )
+
+public:
 
     Foo()
     {
-        cout << "Hello world!!!" << endl;
+        // outputs are not ready to use here, see init() below
     }
-};
 
-SB_DECLARE_CLASS( // declare the class to Softbloks
-    Foo,
-    "Foo",
-    sb::AbstractSource
-)
+    virtual void init()
+    {
+        // outputs can be initialized in this method, e.g. the pointer in the
+        // 2nd output (at index 1) is here initialized to null
+
+        // note that non Softbloks types are wrapped in a Softbloks data
+        // object with a read/write property, called "value", of the
+        // underlying non Softbloks type
+
+        this->get_output(1)->set<MyType::Pointer>(
+            "value", nullptr
+        );
+    }
+
+    virtual void process()
+    {
+        // outputs can be updated in this method
+
+        // update 1st output (at index 0):
+        // it was declared of type std::string in SB_OUTPUTS_TYPES()
+
+        this->get_output(0)->set<std::string>(
+            "value", "Hello World!!!"
+        );
+
+        // update 2nd output (at index 1):
+        // it was declared of type MyType::Pointer in SB_OUTPUTS_TYPES()
+
+        if(this->get_output(1)->get<MyType::Pointer>("value") == nullptr)
+        {
+            this->get_output(1)->set<MyType::Pointer>(
+                "value", MyType::New()
+            );
+        }
+    }
+
+};
 
 // Bar is still a work in progress: let it be
 
 class Bar
 {
-    public:
 
-    Bar()
+public:
+
+    Bar():
+        message("What's going on?")
     {
-        cout << "What's going on?" << endl;
     }
+
+    std::string message;
+
 };
 
 // MainObject can mix bloks with classical objects
 
 class MainObject : public sb::AbstractSoft
 {
-    public:
+
+    SB_NAME("MainObject")
+
+public:
 
     MainObject()
     {
         // create components
 
-        auto foo = sb::create_unique_source("Foo");
+        auto foo = sb::create_unique_source(
+            Foo::get_type_name()
+        );
 
         Bar bar;
+
+        // execute foo and do something with its outputs
+
+        foo->process();
+
+        cout <<
+            foo->get_output(0)->get<std::string>("value") <<" "
+            bar.message << endl;
+
+        foo->get_output(1)->get<MyType::Pointer>(
+            "value"
+        )->do_something();
     }
+
 };
 
-SB_DECLARE_CLASS(
-    MainObject,
-    "MainObject",
-    sb::AbstractSoft
-)
-
-SB_DECLARE_MODULE(/*a description should go here*/)
+SB_MODULE(/*a description should go here*/)
 {
-    // remember to register all your objects when declaring your module
+    // remember to register all your objects when declaring your module,
+    // including the data types
+
+    sb::register_data<std::string>();
+    sb::register_data<MyType::Pointer>();
 
     sb::register_object<Foo>();
     sb::register_object<MainObject>();
 }
 ```
 
-### Why is it called *Softbloks*?
+### Why is it called *Softbloks*? ###
 
 The name was inspired by [Phonebloks](http://phonebloks.com), a modular
 smartphone concept. The aim of Softbloks is to provide a modular framework for
@@ -258,11 +322,13 @@ defines among others the following branches:
 The repository uses the following directory structure:
 
     <root>/
+        3rdparty/
+            (third party libraries)
         share/
             cmake/
                 (config files for cmake packages)
             doc/
-                (config files for the documentation)
+                (documentation generated with Doxygen)
             examples/
                 (source files of the examples)
         src/
@@ -277,14 +343,13 @@ How to set up the build system?
 
 System requirements:
 
-* [CMake](http://cmake.org/) 3.0.0 or newer;
-* A C++11-standard-compliant compiler.
+* [CMake](http://cmake.org/) 3.1.0 or newer;
+* A C++11-standard-compliant compiler (compliance is tested with CMake using
+  [target_compile_features()](http://cmake.org/cmake/help/v3.1/command/target_compile_features.html)).
 
 Optional requirements:
 
 * To build Qt5-based components: [Qt](http://www.qt.io/) 5.2 or newer.
-* To build unit tests: [GTest](https://github.com/google/googletest) 1.7 or newer.
-* To build the documentation: [Doxygen](http://www.doxygen.org/) 1.7 or newer.
 
 Given `<root>` is the directory where you cloned the sources, we recommend to
 create a separate directory for the build, e.g. `<root>/build`:
@@ -305,20 +370,15 @@ You can enable the compilation of the examples by adding the following option:
 
     cmake ... -D BUILD_EXAMPLES=ON ...
 
+You can enable the compilation of the unit tests by adding the following
+option:
+
+    cmake ... -D BUILD_TESTING=ON ...
+
 Suppose you installed Qt in directory `<Qt_install_prefix>`, you can enable
 the compilation of the Qt-based components by adding the following options:
 
     cmake ... -D Qt5_DIR=<Qt_install_prefix>/lib/cmake/Qt5 -D BUILD_SOFTWARE=ON -D BUILD_QT5_EXAMPLES=ON ...
-
-Suppose you installed Google Test in directory `<GTest_install_prefix>`, you
-can enable the compilation of the unit tests by adding the following options:
-
-    cmake ... -D GTEST_ROOT=<GTest_install_prefix> -D BUILD_TESTING=ON ...
-
-If you have installed Doxygen, you can enable the generation of the
-documentation by adding the following option:
-
-    cmake ... -D BUILD_DOCUMENTATION=ON ...
 
 How to run a build?
 -------------------
@@ -344,7 +404,7 @@ Files are installed according to the following directory structure:
                     cmake/
                         (config-file packages for cmake)
                     doc/
-                        (documentation generated from include files)
+                        (documentation generated with Doxygen)
                     modules/
                         (loadable modules)
                 COPYING
@@ -368,7 +428,7 @@ Files are installed according to the following directory structure:
                     cmake/
                         (config-file packages for cmake)
                     doc/
-                        (documentation generated from include files)
+                        (documentation generated with Doxygen)
                     modules/
                         (loadable modules)
                     COPYING
@@ -377,11 +437,22 @@ Files are installed according to the following directory structure:
 
 Where *n* is the current major version number.
 
+How to help this project?
+-------------------------
+
+You can help the project in many ways, but basically you can tell us what's
+wrong with it.
+Tell us what goes wrong when you build the code.
+Tell us about that missing feature or about the bad documentation.
+By the way, if you like the project, please tell your friends.
+
 Links
 -----
 
 Web site: <http://github.com/rita-marylin-raquel/softbloks>  
 E-mail: <rita.marylin.raquel@gmail.com>
+
+Cite us: [![DOI](https://zenodo.org/badge/20687/rita-marylin-raquel/softbloks.svg)](https://zenodo.org/badge/latestdoi/20687/rita-marylin-raquel/softbloks)
 
 Licensing
 ---------

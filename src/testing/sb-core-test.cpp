@@ -15,7 +15,7 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include <gtest/gtest.h>
-
 #include <testing/sb-abstractobject-test.h>
 #include <testing/sb-coredefine-test.h>
+#include <testing/sb-objectformat-test.h>
+#include <testing/sb-propertyformat-test.h>

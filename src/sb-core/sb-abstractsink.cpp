@@ -20,7 +20,6 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb-core/sb-abstractsink-private.h>
 
 #include <sb-core/sb-abstractblok-private.h>
-#include <sb-core/sb-dataset-private.h>
 
 using namespace sb;
 
@@ -38,23 +37,23 @@ AbstractSink::~AbstractSink
     delete d_ptr;
 }
 
-SharedDataSet
+SharedData
 AbstractSink::lock_input
 (
-    size_t index_
+    Index index_
 )
 const
 {
     return AbstractBlok::Private::from(
         this
-    )->inputs.at(index_).lock();
+    )->lock_input(index_);
 }
 
 bool
 AbstractSink::set_input
 (
-    size_t index_,
-    const SharedDataSet& value_
+    Index index_,
+    const SharedData& value_
 )
 {
     return AbstractBlok::Private::from(
@@ -62,65 +61,6 @@ AbstractSink::set_input
     )->set_input(
         index_,
         value_
-    );
-}
-
-void
-AbstractSink::set_wanted_indices
-(
-    size_t input_,
-    const IndexCollection& value_
-)
-{
-    DataSet::Private::from(
-        this->lock_input(
-            input_
-        )
-    )->set_wanted_indices(
-        value_
-    );
-}
-
-void
-AbstractSink::set_input_count
-(
-    size_t value_
-)
-{
-    AbstractBlok::Private::from(
-        this
-    )->set_input_count(
-        value_
-    );
-}
-
-void
-AbstractSink::set_input_count
-(
-    size_t minimum_,
-    size_t maximum_
-)
-{
-    AbstractBlok::Private::from(
-        this
-    )->set_input_count(
-        minimum_,
-        maximum_
-    );
-}
-
-void
-AbstractSink::set_input_format
-(
-    size_t index_,
-    const ObjectFormat& format_
-)
-{
-    AbstractBlok::Private::from(
-        this
-    )->set_input_format(
-        index_,
-        format_
     );
 }
 

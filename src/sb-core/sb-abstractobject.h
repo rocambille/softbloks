@@ -18,66 +18,74 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SB_ABSTRACTOBJECT_H
 #define SB_ABSTRACTOBJECT_H
 
-#include <sb-core/sb-coredefine.h>
+#include <sb-core/sb-objectformat.h>
 
-#include <algorithm>
-#include <string>
+#include <functional>
+#include <map>
+#include <type_traits>
 
 namespace sb
 {
 
-template<typename T>
-inline
-bool
-register_object
-(
-);
+using ObjectFactory = std::function<Unique<AbstractObject>(void)>;
 
-class AbstractObject;
-
-template<typename T>
-using Unique = std::unique_ptr<T, std::function<void(AbstractObject*)>>;
-
-using UniqueObject = Unique<AbstractObject>;
-
-using ObjectFactory = std::function<UniqueObject(void)>;
-
+/// \brief The AbstractObject class is the base class for all Softbloks
+/// objects.
+///
+/// type names, properties.
+///
+/// \anchor property-system
+/// ### The Property System ###
+///
+/// Properties can be associated to a Softbloks object in class declaration:
+///
+/// \code{cpp}
+/// class Foo : public sb::AbstractObject
+/// {
+///
+///     SB_PROPERTIES({
+///         "my_property",
+///         &Foo::get_int,
+///         &Foo::set_int
+///     })
+///
+/// public:
+///
+///     Foo()
+///     {
+///         // a property should not be accessed in the constructor,
+///         // see init() below
+///     }
+///
+///     virtual
+///     void
+///     init
+///     override
+///     {
+///         // the property can be accessed from here using get() or set()
+///
+///         this->get<int>("my_property");      // executes Foo::get_int()
+///         this->set<int>("my_property", 42);  // executes Foo::set_int()
+///     }
+///
+///     int get_int() const { return 42; }
+///
+///     void set_int(const int& /*value_*/) { }
+///
+/// };
+/// \endcode
+///
+/// Through
+/// [std::function](http://www.cplusplus.com/reference/functional/function/),
+/// an accessor may be a function, a function pointer, a function object, a
+/// lambda expression or a pointer to member -- bound to an instance using
+/// [std::bind()](http://www.cplusplus.com/reference/functional/bind/).
 class SB_CORE_API AbstractObject
 {
 
 public:
 
-    template<typename T>
-    struct Accessors
-    {
-
-        using Get = std::function<T(void)>;
-
-        using Set = std::function<void(const T&)>;
-
-        Get
-        get;
-
-        Set
-        set;
-
-    };
-
-    struct Property
-    {
-
-        void*
-        owner;
-
-        PropertyFormat
-        format;
-
-        std::shared_ptr<void>
-        accessors;
-
-    };
-
-    using PropertyMap = std::map<std::string, Property>;
+    using Self = AbstractObject;
 
     class Private;
 
@@ -88,12 +96,14 @@ public:
     (
         const AbstractObject& other_
     )
-    = delete;
+    SB_DELETED_FUNCTION;
 
+    /// Constructs a Softbloks object.
     AbstractObject
     (
     );
 
+    /// Destroys this object.
     virtual
     ~AbstractObject
     (
@@ -107,26 +117,30 @@ public:
     (
         const AbstractObject& other_
     )
-    = delete;
+    SB_DELETED_FUNCTION;
 
-    ObjectFormat
-    get_instance_format
-    (
-    )
-    const;
-
-    bool
-    is_ready
-    (
-    )
-    const;
-
+    virtual
     void
-    set_ready
+    init
     (
-        bool is_ready_
-    );
+    )
+    {
+    }
 
+    /// Returns the format of this object.
+    ObjectFormat
+    get_format
+    (
+    )
+    const;
+
+    /// Returns current value of the property \a name_.
+    ///
+    /// An exception is raised if this object has no properties called
+    /// \a name_, if the property was declared with a type different from \a T
+    /// or if the property was declared in write-only mode.
+    ///
+    /// \sa set() and \ref property-system "Softbloks's property system".
     template<typename T>
     inline
     T
@@ -136,45 +150,18 @@ public:
     )
     const
     {
-        Property wanted_property = this->properties->at(name_);
-
-        // check type
-
-        std::type_index wanted_result_type = typeid(T);
-
-        if(wanted_result_type != wanted_property.format.type)
-        {
-            throw std::invalid_argument(
-                std::string() +
-                "sb::AbstractBlok::get: property " +
-                name_ +
-                " registered as " +
-                wanted_property.format.type.name() +
-                " is accessed as " +
-                wanted_result_type.name()
-            );
-        }
-
-        // check mode
-
-        if((wanted_property.format.mode & READ_ONLY) == 0)
-        {
-            throw std::invalid_argument(
-                std::string() +
-                "sb::AbstractBlok::get: " +
-                "calling on property " +
-                name_ +
-                " which is write-only"
-            );
-        }
-
-        // call is valid
-
-        return std::static_pointer_cast< Accessors<T> >(
-            wanted_property.accessors
-        )->get();
+        return any_cast<T>(
+            this->get(name_)
+        );
     }
 
+    /// Sets the property \a name_ to \a value_.
+    ///
+    /// An exception is raised if this object has no properties called
+    /// \a name_, if the property was declared with a type different from \a T
+    /// or if the property was declared in read-only mode.
+    ///
+    /// \sa get() and \ref property-system "Softbloks's property system".
     template<typename T>
     inline
     void
@@ -184,150 +171,94 @@ public:
         const T& value_
     )
     {
-        Property wanted_property = this->properties->at(name_);
-
-        // check type
-
-        std::type_index wanted_argument_type = typeid(T);
-
-        if(wanted_argument_type != wanted_property.format.type)
-        {
-            throw std::invalid_argument(
-                std::string() +
-                "sb::AbstractBlok::set: property " +
-                name_ +
-                " registered as " +
-                wanted_property.format.type.name() +
-                " is accessed as " +
-                wanted_argument_type.name()
-            );
-        }
-
-        // check mode
-
-        if((wanted_property.format.mode & WRITE_ONLY) == 0)
-        {
-            throw std::invalid_argument(
-                std::string() +
-                "sb::AbstractBlok::set: " +
-                "calling on property " +
-                name_ +
-                " which is read-only"
-            );
-        }
-
-        // call is valid
-
-        std::static_pointer_cast< Accessors<T> >(
-            wanted_property.accessors
-        )->set(value_);
+        this->set(name_, Any(value_));
     }
 
-    template<typename T>
-    inline
-    bool
-    register_property
+    static
+    StringSequence
+    get_type_names
     (
-        void* owner_,
-        const std::string& name_,
-        Mode mode_,
-        const typename Accessors<T>::Get& get_,
-        const typename Accessors<T>::Set& set_
     )
     {
-        bool registered = false;
-
-        if(this->properties->count(name_) == 0)
-        {
-            // initialize the new property
-
-            auto accessors = std::make_shared< Accessors<T> >();
-            accessors->get = get_;
-            accessors->set = set_;
-
-            Property new_property = {
-                owner_,
-                typeid(T),
-                mode_,
-                std::static_pointer_cast<void>(
-                    accessors
-                )
-            };
-
-            // store the property
-
-            this->properties->emplace(name_, new_property);
-
-            registered = true;
-        }
-
-        return registered;
+        return { "sb.AbstractObject" };
     }
 
-    bool
-    unregister_property
+    static
+    PropertySequence<AbstractObject>
+    get_properties
     (
-        void* owner_,
-        const std::string& name_
-    );
-
-protected:
-
-    template<typename T>
-    inline
-    bool
-    register_property
-    (
-        const std::string& name_,
-        Mode mode_,
-        const typename Accessors<T>::Get& get_,
-        const typename Accessors<T>::Set& set_
     )
     {
-        return this->register_property<T>(
-            this,
-            name_,
-            mode_,
-            get_,
-            set_
+        return { };
+    }
+
+    /// \cond INTERNAL
+    template<typename T>
+    static
+    void
+    on_creation
+    (
+        AbstractObject* this_
+    )
+    {
+        AbstractObject::init(
+            this_,
+            T::get_type_names(),
+            T::get_properties()
         );
     }
+    /// \endcond
 
-    bool
-    unregister_property
-    (
-        const std::string& name_
-    );
-
+    /// \cond INTERNAL
     template<typename T>
-    friend
-    bool
-    sb::register_object
+    static
+    void
+    on_destruction
     (
-    );
+        AbstractObject* /*this_*/
+    )
+    {
+    }
+    /// \endcond
 
 private:
 
-    static
-    void
-    set_type_names
+    /// \cond INTERNAL
+    Any
+    get
     (
-        AbstractObject* this_,
-        std::vector<std::string> names_
-    );
+        const std::string& name_
+    )
+    const;
+    /// \endcond
 
+    /// \cond INTERNAL
+    void
+    set
+    (
+        const std::string& name_,
+        const Any& value_
+    );
+    /// \endcond
+
+    /// \cond INTERNAL
     static
     void
     init
     (
-        AbstractObject* this_
+        AbstractObject* this_,
+        const StringSequence& type_names_,
+        const PropertySequence<AbstractObject>& properties_
     );
+    /// \endcond
 
-    static
-    void
-    forget
+    /// \cond INTERNAL
+    template<typename T>
+    friend
+    inline
+    bool
+    register_object
     (
-        AbstractObject* this_
     );
 
     static
@@ -337,23 +268,40 @@ private:
         const ObjectFormat& format_,
         const ObjectFactory& factory_
     );
+    /// \endcond
 
-    PropertyMap*
-    properties;
-
+    /// \cond INTERNAL
     Private*
     d_ptr;
+    /// \endcond
 
 };
 
-template<typename T>
-using Shared = std::shared_ptr<T>;
+using ObjectProperty = Property<AbstractObject>;
+using ObjectPropertySequence = PropertySequence<AbstractObject>;
 
-template<typename T>
-using Weak = std::weak_ptr<T>;
+/// Constant value representing the format of a valid object (inheriting
+/// AbstractObject).
+const ObjectFormat
+ANY_OBJECT_FORMAT = {
+    AbstractObject::get_type_names(),
+    AbstractObject::get_properties()
+};
 
+/// Alias for a managed object with shared ownership.
 using SharedObject = Shared<AbstractObject>;
 
+/// Returns a managed pointer to an instance of the object designated by
+/// \a name_.
+///
+/// If \a T wasn't registered using register_object() before calling this
+/// function, the returned pointer will be empty (pointing to \b nullptr).
+///
+/// Valid names can be retrieved with get_registered_object_names().
+///
+/// The returned pointer has shared ownership.
+///
+/// \sa create_shared() and create_unique_object().
 SB_CORE_API
 SharedObject
 create_shared_object
@@ -361,9 +309,20 @@ create_shared_object
     const std::string& name_
 );
 
+/// Constructs an instance of the object designated by \a name_ and returns it
+/// as a managed pointer casted statically to the type \a T.
+///
+/// If \a T wasn't registered using register_object() before calling this
+/// function, the returned pointer will be empty (pointing to \b nullptr).
+///
+/// Valid names can be retrieved with get_registered_object_names().
+///
+/// The returned pointer has shared ownership.
+///
+/// \sa create_shared_object().
 template<typename T>
 inline
-std::shared_ptr<T>
+Shared<T>
 create_shared
 (
     const std::string& name_
@@ -374,6 +333,20 @@ create_shared
     );
 }
 
+/// Alias for a managed object uniquely owned.
+using UniqueObject = Unique<AbstractObject>;
+
+/// Returns a managed pointer to an instance of the object designated by
+/// \a name_.
+///
+/// If \a T wasn't registered using register_object() before calling this
+/// function, the returned pointer will be empty (pointing to \b nullptr).
+///
+/// Valid names can be retrieved with get_registered_object_names().
+///
+/// The returned pointer is uniquely owned.
+///
+/// \sa create_unique() and create_shared_object().
 SB_CORE_API
 UniqueObject
 create_unique_object
@@ -381,19 +354,39 @@ create_unique_object
     const std::string& name_
 );
 
+/// Constructs an instance of the object designated by \a name_ and returns it
+/// as a managed pointer casted statically to the type \a T.
+///
+/// If \a T wasn't registered using register_object() before calling this
+/// function, the returned pointer will be empty (pointing to \b nullptr).
+///
+/// Valid names can be retrieved with get_registered_object_names().
+///
+/// The returned pointer is uniquely owned.
+///
+/// \sa create_unique_object().
 template<typename T>
 inline
-std::unique_ptr<T, UniqueObject::deleter_type>
+Unique<T>
 create_unique
 (
     const std::string& name_
 )
 {
-    return sb::static_pointer_cast<T>(
+    return static_move_cast<T>(
         create_unique_object(name_)
     );
 }
 
+/// Registers the type \a T as an instantiable object using
+/// create_shared_object() or one of the associated functions.
+///
+/// The type \a T should be given a unique name with SB_NAME().
+///
+/// The function returns \b true if there was no previously registered type
+/// with the same name as \a T; it returns \b false otherwise.
+///
+/// \sa unregister_all_objects().
 template<typename T>
 inline
 bool
@@ -401,50 +394,74 @@ register_object
 (
 )
 {
-    auto factory = (
+    ObjectFactory factory = (
         []
         (
         )
         {
-            auto instance = UniqueObject(
+            Unique<T> instance = Unique<T>(
                 new T,
                 []
                 (
                     AbstractObject* ptr_
                 )
                 {
-                    delete ptr_;
+                    T::template on_destruction<T>(ptr_);
 
-                    AbstractObject::forget(ptr_);
+                    delete ptr_;
                 }
             );
 
-            AbstractObject::set_type_names(
-                instance.get(),
-                get_type_names<T>()
-            );
-            AbstractObject::init(instance.get());
+            T::template on_creation<T>(instance.get());
 
-            return instance;
+            return static_move_cast<AbstractObject>(
+                std::move(instance)
+            );
         }
     );
 
     return AbstractObject::register_object(
         {
-            get_type_names<T>(),
-            get_properties<T>()
+            T::get_type_names(),
+            T::get_properties()
         },
         factory
     );
 }
 
+/// Returns a list of the names of all the objects previously registered with
+/// register_object().
+///
+/// The names can be filtered by type names and/or by properties using the
+/// \a filter_ argument.
+///
+/// \sa SB_NAME() and SB_PROPERTIES().
 SB_CORE_API
-std::vector<std::string>
+StringSequence
 get_registered_object_names
 (
-    const ObjectFormat& filter_ = any_object_format
+    const ObjectFormat& filter_ = ANY_OBJECT_FORMAT
 );
 
+/// Returns the type name for the type \a T.
+///
+/// \sa SB_NAME() and get_object_format().
+template<typename T>
+inline
+std::string
+get_type_name
+(
+)
+{
+    return T::get_type_names()[0];
+}
+
+/// Returns the format of the object identified by \a name_.
+///
+/// The object must have been previously registered using register_object().
+/// The function returns UNDEFINED_OBJECT_FORMAT otherwise.
+///
+/// \sa \ref property-system "Softbloks's property system".
 SB_CORE_API
 ObjectFormat
 get_object_format
@@ -452,32 +469,98 @@ get_object_format
     const std::string& name_
 );
 
+template<typename T>
+inline
+ObjectFormat
+get_object_format
+(
+)
+{
+    return get_object_format(
+        get_type_name<T>()
+    );
+}
+
+/// Unregisters all the objects previously registered using register_object().
+///
+/// You shouldn't normally call this function, unless you are integrating
+/// Softbloks in your own application and your application dynamically load
+/// modules using functions like LoadLibrary() or dlopen(): in that case you
+/// should call this function before unloading the modules.
 SB_CORE_API
 void
 unregister_all_objects
 (
 );
 
-template<>
-inline
-std::vector<std::string>
-get_type_names<AbstractObject>
-(
-)
-{
-    return {"sb.AbstractObject"};
 }
 
-template<>
-inline
-sb::PropertyFormatMap
-get_properties<AbstractObject>
-(
-)
-{
-    return {};
-}
+#define SB_SELF(type_)\
+    public:\
+        using Base = Self;\
+        using Self = type_;
 
-}
+#define SB_NAME(name_)\
+    public:\
+        static\
+        sb::StringSequence\
+        get_type_names\
+        (\
+        )\
+        {\
+            SB_STATIC_ASSERT_MSG(\
+                SB_EVAL(\
+                    std::is_base_of<Base, Self>::value\
+                ),\
+                "declared Self type not related to its base"\
+            );\
+            SB_STATIC_ASSERT_MSG(\
+                SB_EVAL(\
+                    std::is_same<sb::AbstractObject, Self>::value ||\
+                    std::is_base_of<sb::AbstractObject, Self>::value\
+                ),\
+                "declared name on a type not derived from sb::AbstractObject"\
+            );\
+            sb::StringSequence type_names = (\
+                Self::get_type_names == get_type_names\
+            ) ? (\
+                Base::get_type_names()\
+            ) : (\
+                Self::get_type_names()\
+            );\
+            type_names.insert(type_names.begin(), name_);\
+            return type_names;\
+        }
+
+#define SB_PROPERTIES(...)\
+    public:\
+        static\
+        sb::ObjectPropertySequence\
+        get_properties\
+        (\
+        )\
+        {\
+            SB_STATIC_ASSERT_MSG(\
+                SB_EVAL(\
+                    std::is_same<sb::AbstractObject, Self>::value ||\
+                    std::is_base_of<sb::AbstractObject, Self>::value\
+                ),\
+                "declared properties on a type not derived from sb::AbstractObject"\
+            );\
+            sb::ObjectPropertySequence properties = {__VA_ARGS__};\
+            sb::ObjectPropertySequence base_properties = (\
+                Self::get_properties == get_properties\
+            ) ? (\
+                Base::get_properties()\
+            ) : (\
+                Self::get_properties()\
+            );\
+            properties.insert(\
+                properties.begin(),\
+                base_properties.begin(),\
+                base_properties.end()\
+            );\
+            return properties;\
+        }
 
 #endif // SB_ABSTRACTOBJECT_H

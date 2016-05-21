@@ -23,115 +23,62 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
-class SB_CORE_API AbstractFilter : public sb::AbstractBlok
+class SB_CORE_API AbstractFilter : public AbstractBlok
 {
+
+    SB_SELF(sb::AbstractFilter)
+
+    SB_NAME("sb.AbstractFilter")
 
 public:
 
     class Private;
 
+    /// Constructs a filter.
     AbstractFilter
     (
     );
 
+    /// Destroys this object.
     virtual
     ~AbstractFilter
     (
     );
 
-    SharedDataSet
+    SharedData
     lock_input
     (
-        size_t index_
+        Index index_ = 0
     )
     const;
 
     bool
     set_input
     (
-        size_t index_,
-        const SharedDataSet& value_
+        Index index_,
+        const SharedData& value_
     );
 
-    SharedDataSet
+    SharedData
     get_output
     (
-        size_t index_
+        Index index_ = 0
     )
     const;
 
-protected:
-
-    void
-    set_input_count
-    (
-        size_t value_
-    );
-
-    void
-    set_input_count
-    (
-        size_t minimum_,
-        size_t maximum_
-    );
-
-    void
-    set_input_format
-    (
-        size_t index_,
-        const ObjectFormat& format_
-    );
-
-    void
-    set_output_count
-    (
-        size_t value_
-    );
-
-    void
-    set_output_count
-    (
-        size_t minimum_,
-        size_t maximum_
-    );
-
-    void
-    set_output_format
-    (
-        size_t index_,
-        const ObjectFormat& format_
-    );
-
-    void
-    set_index_range_converter
-    (
-        size_t output_,
-        const IndexRangeConverter& value_
-    );
-
-    void
-    set_defined_indices_converter
-    (
-        size_t output_,
-        const IndexCollectionConverter& value_
-    );
-
-    void
-    set_wanted_indices_converter
-    (
-        size_t input_,
-        const IndexCollectionConverter& value_
-    );
-
 private:
 
+    /// \cond INTERNAL
     Private*
     d_ptr;
+    /// \endcond
 
 };
 
+/// Alias for a managed filter uniquely owned.
 using UniqueFilter = Unique<AbstractFilter>;
 
+/// Alias for create_unique<AbstractFilter>().
 static
 UniqueFilter
 (&create_unique_filter)
@@ -140,11 +87,5 @@ UniqueFilter
 ) = create_unique<AbstractFilter>;
 
 }
-
-SB_DECLARE_CLASS(
-    sb::AbstractFilter,
-    "sb.AbstractFilter",
-    sb::AbstractBlok
-)
 
 #endif // SB_ABSTRACTFILTER_H

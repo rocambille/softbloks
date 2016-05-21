@@ -21,7 +21,6 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb-core/sb-abstractblok.h>
 
 #include <sb-core/sb-abstractdata.h>
-#include <sb-core/sb-dataset-private.h>
 
 namespace sb
 {
@@ -37,78 +36,35 @@ public:
     );
 
     void
-    set_input_count
+    set_inputs_formats
     (
-        size_t value_
+        const ObjectFormatSequence& value_
     );
 
     void
-    set_input_count
+    set_outputs_type_names
     (
-        size_t minimum_,
-        size_t maximum_
+        const StringSequence& value_
     );
 
-    void
-    set_input_format
-    (
-        size_t index_,
-        const ObjectFormat& format_
-    );
-
-    void
-    set_output_count
-    (
-        size_t value_
-    );
-
-    void
-    set_output_count
-    (
-        size_t minimum_,
-        size_t maximum_
-    );
-
-    void
-    set_output_format
-    (
-        size_t index_,
-        const ObjectFormat& format_
-    );
-
-    void
-    update_outputs_index_range
-    (
-    );
-
-    void
-    update_outputs_defined_indices
-    (
-    );
-
-    void
-    update_inputs_wanted_indices
-    (
-    );
-
-    SharedDataSet
+    SharedData
     lock_input
     (
-        size_t index_
+        Index index_
     )
     const;
 
     bool
     set_input
     (
-        size_t index_,
-        const SharedDataSet& value_
+        Index index_,
+        const SharedData& value_
     );
 
     void
     unlink_input
     (
-        size_t index_
+        Index index_
     );
 
     static
@@ -130,35 +86,17 @@ public:
     AbstractBlok*
     q_ptr;
 
-    size_t
-    minimum_input_count;
+    ObjectFormatSequence
+    inputs_formats;
 
-    size_t
-    maximum_input_count;
-
-    std::vector<WeakDataSet>
+    std::vector<WeakData>
     inputs;
 
-    std::vector<ObjectFormat>
-    inputs_format;
+    ObjectFormatSequence
+    outputs_formats;
 
-    std::vector<IndexCollectionConverter>
-    wanted_indices_converters;
-
-    size_t
-    minimum_output_count;
-
-    size_t
-    maximum_output_count;
-
-    std::vector<SharedDataSet>
+    std::vector<SharedData>
     outputs;
-
-    std::vector<IndexRangeConverter>
-    index_range_converters;
-
-    std::vector<IndexCollectionConverter>
-    defined_indices_converters;
 
     UniqueExecutive
     executive;

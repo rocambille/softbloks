@@ -25,17 +25,23 @@ namespace sb
 
 class AbstractBlok;
 
-class SB_CORE_API AbstractExecutive : public sb::AbstractObject
+class SB_CORE_API AbstractExecutive : public AbstractObject
 {
+
+    SB_SELF(sb::AbstractExecutive)
+
+    SB_NAME("sb.AbstractExecutive")
 
 public:
 
     class Private;
 
+    /// Constructs an executive.
     AbstractExecutive
     (
     );
 
+    /// Destroys this object.
     virtual
     ~AbstractExecutive
     (
@@ -45,7 +51,7 @@ public:
     void
     on_input_pushed
     (
-        size_t index_
+        Index index_
     )
     = 0;
 
@@ -53,7 +59,7 @@ public:
     void
     on_output_pulled
     (
-        size_t index_
+        Index index_
     )
     = 0;
 
@@ -72,13 +78,17 @@ protected:
 
 private:
 
+    /// \cond INTERNAL
     Private*
     d_ptr;
+    /// \endcond
 
 };
 
+/// Alias for a managed executive uniquely owned.
 using UniqueExecutive = Unique<AbstractExecutive>;
 
+/// Alias for create_unique<AbstractExecutive>().
 static
 UniqueExecutive
 (&create_unique_executive)
@@ -87,11 +97,5 @@ UniqueExecutive
 ) = create_unique<AbstractExecutive>;
 
 }
-
-SB_DECLARE_CLASS(
-    sb::AbstractExecutive,
-    "sb.AbstractExecutive",
-    sb::AbstractObject
-)
 
 #endif // SB_ABSTRACTEXECUTIVE_H

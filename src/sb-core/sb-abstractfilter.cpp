@@ -37,23 +37,23 @@ AbstractFilter::~AbstractFilter
     delete d_ptr;
 }
 
-SharedDataSet
+SharedData
 AbstractFilter::lock_input
 (
-    size_t index_
+    Index index_
 )
 const
 {
     return AbstractBlok::Private::from(
         this
-    )->inputs.at(index_).lock();
+    )->lock_input(index_);
 }
 
 bool
 AbstractFilter::set_input
 (
-    size_t index_,
-    const SharedDataSet& value_
+    Index index_,
+    const SharedData& value_
 )
 {
     return AbstractBlok::Private::from(
@@ -64,146 +64,16 @@ AbstractFilter::set_input
     );
 }
 
-SharedDataSet
+SharedData
 AbstractFilter::get_output
 (
-    size_t index_
+    Index index_
 )
 const
 {
     return AbstractBlok::Private::from(
         this
     )->outputs.at(index_);
-}
-
-void
-AbstractFilter::set_input_count
-(
-    size_t value_
-)
-{
-    AbstractBlok::Private::from(
-        this
-    )->set_input_count(
-        value_
-    );
-}
-
-void
-AbstractFilter::set_input_count
-(
-    size_t minimum_,
-    size_t maximum_
-)
-{
-    AbstractBlok::Private::from(
-        this
-    )->set_input_count(
-        minimum_,
-        maximum_
-    );
-}
-
-void
-AbstractFilter::set_input_format
-(
-    size_t index_,
-    const ObjectFormat& format_
-)
-{
-    AbstractBlok::Private::from(
-        this
-    )->set_input_format(
-        index_,
-        format_
-    );
-}
-
-void
-AbstractFilter::set_output_count
-(
-    size_t value_
-)
-{
-    AbstractBlok::Private::from(
-        this
-    )->set_output_count(
-        value_
-    );
-}
-
-void
-AbstractFilter::set_output_count
-(
-    size_t minimum_,
-    size_t maximum_
-)
-{
-    AbstractBlok::Private::from(
-        this
-    )->set_output_count(
-        minimum_,
-        maximum_
-    );
-}
-
-void
-AbstractFilter::set_output_format
-(
-    size_t index_,
-    const ObjectFormat& format_
-)
-{
-    AbstractBlok::Private::from(
-        this
-    )->set_output_format(
-        index_,
-        format_
-    );
-}
-
-void
-AbstractFilter::set_index_range_converter
-(
-    size_t output_,
-    const IndexRangeConverter& value_
-)
-{
-    AbstractBlok::Private::from(
-        this
-    )->index_range_converters.at(output_) = value_;
-}
-
-void
-AbstractFilter::set_defined_indices_converter
-(
-    size_t output_,
-    const IndexCollectionConverter& value_
-)
-{
-    AbstractBlok::Private::from(
-        this
-    )->defined_indices_converters.at(
-        output_
-    ) = (
-        value_
-    );
-}
-
-void
-AbstractFilter::set_wanted_indices_converter
-(
-    size_t input_,
-    const IndexCollectionConverter& value_
-)
-{
-    AbstractBlok::Private::from(
-        this
-    )->wanted_indices_converters.at(
-        input_
-    ) = (
-        value_
-    );
 }
 
 AbstractFilter::Private::Private

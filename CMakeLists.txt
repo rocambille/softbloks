@@ -14,18 +14,18 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.1.0)
 
 project(Softbloks CXX)
 
 # set version
 
 set(SOFTBLOKS_VERSION_MAJOR 0)
-set(SOFTBLOKS_VERSION_MINOR 2)
+set(SOFTBLOKS_VERSION_MINOR 3)
 
 set(SOFTBLOKS_BUILD_YEAR    16)
-set(SOFTBLOKS_BUILD_MONTH   02)
-set(SOFTBLOKS_BUILD_DAY     19)
+set(SOFTBLOKS_BUILD_MONTH   05)
+set(SOFTBLOKS_BUILD_DAY     21)
 
 set(SOFTBLOKS_VERSION
     "${SOFTBLOKS_VERSION_MAJOR}.${SOFTBLOKS_VERSION_MINOR}"
@@ -48,7 +48,7 @@ if(WIN32)
 elseif(APPLE)
     set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-Wall")
 elseif(UNIX)
-    set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-Wall -std=c++11")
+    set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-Wall")
 
     set(SB_INSTALL_ROOT_DESTINATION "share/sb${SOFTBLOKS_VERSION_MAJOR}")
     set(SB_INSTALL_RUNTIME_DESTINATION "bin/sb${SOFTBLOKS_VERSION_MAJOR}")

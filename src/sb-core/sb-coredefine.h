@@ -20,308 +20,112 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sb-global/sb-global.h>
 
-#include <algorithm>
-#include <array>
-#include <functional>
 #include <limits>
-#include <map>
 #include <memory>
-#include <typeindex>
+#include <string>
 #include <vector>
 
+/// \cond INTERNAL
 #ifdef sb_core_EXPORTS
 #define SB_CORE_API SB_DECL_EXPORT
 #else
 #define SB_CORE_API SB_DECL_IMPORT
 #endif
+/// \endcond
 
 namespace sb
 {
 
-enum Mode
+class AbstractObject;
+
+/// Template alias for a managed pointer uniquely owned.
+///
+/// The pointer type \a T must be compatible with a deleter of AbstractObject.
+template<typename T>
+using Unique = std::unique_ptr<T, std::function<void(AbstractObject*)>>;
+
+/// Template alias for a managed pointer with shared ownership.
+template<typename T>
+using Shared = std::shared_ptr<T>;
+
+/// Template alias for a weakly managed pointer.
+template<typename T>
+using Weak = std::weak_ptr<T>;
+
+/// Alias for a type representing the size of an object.
+using Size = size_t;
+
+/// Constant symbolizing the maximum finite value for the type Size.
+const Size MAX_SIZE = std::numeric_limits<Size>::max();
+
+/// Alias for a type representing a position in a container.
+using Index = Size;
+
+/// Alias for a sequence container of strings.
+using StringSequence = std::vector<std::string>;
+
+/// \brief This enum describes a bitmask for access rights.
+///
+/// The applicable operators for this enum are overloaded using
+/// SB_BITMASK_OPERATORS().
+///
+/// \sa BitmaskWrapper.
+enum class AccessRights
 {
-    READ_ONLY   = 0x1,
-    WRITE_ONLY  = 0x2,
-    READ_WRITE  = 0x3,
+
+// empty bitmask
+
+    NONE        = 0,            ///< No access permissions.
+
+// bitmask values
+
+    READ        = 1 << 0,       ///< Read permission.
+    WRITE       = 1 << 1,       ///< Write permission.
+
+// bitwise combinations
+
+    READ_WRITE  = READ | WRITE  ///< Read/write permissions.
+
 };
 
-using IndexRange = std::array<double, 2>;
+SB_BITMASK_OPERATORS(AccessRights)
 
-using IndexRangeConverter =
-    std::function<sb::IndexRange(const std::vector<sb::IndexRange>&)>;
-
-using IndexCollection = std::vector<double>;
-
-using IndexCollectionConverter =
-    std::function<sb::IndexCollection(const std::vector<sb::IndexCollection>&)>;
-
-const size_t infinity = std::numeric_limits<size_t>::max();
-
+/// Returns a std::unique_ptr object move-constructed from \a unique_pointer_.
+///
+/// The standard move-cast-constructor of std::unique_ptr needs T* to be
+/// implicitly convertible to U*. This function explicitly perfoms a static
+/// cast on the stored pointer, so the constraints on the types are reduced.
 template<typename U, typename T, typename D>
 std::unique_ptr<U, D>
-static_pointer_cast
+static_move_cast
 (
-    std::unique_ptr<T, D>&& t_ptr_
+    std::unique_ptr<T, D>&& unique_pointer_
 )
 {
-    auto ptr = static_cast<U*>(t_ptr_.get());
-
-    std::unique_ptr<U, D> u_ptr(
-        ptr, std::move(t_ptr_.get_deleter())
+    U* stored_pointer = static_cast<U*>(
+        unique_pointer_.get()
     );
 
-    t_ptr_.release();
-
-    return u_ptr;
-}
-
-template <typename T>
-std::vector<T>
-join
-(
-    const std::vector<T>& a_,
-    const std::vector<T>& b_
-)
-{
-    std::vector<T> ab;
-    ab.reserve(a_.size() + b_.size());
-
-    ab.insert(ab.end(), a_.begin(), a_.end());
-    ab.insert(ab.end(), b_.begin(), b_.end());
-
-    return ab;
-}
-
-template <typename T, typename U>
-std::map<T, U>
-join
-(
-    const std::map<T, U>& a_,
-    const std::map<T, U>& b_
-)
-{
-    std::map<T, U> ab;
-
-    ab.insert(a_.begin(), a_.end());
-    ab.insert(b_.begin(), b_.end());
-
-    return ab;
-}
-
-struct PropertyFormat
-{
-
-    std::type_index
-    type;
-
-    sb::Mode
-    mode;
-
-};
-
-inline
-bool
-operator==
-(
-    const sb::PropertyFormat& left_,
-    const sb::PropertyFormat& right_
-)
-{
-    return (
-        left_.type == right_.type
-    ) && (
-        left_.mode == right_.mode
+    std::unique_ptr<U, D> moved_pointer(
+        stored_pointer,
+        std::move(unique_pointer_.get_deleter())
     );
-}
 
-using PropertyFormatMap = std::map<std::string, sb::PropertyFormat>;
+    unique_pointer_.release();
 
-struct ObjectFormat
-{
-
-    std::vector<std::string>
-    type_names;
-
-    sb::PropertyFormatMap
-    properties;
-
-};
-
-inline
-bool
-operator==
-(
-    const sb::ObjectFormat& left_,
-    const sb::ObjectFormat& right_
-)
-{
-    return (
-        left_.type_names == right_.type_names
-    ) && (
-        left_.properties == right_.properties
-    );
-}
-
-inline
-bool
-operator>>
-(
-    const sb::ObjectFormat& from_,
-    const sb::ObjectFormat& to_extract_
-)
-{
-    return (
-        to_extract_.type_names.size() > 0
-    ) && std::all_of(
-        to_extract_.type_names.begin(),
-        to_extract_.type_names.end(),
-        [&from_]
-        (
-            const std::string& type_name_
-        )
-        {
-            return std::find(
-                from_.type_names.begin(),
-                from_.type_names.end(),
-                type_name_
-            ) != from_.type_names.end();
-        }
-    ) && std::all_of(
-        to_extract_.properties.begin(),
-        to_extract_.properties.end(),
-        [&from_]
-        (
-            const sb::PropertyFormatMap::value_type& value_to_extract_
-        )
-        {
-            return std::find_if(
-                from_.properties.begin(),
-                from_.properties.end(),
-                [&value_to_extract_]
-                (
-                    const sb::PropertyFormatMap::value_type& from_value_
-                )
-                {
-                    return (
-                        value_to_extract_.first
-                    ) == (
-                        from_value_.first
-                    ) && (
-                        value_to_extract_.second.type
-                    ) == (
-                        from_value_.second.type
-                    ) && (
-                        value_to_extract_.second.mode &
-                        from_value_.second.mode
-                    ) == (
-                        value_to_extract_.second.mode
-                    );
-                }
-            ) != from_.properties.end();
-        }
-    );
-}
-
-inline
-bool
-operator<<
-(
-    const sb::ObjectFormat& target_,
-    const sb::ObjectFormat& to_inject_
-)
-{
-    return to_inject_ >> target_;
-}
-
-const sb::ObjectFormat
-undefined_object_format = { { } };
-
-const sb::ObjectFormat
-any_object_format = { { "sb.AbstractObject" } };
-
-template<typename T>
-class Meta;
-
-template<typename T>
-inline
-std::vector<std::string>
-get_type_names
-(
-)
-{
-    return std::vector<std::string>();
-}
-
-template<typename T>
-inline
-std::string
-get_object_name
-(
-)
-{
-    return sb::get_type_names<T>()[0];
-}
-
-template<typename T>
-inline
-sb::PropertyFormatMap
-get_properties
-(
-)
-{
-    return sb::get_properties<typename sb::Meta<T>::super_class>();
+    return moved_pointer;
 }
 
 }
 
-#define SB_DECLARE_CLASS(type_, name_, super_class_)\
-    namespace sb\
-    {\
-        template<>\
-        class Meta<type_>\
-        {\
-            public: using super_class = super_class_;\
-        };\
-        template<>\
-        inline\
-        std::vector<std::string>\
-        get_type_names<type_>\
-        (\
-        )\
-        {\
-            return sb::join(\
-                std::vector<std::string>({name_}),\
-                sb::get_type_names<super_class_>()\
-            );\
-        }\
-    }
-
-#define SB_DECLARE_PROPERTIES_(type_, properties_)\
-    namespace sb\
-    {\
-        template<>\
-        inline\
-        sb::PropertyFormatMap\
-        get_properties<type_>\
-        (\
-        )\
-        {\
-            return sb::join(\
-                sb::PropertyFormatMap(properties_),\
-                sb::get_properties<sb::Meta<type_>::super_class>()\
-            );\
-        }\
-    }
-
-#define SB_DECLARE_PROPERTIES(type_, ...)\
-    SB_DECLARE_PROPERTIES_(\
-        type_,\
-        std::initializer_list<sb::PropertyFormatMap::value_type>(\
-            {__VA_ARGS__}\
-        )\
-    )
-
-#define SB_DECLARE_MODULE(descriptor_)\
+/// This macro declares a Softbloks module.
+///
+/// Modules are useful to encapsulate registration of declared objects in a
+/// shared library, to be dynamically loaded as a plugin in a compatible tool
+/// (e.g. Softrun or Software).
+///
+/// Note that SB_MODULE() must be called outside of any namespace.
+#define SB_MODULE(descriptor_)\
     namespace sb\
     {\
         const char descriptor[] = "{" #descriptor_ "}";\

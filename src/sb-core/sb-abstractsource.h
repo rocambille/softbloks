@@ -23,74 +23,48 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
-class SB_CORE_API AbstractSource : public sb::AbstractBlok
+class SB_CORE_API AbstractSource : public AbstractBlok
 {
+
+    SB_SELF(sb::AbstractSource)
+
+    SB_NAME("sb.AbstractSource")
 
 public:
 
     class Private;
 
+    /// Constructs a source.
     AbstractSource
     (
     );
 
+    /// Destroys this object.
     virtual
     ~AbstractSource
     (
     );
 
-    SharedDataSet
+    SharedData
     get_output
     (
-        size_t index_
+        Index index_ = 0
     )
     const;
 
-protected:
-
-    void
-    set_output_count
-    (
-        size_t value_
-    );
-
-    void
-    set_output_count
-    (
-        size_t minimum_,
-        size_t maximum_
-    );
-
-    void
-    set_output_format
-    (
-        size_t index_,
-        const ObjectFormat& format
-    );
-
-    void
-    set_index_range
-    (
-        size_t output_,
-        const IndexRange& value_
-    );
-
-    void
-    set_defined_indices
-    (
-        size_t output_,
-        const IndexCollection& value_
-    );
-
 private:
 
+    /// \cond INTERNAL
     Private*
     d_ptr;
+    /// \endcond
 
 };
 
+/// Alias for a managed source uniquely owned.
 using UniqueSource = Unique<AbstractSource>;
 
+/// Alias for create_unique<AbstractSource>().
 static
 UniqueSource
 (&create_unique_source)
@@ -99,11 +73,5 @@ UniqueSource
 ) = create_unique<AbstractSource>;
 
 }
-
-SB_DECLARE_CLASS(
-    sb::AbstractSource,
-    "sb.AbstractSource",
-    sb::AbstractBlok
-)
 
 #endif // SB_ABSTRACTSOURCE_H

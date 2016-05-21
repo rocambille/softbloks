@@ -22,49 +22,30 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
-using ObjectFactoryMap = std::map<std::string, ObjectFactory>;
+using NameToObjectFactoryMap = std::map<std::string, ObjectFactory>;
 
-using ObjectFormatMap = std::map<std::string, ObjectFormat>;
+using NameToObjectFormatMap = std::map<std::string, ObjectFormat>;
 
 namespace Global
 {
 
-ObjectFactoryMap
-object_factory_map;
+NameToObjectFactoryMap
+object_factories;
 
-ObjectFormatMap
-object_format_map;
+NameToObjectFormatMap
+object_formats;
 
 }
 
 namespace Unmapper
 {
 
+    template<typename T>
     inline
     std::string
     name
     (
-        const AbstractObject::PropertyMap::value_type& value_
-    )
-    {
-        return value_.first;
-    }
-
-    inline
-    AbstractObject::Property
-    data
-    (
-        const AbstractObject::PropertyMap::value_type& value_
-    )
-    {
-        return value_.second;
-    }
-
-    inline
-    std::string
-    name
-    (
-        const ObjectFactoryMap::value_type& value_
+        const T& value_
     )
     {
         return value_.first;
@@ -74,27 +55,17 @@ namespace Unmapper
     ObjectFactory
     factory
     (
-        const ObjectFactoryMap::value_type& value_
+        const NameToObjectFactoryMap::value_type& value_
     )
     {
         return value_.second;
     }
 
     inline
-    std::string
-    name
-    (
-        const ObjectFormatMap::value_type& value_
-    )
-    {
-        return value_.first;
-    }
-
-    inline
     ObjectFormat
     format
     (
-        const ObjectFormatMap::value_type& value_
+        const NameToObjectFormatMap::value_type& value_
     )
     {
         return value_.second;
@@ -110,8 +81,6 @@ AbstractObject::AbstractObject
 (
 )
 {
-    this->properties = new std::map<std::string, Property>;
-
     this->d_ptr = new Private(this);
 }
 
@@ -120,118 +89,120 @@ AbstractObject::~AbstractObject
 )
 {
     delete d_ptr;
-
-    delete this->properties;
 }
 
 ObjectFormat
-AbstractObject::get_instance_format
+AbstractObject::get_format
 (
 )
 const
 {
-    PropertyFormatMap property_format;
-
-    for(auto property : *(this->properties))
-    {
-        property_format.emplace(
-            Unmapper::name(property),
-            Unmapper::data(property).format
-        );
-    }
-
-    ObjectFormat format = {
-        d_ptr->type_names,
-        property_format
-    };
-
-    return format;
-}
-
-bool
-AbstractObject::is_ready
-(
-)
-const
-{
-    return d_ptr->is_ready;
-}
-
-void
-AbstractObject::set_ready
-(
-    bool is_ready_
-)
-{
-    d_ptr->is_ready = is_ready_;
-}
-
-bool
-AbstractObject::unregister_property
-(
-    void* owner_,
-    const std::string& name_
-)
-{
-    bool unregistered = false;
-
-    // check if name_ is known and if owner_ matches
-
-    auto find_result = this->properties->find(name_);
-
-    if(
-        find_result != this->properties->end() &&
-        Unmapper::data(*find_result).owner == owner_
-    )
-    {
-        // erase property
-
-        this->properties->erase(find_result);
-
-        unregistered = true;
-    }
-
-    return unregistered;
-}
-
-bool
-AbstractObject::unregister_property
-(
-    const std::string& name_
-)
-{
-    return this->unregister_property(
-        this,
-        name_
+    return Global::object_formats.at(
+        d_ptr->type_names[0]
     );
 }
 
-void
-AbstractObject::set_type_names
+Any
+AbstractObject::get
 (
-    AbstractObject* this_,
-    std::vector<std::string> names_
+    const std::string& name_
+)
+const
+{
+    ObjectProperty wanted_property = d_ptr->properties.at(name_);
+
+    // check access rights
+
+    if(
+        !bitmask(
+            wanted_property.access_rights
+        ).is_set(
+            AccessRights::READ
+        )
+    )
+    {
+        throw std::invalid_argument(
+            std::string() +
+            "sb::AbstractBlok::get: " +
+            "calling on property " +
+            name_ +
+            " which is write-only"
+        );
+    }
+
+    // call the accessor
+
+    return wanted_property.get(*this);
+}
+
+void
+AbstractObject::set
+(
+    const std::string& name_,
+    const Any& value_
 )
 {
-    AbstractObject::Private::from(
-        this_
-    )->type_names = names_;
+    ObjectProperty wanted_property = d_ptr->properties.at(name_);
+
+    // check access rights
+
+    if(
+        !bitmask(
+            wanted_property.access_rights
+        ).is_set(
+            AccessRights::WRITE
+        )
+    )
+    {
+        throw std::invalid_argument(
+            std::string() +
+            "sb::AbstractBlok::set: " +
+            "calling on property " +
+            name_ +
+            " which is read-only"
+        );
+    }
+
+    // call the accessor
+
+    wanted_property.set(*this, value_);
 }
 
 void
 AbstractObject::init
 (
-    AbstractObject* this_
+    AbstractObject* this_,
+    const StringSequence& type_names_,
+    const ObjectPropertySequence& properties_
 )
 {
-}
+    auto d_ptr = AbstractObject::Private::from(
+        this_
+    );
+    
+    d_ptr->type_names = type_names_;
 
-void
-AbstractObject::forget
-(
-    AbstractObject* this_
-)
-{
+    for(auto property : properties_)
+    {
+        if(
+            ! d_ptr->properties.emplace(
+                property.name,
+                property
+            ).second
+        )
+        {
+            // insertion failed, throw an exception
+            throw std::invalid_argument(
+                std::string() +
+                "sb::AbstractBlok::init: " +
+                "failed to insert property " +
+                property.name +
+                "; a property with that name already exists"
+            );
+        }
+    }
+
+    this_->init();
 }
 
 bool
@@ -245,14 +216,14 @@ AbstractObject::register_object
 
     std::string name = format_.type_names[0];
 
-    if(Global::object_factory_map.count(name) == 0)
+    if(Global::object_factories.count(name) == 0)
     {
-        Global::object_factory_map.emplace(
+        Global::object_factories.emplace(
             name,
             factory_
         );
 
-        Global::object_format_map.emplace(
+        Global::object_formats.emplace(
             name,
             format_
         );
@@ -267,8 +238,7 @@ AbstractObject::Private::Private
 (
     AbstractObject* q_ptr_
 ):
-    q_ptr   (q_ptr_),
-    is_ready(false)
+    q_ptr   (q_ptr_)
 {
 }
 
@@ -299,9 +269,9 @@ sb::create_shared_object
     SharedObject instance;
 
     auto object_factory =
-        Global::object_factory_map.find(name_);
+        Global::object_factories.find(name_);
 
-    if(object_factory != Global::object_factory_map.end())
+    if(object_factory != Global::object_factories.end())
     {
         instance = Unmapper::factory(*object_factory)();
     }
@@ -318,9 +288,9 @@ sb::create_unique_object
     UniqueObject instance;
 
     auto object_factory =
-        Global::object_factory_map.find(name_);
+        Global::object_factories.find(name_);
 
-    if(object_factory != Global::object_factory_map.end())
+    if(object_factory != Global::object_factories.end())
     {
         instance = Unmapper::factory(*object_factory)();
     }
@@ -328,20 +298,20 @@ sb::create_unique_object
     return instance;
 }
 
-std::vector<std::string>
+StringSequence
 sb::get_registered_object_names
 (
     const ObjectFormat& filter_
 )
 {
-    std::vector<std::string> registered_objects;
+    StringSequence registered_objects;
     registered_objects.reserve(
-        Global::object_factory_map.size()
+        Global::object_factories.size()
     );
 
-    for(auto object : Global::object_format_map)
+    for(auto object : Global::object_formats)
     {
-        if(Unmapper::format(object) >> filter_)
+        if(Unmapper::format(object).includes(filter_))
         {
             registered_objects.push_back(
                 Unmapper::name(object)
@@ -358,12 +328,12 @@ sb::get_object_format
     const std::string& name_
 )
 {
-    auto object_format = undefined_object_format;
+    auto object_format = UNDEFINED_OBJECT_FORMAT;
 
     auto mapped_format =
-        Global::object_format_map.find(name_);
+        Global::object_formats.find(name_);
 
-    if(mapped_format != Global::object_format_map.end())
+    if(mapped_format != Global::object_formats.end())
     {
         object_format = Unmapper::format(*mapped_format);
     }
@@ -376,6 +346,6 @@ sb::unregister_all_objects
 (
 )
 {
-    Global::object_factory_map.clear();
-    Global::object_format_map.clear();
+    Global::object_factories.clear();
+    Global::object_formats.clear();
 }

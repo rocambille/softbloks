@@ -174,11 +174,55 @@ class Foo : public sb::AbstractSource // inherit a blok interface
 
     SB_NAME("Foo")
 
+    // declare the types of the outputs:
+    // any existing type can be used, even a non Softbloks type
+
+    SB_OUTPUTS_TYPES(
+        std::string,    /* 1st output is of type std::string */
+        MyType::Pointer /* 2nd output is a pointer to a user-defined object */
+    )
+
 public:
 
     Foo()
     {
-        cout << "Hello world!!!" << endl;
+        // outputs are not ready to use here, see init() below
+    }
+
+    virtual void init()
+    {
+        // outputs can be initialized in this method, e.g. the pointer in the
+        // 2nd output (at index 1) is here initialized to null
+
+        // note that non Softbloks types are wrapped in a Softbloks data
+        // object with a read/write property, called "value", of the
+        // underlying non Softbloks type
+
+        this->get_output(1)->set<MyType::Pointer>(
+            "value", nullptr
+        );
+    }
+
+    virtual void process()
+    {
+        // outputs can be updated in this method
+
+        // update 1st output (at index 0):
+        // it was declared of type std::string in SB_OUTPUTS_TYPES()
+
+        this->get_output(0)->set<std::string>(
+            "value", "Hello World!!!"
+        );
+
+        // update 2nd output (at index 1):
+        // it was declared of type MyType::Pointer in SB_OUTPUTS_TYPES()
+
+        if(this->get_output(1)->get<MyType::Pointer>("value") == nullptr)
+        {
+            this->get_output(1)->set<MyType::Pointer>(
+                "value", MyType::New()
+            );
+        }
     }
 
 };
@@ -190,10 +234,12 @@ class Bar
 
 public:
 
-    Bar()
+    Bar():
+        message("What's going on?")
     {
-        cout << "What's going on?" << endl;
     }
+
+    std::string message;
 
 };
 
@@ -215,13 +261,29 @@ public:
         );
 
         Bar bar;
+
+        // execute foo and do something with its outputs
+
+        foo->process();
+
+        cout <<
+            foo->get_output(0)->get<std::string>("value") <<" "
+            bar.message << endl;
+
+        foo->get_output(1)->get<MyType::Pointer>(
+            "value"
+        )->do_something();
     }
 
 };
 
 SB_MODULE(/*a description should go here*/)
 {
-    // remember to register all your objects when declaring your module
+    // remember to register all your objects when declaring your module,
+    // including the data types
+
+    sb::register_data<std::string>();
+    sb::register_data<MyType::Pointer>();
 
     sb::register_object<Foo>();
     sb::register_object<MainObject>();

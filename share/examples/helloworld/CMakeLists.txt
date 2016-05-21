@@ -23,4 +23,9 @@ if(BUILD_QT5_EXAMPLES)
         hellosoft.cpp
         Qt5::Widgets
     )
+    target_compile_features(hellosoft
+        PRIVATE
+            cxx_auto_type
+            cxx_decltype
+    )
 endif()

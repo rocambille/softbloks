@@ -135,10 +135,10 @@ main
                 // the path is a directory : replace with the contained files
                 // (maybe should add an option for some recursivity)
 
-                sr::Directory::EntryList entry_list =
-                    directory.get_entry_list();
+                sr::Directory::EntrySequence entry_sequence =
+                    directory.get_entry_sequence();
 
-                for(auto entry : entry_list)
+                for(auto entry : entry_sequence)
                 {
                     if(
                         entry != "." &&

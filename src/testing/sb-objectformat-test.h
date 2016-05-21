@@ -20,7 +20,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <gtest/gtest.h>
 
-#include <sb-core/sb-coredefine.h>
+#include <sb-core/sb-core.h>
 
 namespace sb
 {
@@ -33,149 +33,64 @@ class ObjectFormatTest : public ::testing::Test
 
 public:
 
-    //virtual
-    //void
-    //SetUp
-    //(
-    //)
-    //override
-    //{
-    //}
+    virtual
+    void
+    SetUp
+    (
+    )
+    SB_OVERRIDE
+    {
+        // create a test format
+        foo_object_format =
+            // use AbstractObject's format as a base
+            ObjectFormat(ANY_OBJECT_FORMAT) <<
+                // add a type name "foo"
+                "foo" <<
+                // and a dummy property "bar"
+                sb::make_property_format<int>(
+                    "bar", AccessRights::READ_WRITE
+                );
+    }
 
     //virtual
     //void
     //TearDown
     //(
     //)
-    //override
+    //SB_OVERRIDE
     //{
     //}
 
-    static
-    const ObjectFormat
+    ObjectFormat
     foo_object_format;
 
 };
 
-// create a test format
-const ObjectFormat ObjectFormatTest::foo_object_format = {
-    { // of type "foo" derived from sb::AbstractObject
-        "sb.AbstractObject", "foo"
-    },
-    { // with a dummy property "bar" of type int in read/write mode
-        SB_PROPERTY("bar", int, AccessRights::READ_WRITE)
-    }
-};
-
 TEST_F(
     ObjectFormatTest,
-    Equality
-)
-{
-    EXPECT_TRUE(
-        UNDEFINED_OBJECT_FORMAT == UNDEFINED_OBJECT_FORMAT
-    );
-    EXPECT_TRUE(
-        ANY_OBJECT_FORMAT == ANY_OBJECT_FORMAT
-    );
-    EXPECT_TRUE(
-        ObjectFormatTest::foo_object_format == ObjectFormatTest::foo_object_format
-    );
-}
-
-TEST_F(
-    ObjectFormatTest,
-    ExtractUndefinedFormat
+    Inclusion
 )
 {
     EXPECT_FALSE(
-        UNDEFINED_OBJECT_FORMAT >> UNDEFINED_OBJECT_FORMAT
+        UNDEFINED_OBJECT_FORMAT.includes(UNDEFINED_OBJECT_FORMAT)
     );
     EXPECT_FALSE(
-        ANY_OBJECT_FORMAT >> UNDEFINED_OBJECT_FORMAT
+        UNDEFINED_OBJECT_FORMAT.includes(ANY_OBJECT_FORMAT)
     );
     EXPECT_FALSE(
-        ObjectFormatTest::foo_object_format >> UNDEFINED_OBJECT_FORMAT
-    );
-}
-
-TEST_F(
-    ObjectFormatTest,
-    ExtractAnyObjectFormat
-)
-{
-    EXPECT_FALSE(
-        UNDEFINED_OBJECT_FORMAT >> ANY_OBJECT_FORMAT
+        ANY_OBJECT_FORMAT.includes(UNDEFINED_OBJECT_FORMAT)
     );
     EXPECT_TRUE(
-        ANY_OBJECT_FORMAT >> ANY_OBJECT_FORMAT
+        ANY_OBJECT_FORMAT.includes(ANY_OBJECT_FORMAT)
+    );
+    EXPECT_FALSE(
+        ANY_OBJECT_FORMAT.includes(foo_object_format)
     );
     EXPECT_TRUE(
-        ObjectFormatTest::foo_object_format >> ANY_OBJECT_FORMAT
-    );
-}
-
-TEST_F(
-    ObjectFormatTest,
-    ExtractDummyFormat
-)
-{
-    EXPECT_FALSE(
-        UNDEFINED_OBJECT_FORMAT >> ObjectFormatTest::foo_object_format
-    );
-    EXPECT_FALSE(
-        ANY_OBJECT_FORMAT >> ObjectFormatTest::foo_object_format
+        foo_object_format.includes(ANY_OBJECT_FORMAT)
     );
     EXPECT_TRUE(
-        ObjectFormatTest::foo_object_format >> ObjectFormatTest::foo_object_format
-    );
-}
-
-TEST_F(
-    ObjectFormatTest,
-    InjectUndefinedFormat
-)
-{
-    EXPECT_FALSE(
-        UNDEFINED_OBJECT_FORMAT << UNDEFINED_OBJECT_FORMAT
-    );
-    EXPECT_FALSE(
-        UNDEFINED_OBJECT_FORMAT << ANY_OBJECT_FORMAT
-    );
-    EXPECT_FALSE(
-        UNDEFINED_OBJECT_FORMAT << ObjectFormatTest::foo_object_format
-    );
-}
-
-TEST_F(
-    ObjectFormatTest,
-    InjectAnyObjectFormat
-)
-{
-    EXPECT_FALSE(
-        ANY_OBJECT_FORMAT << UNDEFINED_OBJECT_FORMAT
-    );
-    EXPECT_TRUE(
-        ANY_OBJECT_FORMAT << ANY_OBJECT_FORMAT
-    );
-    EXPECT_TRUE(
-        ANY_OBJECT_FORMAT << ObjectFormatTest::foo_object_format
-    );
-}
-
-TEST_F(
-    ObjectFormatTest,
-    InjectDummyFormat
-)
-{
-    EXPECT_FALSE(
-        ObjectFormatTest::foo_object_format << UNDEFINED_OBJECT_FORMAT
-    );
-    EXPECT_FALSE(
-        ObjectFormatTest::foo_object_format << ANY_OBJECT_FORMAT
-    );
-    EXPECT_TRUE(
-        ObjectFormatTest::foo_object_format << ObjectFormatTest::foo_object_format
+        foo_object_format.includes(foo_object_format)
     );
 }
 

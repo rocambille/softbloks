@@ -72,13 +72,13 @@ TEST_F(
     get_registered_object_names
 )
 {
-    auto name_list = get_registered_object_names();
+    auto name_sequence = get_registered_object_names();
 
     EXPECT_EQ(
         0,
-        name_list.size()
+        name_sequence.size()
     ) << (
-        "Found registered names while no object is registered"
+        "Found registered names while no objects are registered"
     );
 }
 TYPED_TEST(
@@ -86,14 +86,14 @@ TYPED_TEST(
     get_registered_object_names
 )
 {
-    auto name_list = get_registered_object_names();
+    auto name_sequence = get_registered_object_names();
 
     EXPECT_TRUE(
         std::find(
-            name_list.begin(),
-            name_list.end(),
+            name_sequence.begin(),
+            name_sequence.end(),
             get_type_name<TypeParam>()
-        ) !=  name_list.end()
+        ) !=  name_sequence.end()
     ) << (
         "Registered name "
     ) << (
@@ -111,7 +111,7 @@ TEST_F(
 )
 {
     EXPECT_EQ(
-        nullptr,
+        SB_NULLPTR,
         create_unique_object(
             "foo"
         ).get()
@@ -125,7 +125,7 @@ TYPED_TEST(
 )
 {
     EXPECT_NE(
-        nullptr,
+        SB_NULLPTR,
         create_unique<TypeParam>(
             get_type_name<TypeParam>()
         ).get()
@@ -144,7 +144,7 @@ TEST_F(
 )
 {
     EXPECT_EQ(
-        nullptr,
+        SB_NULLPTR,
         create_shared_object(
             "foo"
         ).get()
@@ -158,7 +158,7 @@ TYPED_TEST(
 )
 {
     EXPECT_NE(
-        nullptr,
+        SB_NULLPTR,
         create_shared<TypeParam>(
             get_type_name<TypeParam>()
         )
@@ -177,7 +177,7 @@ TEST_F(
 )
 {
     EXPECT_TRUE(
-        get_object_format("foo") == UNDEFINED_OBJECT_FORMAT
+        UNDEFINED_OBJECT_FORMAT == get_object_format("foo")
     );
 }
 class Object : public AbstractObject
@@ -198,7 +198,7 @@ TYPED_TEST(
     );
 
     EXPECT_TRUE(
-        this->instance->get_instance_format() >> object_format
+        this->instance->get_format().includes(object_format)
     );
 }
 

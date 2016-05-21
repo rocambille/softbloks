@@ -33,11 +33,10 @@ using InstantiableTypes = ::testing::Types<
     AbstractSink,
     AbstractSoft,
     AbstractSource,
-    DataSet,
+    Data<int>,
     PushExecutive,
     PullExecutive,
-    PushPullExecutive,
-    AbstractObject
+    PushPullExecutive
 >;
 
 class NoRegisteredObject : public ::testing::Test
@@ -50,7 +49,7 @@ public:
     SetUp
     (
     )
-    override
+    SB_OVERRIDE
     {
         unregister_all_objects();
     }
@@ -60,7 +59,7 @@ public:
     //TearDown
     //(
     //)
-    //override
+    //SB_OVERRIDE
     //{
     //}
 
@@ -77,7 +76,7 @@ public:
     SetUp
     (
     )
-    override
+    SB_OVERRIDE
     {
         unregister_all_objects();
     }
@@ -87,7 +86,7 @@ public:
     //TearDown
     //(
     //)
-    //override
+    //SB_OVERRIDE
     //{
     //}
 
@@ -106,7 +105,7 @@ public:
     SetUp
     (
     )
-    override
+    SB_OVERRIDE
     {
         unregister_all_objects();
 
@@ -118,7 +117,7 @@ public:
     //TearDown
     //(
     //)
-    //override
+    //SB_OVERRIDE
     //{
     //}
 
@@ -137,7 +136,7 @@ public:
     SetUp
     (
     )
-    override
+    SB_OVERRIDE
     {
         unregister_all_objects();
 
@@ -153,7 +152,7 @@ public:
     //TearDown
     //(
     //)
-    //override
+    //SB_OVERRIDE
     //{
     //}
 

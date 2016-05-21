@@ -31,7 +31,7 @@ public:
 
     class Private;
 
-    using EntryList = std::vector<std::string>;
+    using EntrySequence = std::vector<std::string>;
 
     Directory
     (
@@ -70,8 +70,8 @@ public:
     )
     const;
 
-    EntryList
-    get_entry_list
+    EntrySequence
+    get_entry_sequence
     (
     )
     const;

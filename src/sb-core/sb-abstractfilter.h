@@ -23,8 +23,12 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
-class SB_CORE_API AbstractFilter : public sb::AbstractBlok
+class SB_CORE_API AbstractFilter : public AbstractBlok
 {
+
+    SB_SELF(sb::AbstractFilter)
+
+    SB_NAME("sb.AbstractFilter")
 
 public:
 
@@ -41,82 +45,26 @@ public:
     (
     );
 
-    SharedDataSet
+    SharedData
     lock_input
     (
-        sb::Index index_
+        Index index_ = 0
     )
     const;
 
     bool
     set_input
     (
-        sb::Index index_,
-        const SharedDataSet& value_
+        Index index_,
+        const SharedData& value_
     );
 
-    SharedDataSet
+    SharedData
     get_output
     (
-        sb::Index index_
+        Index index_ = 0
     )
     const;
-
-protected:
-
-    void
-    set_input_count
-    (
-        sb::Size value_
-    );
-
-    void
-    set_input_count
-    (
-        sb::Size minimum_,
-        sb::Size maximum_
-    );
-
-    void
-    set_input_format
-    (
-        sb::Index index_,
-        const ObjectFormat& format_
-    );
-
-    void
-    set_output_count
-    (
-        sb::Size value_
-    );
-
-    void
-    set_output_count
-    (
-        sb::Size minimum_,
-        sb::Size maximum_
-    );
-
-    void
-    set_data_key_range_mapper
-    (
-        sb::Index output_,
-        const DataKeyRangeMapper& value_
-    );
-
-    void
-    set_defined_data_keys_mapper
-    (
-        sb::Index output_,
-        const DataKeyCollectionMapper& value_
-    );
-
-    void
-    set_wanted_data_keys_mapper
-    (
-        sb::Index input_,
-        const DataKeyCollectionMapper& value_
-    );
 
 private:
 
@@ -139,13 +87,5 @@ UniqueFilter
 ) = create_unique<AbstractFilter>;
 
 }
-
-/// \cond INTERNAL
-SB_DECLARE_CLASS(
-    sb::AbstractFilter,
-    "sb.AbstractFilter",
-    sb::AbstractBlok
-)
-/// \endcond
 
 #endif // SB_ABSTRACTFILTER_H

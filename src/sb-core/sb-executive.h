@@ -23,8 +23,10 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 namespace sb
 {
 
-class SB_CORE_API PushExecutive : public sb::AbstractExecutive
+class SB_CORE_API PushExecutive : public AbstractExecutive
 {
+
+    SB_NAME("sb.PushExecutive")
 
 public:
 
@@ -45,17 +47,17 @@ public:
     void
     on_input_pushed
     (
-        sb::Index index_
+        Index index_
     )
-    override;
+    SB_OVERRIDE;
 
     virtual
     void
     on_output_pulled
     (
-        sb::Index index_
+        Index index_
     )
-    override;
+    SB_OVERRIDE;
 
 private:
 
@@ -66,8 +68,10 @@ private:
 
 };
 
-class SB_CORE_API PullExecutive : public sb::AbstractExecutive
+class SB_CORE_API PullExecutive : public AbstractExecutive
 {
+
+    SB_NAME("sb.PullExecutive")
 
 public:
 
@@ -88,17 +92,17 @@ public:
     void
     on_input_pushed
     (
-        sb::Index index_
+        Index index_
     )
-    override;
+    SB_OVERRIDE;
 
     virtual
     void
     on_output_pulled
     (
-        sb::Index index_
+        Index index_
     )
-    override;
+    SB_OVERRIDE;
 
 private:
 
@@ -109,8 +113,10 @@ private:
 
 };
 
-class SB_CORE_API PushPullExecutive : public sb::AbstractExecutive
+class SB_CORE_API PushPullExecutive : public AbstractExecutive
 {
+
+    SB_NAME("sb.PushPullExecutive")
 
 public:
 
@@ -131,17 +137,17 @@ public:
     void
     on_input_pushed
     (
-        sb::Index index_
+        Index index_
     )
-    override;
+    SB_OVERRIDE;
 
     virtual
     void
     on_output_pulled
     (
-        sb::Index index_
+        Index index_
     )
-    override;
+    SB_OVERRIDE;
 
 private:
 
@@ -153,23 +159,5 @@ private:
 };
 
 }
-
-/// \cond INTERNAL
-SB_DECLARE_CLASS(
-    sb::PushExecutive,
-    "sb.PushExecutive",
-    sb::AbstractExecutive
-)
-SB_DECLARE_CLASS(
-    sb::PullExecutive,
-    "sb.PullExecutive",
-    sb::AbstractExecutive
-)
-SB_DECLARE_CLASS(
-    sb::PushPullExecutive,
-    "sb.PushPullExecutive",
-    sb::AbstractExecutive
-)
-/// \endcond
 
 #endif // SB_EXECUTIVE_H

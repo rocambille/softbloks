@@ -15,63 +15,71 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef SB_ABSTRACTSOURCE_H
-#define SB_ABSTRACTSOURCE_H
+#ifndef SB_DATA_H
+#define SB_DATA_H
 
-#include <sb-core/sb-abstractblok.h>
+#include <sb-core/sb-abstractdata.h>
+
+#include <sstream>
 
 namespace sb
 {
 
-class SB_CORE_API AbstractSource : public AbstractBlok
+template<typename Type>
+class Data : public AbstractData
 {
 
-    SB_SELF(sb::AbstractSource)
+    SB_NAME(
+        static_cast<std::ostringstream&>(
+            std::ostringstream() <<
+                "sb.Data<" <<
+                typeid(Type).hash_code() <<
+                ">"
+        ).str()
+    )
 
-    SB_NAME("sb.AbstractSource")
+    SB_PROPERTIES({
+        "value",
+        &Data::get_value,
+        &Data::set_value
+    })
 
 public:
 
-    class Private;
-
-    /// Constructs a source.
-    AbstractSource
+    Type
+    get_value
     (
-    );
-
-    /// Destroys this object.
-    virtual
-    ~AbstractSource
-    (
-    );
-
-    SharedData
-    get_output
-    (
-        Index index_ = 0
     )
-    const;
+    const
+    {
+        return this->value;
+    }
+
+    void
+    set_value
+    (
+        const Type& value_
+    )
+    {
+        this->value = value_;
+    }
 
 private:
 
-    /// \cond INTERNAL
-    Private*
-    d_ptr;
-    /// \endcond
+    Type
+    value;
 
 };
 
-/// Alias for a managed source uniquely owned.
-using UniqueSource = Unique<AbstractSource>;
-
-/// Alias for create_unique<AbstractSource>().
-static
-UniqueSource
-(&create_unique_source)
+template<typename T>
+bool
+register_data
 (
-    const std::string& name_
-) = create_unique<AbstractSource>;
+)
+{
+    return register_object<Data<T>>();
+}
 
 }
 
-#endif // SB_ABSTRACTSOURCE_H
+#endif // SB_DATA_H

@@ -19,6 +19,8 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sb-core/sb-abstractdata-private.h>
 
+#include <sb-core/sb-abstractblok-private.h>
+
 using namespace sb;
 
 AbstractData::AbstractData
@@ -39,6 +41,25 @@ AbstractData::Private::Private
 (
     AbstractData* q_ptr_
 ):
-    q_ptr(q_ptr_)
+    q_ptr       (q_ptr_),
+    source_blok (SB_NULLPTR)
 {
+}
+
+AbstractData::Private*
+AbstractData::Private::from
+(
+    const AbstractData* this_
+)
+{
+    return this_->d_ptr;
+}
+
+AbstractData::Private*
+AbstractData::Private::from
+(
+    const SharedData& this_
+)
+{
+    return this_->d_ptr;
 }

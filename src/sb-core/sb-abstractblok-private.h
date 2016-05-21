@@ -21,7 +21,6 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb-core/sb-abstractblok.h>
 
 #include <sb-core/sb-abstractdata.h>
-#include <sb-core/sb-dataset-private.h>
 
 namespace sb
 {
@@ -37,54 +36,18 @@ public:
     );
 
     void
-    set_input_count
+    set_inputs_formats
     (
-        Size value_
+        const ObjectFormatSequence& value_
     );
 
     void
-    set_input_count
+    set_outputs_type_names
     (
-        Size minimum_,
-        Size maximum_
+        const StringSequence& value_
     );
 
-    void
-    set_input_format
-    (
-        Size index_,
-        const ObjectFormat& format_
-    );
-
-    void
-    set_output_count
-    (
-        Size value_
-    );
-
-    void
-    set_output_count
-    (
-        Size minimum_,
-        Size maximum_
-    );
-
-    void
-    update_outputs_data_key_range
-    (
-    );
-
-    void
-    update_outputs_defined_data_keys
-    (
-    );
-
-    void
-    update_inputs_wanted_data_keys
-    (
-    );
-
-    SharedDataSet
+    SharedData
     lock_input
     (
         Index index_
@@ -95,7 +58,7 @@ public:
     set_input
     (
         Index index_,
-        const SharedDataSet& value_
+        const SharedData& value_
     );
 
     void
@@ -123,35 +86,17 @@ public:
     AbstractBlok*
     q_ptr;
 
-    Size
-    minimum_input_count;
+    ObjectFormatSequence
+    inputs_formats;
 
-    Size
-    maximum_input_count;
-
-    std::vector<WeakDataSet>
+    std::vector<WeakData>
     inputs;
 
-    std::vector<ObjectFormat>
-    inputs_format;
+    ObjectFormatSequence
+    outputs_formats;
 
-    std::vector<DataKeyCollectionMapper>
-    wanted_data_keys_mappers;
-
-    Size
-    minimum_output_count;
-
-    Size
-    maximum_output_count;
-
-    std::vector<SharedDataSet>
+    std::vector<SharedData>
     outputs;
-
-    std::vector<DataKeyRangeMapper>
-    data_key_range_mappers;
-
-    std::vector<DataKeyCollectionMapper>
-    defined_data_keys_mappers;
 
     UniqueExecutive
     executive;

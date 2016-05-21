@@ -37,7 +37,7 @@ AbstractFilter::~AbstractFilter
     delete d_ptr;
 }
 
-SharedDataSet
+SharedData
 AbstractFilter::lock_input
 (
     Index index_
@@ -46,14 +46,14 @@ const
 {
     return AbstractBlok::Private::from(
         this
-    )->inputs.at(index_).lock();
+    )->lock_input(index_);
 }
 
 bool
 AbstractFilter::set_input
 (
     Index index_,
-    const SharedDataSet& value_
+    const SharedData& value_
 )
 {
     return AbstractBlok::Private::from(
@@ -64,7 +64,7 @@ AbstractFilter::set_input
     );
 }
 
-SharedDataSet
+SharedData
 AbstractFilter::get_output
 (
     Index index_
@@ -74,121 +74,6 @@ const
     return AbstractBlok::Private::from(
         this
     )->outputs.at(index_);
-}
-
-void
-AbstractFilter::set_input_count
-(
-    Size value_
-)
-{
-    AbstractBlok::Private::from(
-        this
-    )->set_input_count(
-        value_
-    );
-}
-
-void
-AbstractFilter::set_input_count
-(
-    Size minimum_,
-    Size maximum_
-)
-{
-    AbstractBlok::Private::from(
-        this
-    )->set_input_count(
-        minimum_,
-        maximum_
-    );
-}
-
-void
-AbstractFilter::set_input_format
-(
-    Index index_,
-    const ObjectFormat& format_
-)
-{
-    AbstractBlok::Private::from(
-        this
-    )->set_input_format(
-        index_,
-        format_
-    );
-}
-
-void
-AbstractFilter::set_output_count
-(
-    Size value_
-)
-{
-    AbstractBlok::Private::from(
-        this
-    )->set_output_count(
-        value_
-    );
-}
-
-void
-AbstractFilter::set_output_count
-(
-    Size minimum_,
-    Size maximum_
-)
-{
-    AbstractBlok::Private::from(
-        this
-    )->set_output_count(
-        minimum_,
-        maximum_
-    );
-}
-
-void
-AbstractFilter::set_data_key_range_mapper
-(
-    Index output_,
-    const DataKeyRangeMapper& value_
-)
-{
-    AbstractBlok::Private::from(
-        this
-    )->data_key_range_mappers.at(output_) = value_;
-}
-
-void
-AbstractFilter::set_defined_data_keys_mapper
-(
-    Index output_,
-    const DataKeyCollectionMapper& value_
-)
-{
-    AbstractBlok::Private::from(
-        this
-    )->defined_data_keys_mappers.at(
-        output_
-    ) = (
-        value_
-    );
-}
-
-void
-AbstractFilter::set_wanted_data_keys_mapper
-(
-    Index input_,
-    const DataKeyCollectionMapper& value_
-)
-{
-    AbstractBlok::Private::from(
-        this
-    )->wanted_data_keys_mappers.at(
-        input_
-    ) = (
-        value_
-    );
 }
 
 AbstractFilter::Private::Private

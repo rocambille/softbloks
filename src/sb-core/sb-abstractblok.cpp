@@ -21,70 +21,11 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <algorithm>
 
+#include <sb-core/sb-abstractdata-private.h>
 #include <sb-core/sb-abstractexecutive-private.h>
-#include <sb-core/sb-dataset-private.h>
 #include <sb-core/sb-executive.h>
 
 using namespace sb;
-
-namespace Global
-{
-
-const DataKeyRangeMapper
-default_data_key_range_mapper =
-    []
-    (
-        const std::vector<DataKeyRange>& sources_
-    )
-    {
-        DataKeyRange result = {{0, 0}};
-
-        if(sources_.size() > 0)
-        {
-            result = sources_[0];
-
-            for(Index i(1); i < sources_.size(); ++i)
-            {
-                result[0] = std::min(result[0], sources_[i][0]);
-                result[1] = std::max(result[1], sources_[i][1]);
-            }
-        }
-
-        return result;
-    };
-
-const DataKeyCollectionMapper
-default_data_key_collection_mapper =
-    []
-    (
-        const std::vector<DataKeyCollection>& sources_
-    )
-    {
-        DataKeyCollection result;
-
-        if(sources_.size() > 0)
-        {
-            result = sources_[0];
-
-            for(Index i(1); i < sources_.size(); ++i)
-            {
-                result.insert(
-                    result.begin(),
-                    sources_[i].begin(),
-                    sources_[i].end()
-                );
-
-                std::unique(
-                    result.begin(),
-                    result.end()
-                );
-            }
-        }
-
-        return result;
-    };
-
-}
 
 AbstractBlok::AbstractBlok
 (
@@ -110,9 +51,9 @@ AbstractBlok::~AbstractBlok
 
     for(auto output : d_ptr->outputs)
     {
-        DataSet::Private::from(
+        AbstractData::Private::from(
             output
-        )->source_blok = nullptr;
+        )->source_blok = SB_NULLPTR;
     }
 
     // d_ptr->executive points to this blok:
@@ -124,48 +65,12 @@ AbstractBlok::~AbstractBlok
 }
 
 Size
-AbstractBlok::get_minimum_input_count
-(
-)
-const
-{
-    return d_ptr->minimum_input_count;
-}
-
-Size
-AbstractBlok::get_maximum_input_count
-(
-)
-const
-{
-    return d_ptr->maximum_input_count;
-}
-
-Size
 AbstractBlok::get_input_count
 (
 )
 const
 {
     return d_ptr->inputs.size();
-}
-
-Size
-AbstractBlok::get_minimum_output_count
-(
-)
-const
-{
-    return d_ptr->minimum_output_count;
-}
-
-Size
-AbstractBlok::get_maximum_output_count
-(
-)
-const
-{
-    return d_ptr->maximum_output_count;
 }
 
 Size
@@ -183,7 +88,7 @@ AbstractBlok::use_executive
     const std::string& name_
 )
 {
-    d_ptr->executive = sb::create_unique_executive(name_);
+    d_ptr->executive = create_unique_executive(name_);
 
     if(!d_ptr->executive)
     {
@@ -206,7 +111,7 @@ AbstractBlok::pull_input
     // AbstractBlok::Private::lock_input calls this method:
     // don't call it here or it will cause infinite recursion
 
-    auto input_d_ptr = DataSet::Private::from(
+    auto input_d_ptr = AbstractData::Private::from(
         d_ptr->inputs.at(index_).lock()
     );
 
@@ -223,7 +128,7 @@ AbstractBlok::push_output
     Index index_
 )
 {
-    auto output_d_ptr = DataSet::Private::from(
+    auto output_d_ptr = AbstractData::Private::from(
         d_ptr->outputs.at(index_)
     );
 
@@ -237,244 +142,82 @@ AbstractBlok::push_output
     }
 }
 
+void
+AbstractBlok::init
+(
+    AbstractBlok* this_,
+    const ObjectFormatSequence& inputs_formats_,
+    const StringSequence& output_type_names_
+)
+{
+    auto d_ptr = AbstractBlok::Private::from(
+        this_
+    );
+
+    d_ptr->set_inputs_formats(
+        inputs_formats_
+    );
+    d_ptr->set_outputs_type_names(
+        output_type_names_
+    );
+}
+
 AbstractBlok::Private::Private
 (
     AbstractBlok* q_ptr_
 ):
-    q_ptr               (q_ptr_),
-    minimum_input_count (0),
-    maximum_input_count (sb::MAX_SIZE),
-    minimum_output_count(0),
-    maximum_output_count(sb::MAX_SIZE)
+    q_ptr(q_ptr_)
 {
-    sb::register_object<DataSet>();
 }
 
 void
-AbstractBlok::Private::set_input_count
+AbstractBlok::Private::set_inputs_formats
 (
-    Size value_
+    const ObjectFormatSequence& value_
 )
 {
-    this->set_input_count(
-        value_,
-        value_
+    this->inputs_formats = value_;
+
+    this->inputs.resize(
+        this->inputs_formats.size()
     );
 }
 
 void
-AbstractBlok::Private::set_input_count
+AbstractBlok::Private::set_outputs_type_names
 (
-    Size minimum_,
-    Size maximum_
+    const StringSequence& value_
 )
 {
-    this->minimum_input_count = minimum_;
-    this->maximum_input_count = maximum_;
-
-    this->inputs.resize(minimum_);
-
-    this->inputs_format.resize(
-        this->inputs.size(),
-        UNDEFINED_OBJECT_FORMAT
+    this->outputs_formats.resize(
+        value_.size()
+    );
+    this->outputs.resize(
+        value_.size()
     );
 
-    this->wanted_data_keys_mappers.resize(
-        this->inputs.size(),
-        Global::default_data_key_collection_mapper
-    );
-}
-
-void
-AbstractBlok::Private::set_input_format
-(
-    Index index_,
-    const ObjectFormat& format_
-)
-{
-    this->inputs_format[index_] = format_;
-}
-
-void
-AbstractBlok::Private::set_output_count
-(
-    Size value_
-)
-{
-    this->set_output_count(
-        value_,
-        value_
-    );
-}
-
-void
-AbstractBlok::Private::set_output_count
-(
-    Size minimum_,
-    Size maximum_
-)
-{
-    Size previous_output_count =
-        this->outputs.size();
-
-    this->minimum_output_count = minimum_;
-    this->maximum_output_count = maximum_;
-
-    this->outputs.resize(minimum_);
-
-    for(Index i(previous_output_count); i < this->outputs.size(); ++i)
+    for(Index i(0); i < value_.size(); ++i)
     {
-        SharedDataSet data_set = sb::create_shared_data_set(
-            get_type_name<DataSet>()
+        this->outputs_formats[i] = get_object_format(
+            value_[i]
         );
 
-        auto data_set_d_ptr = DataSet::Private::from(
-            data_set
+        SharedData data = create_shared_data(
+            value_[i]
         );
 
-        data_set_d_ptr->source_blok = q_ptr;
-        data_set_d_ptr->source_index = i;
-
-        this->outputs[i] = data_set;
-    }
-
-    this->data_key_range_mappers.resize(
-        this->outputs.size(),
-        Global::default_data_key_range_mapper
-    );
-
-    this->defined_data_keys_mappers.resize(
-        this->outputs.size(),
-        Global::default_data_key_collection_mapper
-    );
-}
-
-void
-AbstractBlok::Private::update_outputs_data_key_range
-(
-)
-{
-    std::vector<DataKeyRange> data_key_ranges;
-
-    for(auto input : this->inputs)
-    {
-        auto locked_input = input.lock();
-
-        if(locked_input)
-        {
-            data_key_ranges.push_back(
-                locked_input->get_data_key_range()
-            );
-        }
-        else
-        {
-            data_key_ranges.push_back(
-                DataKeyRange({{0, 0}})
-            );
-        }
-    }
-
-    for(auto output : this->outputs)
-    {
-        auto mapper = this->data_key_range_mappers.at(
-            DataSet::Private::from(
-                output
-            )->source_index
+        auto data_d_ptr = AbstractData::Private::from(
+            data
         );
 
-        DataSet::Private::from(
-            output
-        )->set_data_key_range(
-            mapper(
-                data_key_ranges
-            )
-        );
+        data_d_ptr->source_blok = q_ptr;
+        data_d_ptr->source_index = i;
+
+        this->outputs[i] = data;
     }
 }
 
-void
-AbstractBlok::Private::update_outputs_defined_data_keys
-(
-)
-{
-    std::vector<DataKeyCollection> data_key_collections;
-
-    for(auto input : this->inputs)
-    {
-        auto locked_input = input.lock();
-
-        if(locked_input)
-        {
-            data_key_collections.push_back(
-                locked_input->get_defined_data_keys()
-            );
-        }
-        else
-        {
-            data_key_collections.push_back(
-                DataKeyCollection()
-            );
-        }
-    }
-
-    for(auto output : this->outputs)
-    {
-        auto mapper = this->defined_data_keys_mappers.at(
-            DataSet::Private::from(
-                output
-            )->source_index
-        );
-
-        DataSet::Private::from(
-            output
-        )->set_defined_data_keys(
-            mapper(
-                data_key_collections
-            )
-        );
-    }
-}
-
-void
-AbstractBlok::Private::update_inputs_wanted_data_keys
-(
-)
-{
-    std::vector<DataKeyCollection> data_key_collections;
-
-    for(auto output : this->outputs)
-    {
-        data_key_collections.push_back(
-            DataSet::Private::from(
-                output
-            )->wanted_data_keys
-        );
-    }
-
-    for(auto input : this->inputs)
-    {
-        auto locked_input = input.lock();
-
-        if(locked_input)
-        {
-            auto mapper = this->wanted_data_keys_mappers.at(
-                DataSet::Private::from(
-                    locked_input
-                )->source_index
-            );
-
-            DataSet::Private::from(
-                locked_input
-            )->set_wanted_data_keys(
-                mapper(
-                    data_key_collections
-                )
-            );
-        }
-    }
-}
-
-SharedDataSet
+SharedData
 AbstractBlok::Private::lock_input
 (
     Index index_
@@ -490,39 +233,16 @@ bool
 AbstractBlok::Private::set_input
 (
     Index index_,
-    const SharedDataSet& value_
+    const SharedData& value_
 )
 {
     bool ok = false;
 
     if(
-        index_ >= this->inputs.size() &&
-        index_ < this->maximum_input_count
-    )
-    {
-        this->inputs.resize(index_+1);
-
-        this->inputs_format.resize(
-            this->inputs.size(),
-            UNDEFINED_OBJECT_FORMAT
-        );
-
-        this->wanted_data_keys_mappers.resize(
-            this->inputs.size(),
-            Global::default_data_key_collection_mapper
-        );
-    }
-
-    ObjectFormat input_format = UNDEFINED_OBJECT_FORMAT;
-
-    if(index_ < this->inputs_format.size())
-    {
-        input_format = this->inputs_format.at(index_);
-    }
-
-    if(
-        value_ == nullptr ||
-        value_->get_instance_format() >> input_format
+        value_ == SB_NULLPTR ||
+        value_->get_format().includes(
+            this->inputs_formats.at(index_)
+        )
     )
     {
         ok = true;
@@ -535,19 +255,12 @@ AbstractBlok::Private::set_input
         {
             // register this blok as a follower
 
-            DataSet::Private::from(
+            AbstractData::Private::from(
                 value_
             )->followers.emplace(
                 q_ptr, index_
             );
         }
-
-        // update data keys
-
-        this->update_outputs_data_key_range();
-        this->update_outputs_defined_data_keys();
-
-        this->update_inputs_wanted_data_keys();
     }
 
     return ok;
@@ -565,14 +278,13 @@ AbstractBlok::Private::unlink_input
     {
         // unregister this blok from previous input's followers
 
-        auto input_d_ptr = DataSet::Private::from(
+        auto input_d_ptr = AbstractData::Private::from(
             input
         );
 
-        auto erase_candidates = 
-            input_d_ptr->followers.equal_range(
-                q_ptr
-            );
+        auto erase_candidates = input_d_ptr->followers.equal_range(
+            q_ptr
+        );
 
         auto candidate = erase_candidates.first;
 
@@ -606,4 +318,26 @@ AbstractBlok::Private::from
 )
 {
     return this_->d_ptr;
+}
+
+bool
+sb::connect
+(
+    AbstractBlok* left_,
+    Index left_index_,
+    AbstractBlok* right_,
+    Index right_index_
+)
+{
+    return
+        AbstractBlok::Private::from(
+            right_
+        )->set_input(
+            right_index_,
+            AbstractBlok::Private::from(
+                left_
+            )->outputs[
+                left_index_
+            ]
+        );
 }

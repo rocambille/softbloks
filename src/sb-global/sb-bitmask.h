@@ -18,6 +18,8 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SB_BITMASK_H
 #define SB_BITMASK_H
 
+#include <sb-global/sb-globaldefine.h>
+
 #include <functional>
 #include <type_traits>
 
@@ -25,13 +27,13 @@ namespace sb
 {
 
 /// \brief The BitmaskWrapper template class can be used as a reference
-/// wrapper for an enumeration of type \a T.
+/// wrapper for the enumeration type \a T.
 ///
 /// The enumeration is considered to be a bitmask type, i.e. an enumeration
-/// with bitwise exclusive values, for which the wrapper provides an object
-/// interface with convenient methods for bitmasks. Note that the enumeration
-/// should declare the necessary bitwise operators, e.g. using
-/// SB_DECLARE_BITMASK_OPERATORS().
+/// with bitwise exclusive values. The wrapper provides an object interface
+/// with convenient methods for bitmasks. Note that the enumeration  should
+/// declare the necessary bitwise operators, e.g. using
+/// SB_BITMASK_OPERATORS().
 ///
 /// An appropriate bitmask wrapper can be constructed with the function
 /// bitmask():
@@ -43,7 +45,7 @@ namespace sb
 ///     BAR = 1 << 1
 /// };
 ///
-/// SB_DECLARE_BITMASK_OPERATORS(MyBitmask)
+/// SB_BITMASK_OPERATORS(MyBitmask)
 ///
 /// ...
 ///
@@ -63,18 +65,15 @@ namespace sb
 ///
 /// sb::bitmask(b).is_set(MyBitmask::FOO); // returns false
 /// sb::bitmask(b).is_set(MyBitmask::BAR); // returns true
-///
 /// \endcode
 ///
 /// \sa make_empty_bitmask().
 template<typename T>
-class BitmaskWrapper : public std::reference_wrapper<
+struct BitmaskWrapper : public std::reference_wrapper<
     // T should be an enum, disable it otherwise
     typename std::enable_if<std::is_enum<T>::value, T>::type
 >
 {
-
-public:
 
     /// Alias for the underlying type of \a T.
     using UnderlyingType = typename std::underlying_type<T>::type;
@@ -95,6 +94,7 @@ public:
     bool
     (
     )
+    const
     {
         return static_cast<UnderlyingType>(
             this->get()
@@ -107,6 +107,7 @@ public:
     is_empty
     (
     )
+    const
     {
         return static_cast<UnderlyingType>(
             this->get()
@@ -126,6 +127,7 @@ public:
     (
         T value_
     )
+    const
     {
         return ( (*this) & value_ ) == value_;
     }
@@ -177,6 +179,7 @@ public:
 ///
 /// \sa make_empty_bitmask().
 template<typename T>
+inline
 BitmaskWrapper<T>
 bitmask
 (
@@ -197,6 +200,7 @@ template<
     // T should be an enum, disable it otherwise
     typename = typename std::enable_if<std::is_enum<T>::value>::type
 >
+SB_CONSTEXPR_FUNCTION
 T
 make_empty_bitmask
 (
@@ -211,8 +215,12 @@ make_empty_bitmask
 /// (&, |, ^, ~, &=, |= and ^=).
 ///
 /// \sa BitmaskWrapper.
-#define SB_DECLARE_BITMASK_OPERATORS(bitmask_)\
-static \
+#define SB_BITMASK_OPERATORS(bitmask_)\
+SB_STATIC_ASSERT_MSG(\
+    std::is_enum<bitmask_>::value,\
+    "declared bitmask operators on non enum type"\
+);\
+SB_CONSTEXPR_FUNCTION \
 bitmask_ \
 operator&\
 (\
@@ -226,7 +234,7 @@ operator&\
     );\
 }\
 \
-static \
+SB_CONSTEXPR_FUNCTION \
 bitmask_ \
 operator|\
 (\
@@ -240,7 +248,7 @@ operator|\
     );\
 }\
 \
-static \
+SB_CONSTEXPR_FUNCTION \
 bitmask_ \
 operator^\
 (\
@@ -254,7 +262,7 @@ operator^\
     );\
 }\
 \
-static \
+SB_CONSTEXPR_FUNCTION \
 bitmask_ \
 operator~\
 (\
@@ -266,8 +274,8 @@ operator~\
     );\
 }\
 \
-static \
-sb::BitmaskWrapper<bitmask_>/*implicitly check bitmask_ is an enum*/\
+inline \
+bitmask_& \
 operator&=\
 (\
     bitmask_& left_,\
@@ -279,8 +287,8 @@ operator&=\
     return left_;\
 }\
 \
-static \
-sb::BitmaskWrapper<bitmask_>/*implicitly check bitmask_ is an enum*/\
+inline \
+bitmask_& \
 operator|=\
 (\
     bitmask_& left_,\
@@ -292,8 +300,8 @@ operator|=\
     return left_;\
 }\
 \
-static \
-sb::BitmaskWrapper<bitmask_>/*implicitly check bitmask_ is an enum*/\
+inline \
+bitmask_& \
 operator^=\
 (\
     bitmask_& left_,\

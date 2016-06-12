@@ -29,11 +29,18 @@ namespace sb
 
 // one day: using Any = std::any;
 
+/// \brief The class Any is a type-safe, generic container for single values.
+///
+/// Kevlin Henney (["Valued Conversions"](http://www.two-sdg.demon.co.uk/curbralan/papers/ValuedConversions.pdf)
+/// from Mechanism to Method column in C++ Report 12(7), July–August 2000)
 class Any
 {
 
 public:
 
+    /// Constructs en empty object with null content and void type.
+    ///
+    /// \sa operator=, get_type_info() and any_cast().
     Any
     (
     ):
@@ -41,6 +48,13 @@ public:
     {
     }
 
+    /// Copies the content of \a other_ into this object.
+    ///
+    /// After construction, the type and the value held by this object are
+    /// equivalent to the type and the value held by \a other_. Notably this
+    /// object is empty if \a other_ is empty.
+    ///
+    /// \sa operator=, get_type_info() and any_cast().
     Any
     (
         const Any& other_
@@ -53,6 +67,14 @@ public:
         }
     }
 
+    /// Moves the content of \a other_ into this object.
+    ///
+    /// After construction, \a other_ is empty while the type and the value
+    /// held by this object are equivalent to the type and the value held by
+    /// \a other_ before construction. Notably this object is empty if
+    /// \a other_ was empty.
+    ///
+    /// \sa operator=, get_type_info() and any_cast().
     Any
     (
         Any&& other_
@@ -62,15 +84,12 @@ public:
         other_.content = SB_NULLPTR;
     }
 
-    template<typename T>
-    Any
-    (
-        const T& value_
-    ):
-        content(new Holder<T>(value_))
-    {
-    }
-
+    /// Constructs an object with content direct-initialized from
+    /// \a std::forward<T>(value_).
+    ///
+    /// Note that \a std::decay_t<ValueType> must be copy-constructible.
+    ///
+    /// \sa operator=, get_type_info() and any_cast().
     template<typename T>
     Any
     (
@@ -78,8 +97,14 @@ public:
     ):
         content(new Holder<T>(std::forward<T>(value_)))
     {
+        SB_STATIC_ASSERT(
+            std::is_copy_constructible<std::decay<T>::type>::value
+        );
     }
 
+    /// Destroys this object and its content, if any.
+    ///
+    /// \sa clear().
     ~Any
     (
     )
@@ -87,6 +112,14 @@ public:
         delete this->content;
     }
 
+    /// Assigns \a other_ to this object by copying its content and returns a
+    /// reference to this object.
+    ///
+    /// After assignment, the type and the value held by this object are
+    /// equivalent to the type and the value held by \a other_. Notably this
+    /// object is empty if \a other_ is empty.
+    ///
+    /// \sa Any(), get_type_info() and any_cast().
     Any&
     operator=
     (
@@ -107,6 +140,15 @@ public:
         return (*this);
     }
 
+    /// Assigns \a other_ to this object by moving its content and returns a
+    /// reference to this object.
+    ///
+    /// After assignment, \a other_ is empty while the type and the value held
+    /// by this object are equivalent to the type and the value held by
+    /// \a other_ before assignment. Notably this object is empty if \a other_
+    /// was empty.
+    ///
+    /// \sa Any(), get_type_info() and any_cast().
     Any&
     operator=
     (
@@ -121,20 +163,12 @@ public:
         return (*this);
     }
 
-    template<typename T>
-    Any&
-    operator=
-    (
-        const T& value_
-    )
-    {
-        delete this->content;
-
-        this->content = new Holder<T>(value_);
-
-        return (*this);
-    }
-
+    /// Assigns the type and the value of \a std::forward<T>(value_) to this
+    /// object.
+    ///
+    /// Note that \a std::decay_t<ValueType> must be copy-constructible.
+    ///
+    /// \sa Any(), get_type_info() and any_cast().
     template<typename T>
     Any&
     operator=
@@ -142,6 +176,10 @@ public:
         T&& value_
     )
     {
+        SB_STATIC_ASSERT(
+            std::is_copy_constructible<std::decay<T>::type>::value
+        );
+
         delete this->content;
 
         this->content = new Holder<T>(std::forward<T>(value_));
@@ -196,6 +234,7 @@ public:
 
 private:
 
+    /// \cond INTERNAL
     struct Placeholder
     {
 
@@ -221,24 +260,19 @@ private:
         const = 0;
 
     };
+    /// \endcond
 
+    /// \cond INTERNAL
     template<typename T>
     struct Holder : Placeholder
     {
 
+        template<typename U>
         Holder
         (
-            const T& value_
+            U&& value_
         ):
-            held(value_)
-        {
-        }
-
-        Holder
-        (
-            T&& value_
-        ):
-            held(std::forward<T>(value_))
+            held(std::forward<U>(value_))
         {
         }
 
@@ -268,7 +302,9 @@ private:
         held;
 
     };
+    /// \endcond
 
+    /// \cond INTERNAL
     template<typename T>
     friend
     inline
@@ -277,7 +313,9 @@ private:
     (
         const Any* value_
     );
+    /// \endcond
 
+    /// \cond INTERNAL
     template<typename T>
     friend
     inline
@@ -286,9 +324,30 @@ private:
     (
         Any* value_
     );
+    /// \endcond
 
+    /// \cond INTERNAL
     Placeholder*
     content;
+    /// \endcond
+
+};
+
+class BadAnyCast : public std::bad_cast
+{
+
+public:
+
+    virtual
+    const char*
+    what
+    (
+    )
+    const
+    SB_OVERRIDE
+    {
+        return "Bad any cast";
+    }
 
 };
 
@@ -300,6 +359,12 @@ any_cast
     const Any& value_
 )
 {
+    SB_STATIC_ASSERT_MSG(
+        SB_EVAL(
+            !std::is_same<void, std::decay<T>::type>::value
+        ),
+        "invalid any_cast with type void"
+    );
     return *(
         any_cast<
             typename std::add_const<
@@ -319,6 +384,12 @@ any_cast
     Any& value_
 )
 {
+    SB_STATIC_ASSERT_MSG(
+        SB_EVAL(
+            !std::is_same<void, std::decay<T>::type>::value
+        ),
+        "invalid any_cast with type void"
+    );
     return *(
         any_cast<
             typename std::remove_reference<
@@ -336,6 +407,12 @@ any_cast
     Any&& value_
 )
 {
+    SB_STATIC_ASSERT_MSG(
+        SB_EVAL(
+            !std::is_same<void, std::decay<T>::type>::value
+        ),
+        "invalid any_cast with type void"
+    );
     return *(
         any_cast<
             typename std::remove_reference<
@@ -355,19 +432,23 @@ any_cast
 {
     const T* result = SB_NULLPTR;
 
-    if(
-        value_ &&
-        value_->content &&
-        value_->content->get_type_info() == typeid(T)
-    )
+    if(value_)
     {
-        // note: when dynamic_cast is used on references,
-        // it throws the exception std::bad_cast on failure
-        result = &(
-            static_cast<const Any::Holder<T>&>(
-                *(value_->content)
-            ).held
-        );
+        if(value_->get_type_info() == typeid(T))
+        {
+            if(value_->content)
+            {
+                result = &(
+                    static_cast<const Any::Holder<T>*>(
+                        value_->content
+                    )->held
+                );
+            }
+        }
+        else
+        {
+            throw BadAnyCast();
+        }
     }
 
     return result;
@@ -383,19 +464,23 @@ any_cast
 {
     T* result = SB_NULLPTR;
 
-    if(
-        value_ &&
-        value_->content &&
-        value_->content->get_type_info() == typeid(T)
-    )
+    if(value_)
     {
-        // note: when dynamic_cast is used on references,
-        // it throws the exception std::bad_cast on failure
-        result = &(
-            static_cast<Any::Holder<T>&>(
-                *(value_->content)
-            ).held
-        );
+        if(value_->get_type_info() == typeid(T))
+        {
+            if(value_->content)
+            {
+                result = &(
+                    static_cast<Any::Holder<T>*>(
+                        value_->content
+                    )->held
+                );
+            }
+        }
+        else
+        {
+            throw BadAnyCast();
+        }
     }
 
     return result;

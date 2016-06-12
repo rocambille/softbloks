@@ -1,4 +1,4 @@
-Softbloks Version 0.3 21/05/2016
+Softbloks Version 0.4 12/06/2016
 ================================
 
 README contents

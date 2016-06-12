@@ -306,7 +306,7 @@ you want to download Softbloks in directory `<root>`, you can clone the
 repository from GitHub using the following commands in a Git console:
 
     cd <root>
-    git clone git://github.com/rita-marylin-raquel/softbloks.git .
+    git clone git://github.com/wasthishelpful/softbloks.git .
 
 How the repository is structured?
 ---------------------------------
@@ -449,10 +449,8 @@ By the way, if you like the project, please tell your friends.
 Links
 -----
 
-Web site: <http://github.com/rita-marylin-raquel/softbloks>  
-E-mail: <rita.marylin.raquel@gmail.com>
-
-Cite us: [![DOI](https://zenodo.org/badge/20687/rita-marylin-raquel/softbloks.svg)](https://zenodo.org/badge/latestdoi/20687/rita-marylin-raquel/softbloks)
+Web site: <http://github.com/wasthishelpful/softbloks>  
+E-mail: <wasthishelpful@gmail.com>
 
 Licensing
 ---------

@@ -98,7 +98,7 @@ public:
         content(new Holder<T>(std::forward<T>(value_)))
     {
         SB_STATIC_ASSERT(
-            std::is_copy_constructible<std::decay<T>::type>::value
+            std::is_copy_constructible<typename std::decay<T>::type>::value
         );
     }
 
@@ -177,7 +177,7 @@ public:
     )
     {
         SB_STATIC_ASSERT(
-            std::is_copy_constructible<std::decay<T>::type>::value
+            std::is_copy_constructible<typename std::decay<T>::type>::value
         );
 
         delete this->content;
@@ -344,6 +344,7 @@ public:
     (
     )
     const
+    noexcept
     SB_OVERRIDE
     {
         return "Bad any cast";
@@ -361,7 +362,7 @@ any_cast
 {
     SB_STATIC_ASSERT_MSG(
         SB_EVAL(
-            !std::is_same<void, std::decay<T>::type>::value
+            !std::is_same<void, typename std::decay<T>::type>::value
         ),
         "invalid any_cast with type void"
     );
@@ -386,7 +387,7 @@ any_cast
 {
     SB_STATIC_ASSERT_MSG(
         SB_EVAL(
-            !std::is_same<void, std::decay<T>::type>::value
+            !std::is_same<void, typename std::decay<T>::type>::value
         ),
         "invalid any_cast with type void"
     );
@@ -409,7 +410,7 @@ any_cast
 {
     SB_STATIC_ASSERT_MSG(
         SB_EVAL(
-            !std::is_same<void, std::decay<T>::type>::value
+            !std::is_same<void, typename std::decay<T>::type>::value
         ),
         "invalid any_cast with type void"
     );

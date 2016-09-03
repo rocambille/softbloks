@@ -46,9 +46,9 @@ if(WIN32)
     set(SB_INSTALL_INCLUDE_DESTINATION "sb${SOFTBLOKS_VERSION_MAJOR}/include")
     set(SB_INSTALL_SHARE_DESTINATION "sb${SOFTBLOKS_VERSION_MAJOR}/share")
 elseif(APPLE)
-    set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-Wall")
+    add_compile_options(-Wall -Wextra -pedantic)
 elseif(UNIX)
-    set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-Wall")
+    add_compile_options(-Wall -Wextra -pedantic)
 
     set(SB_INSTALL_ROOT_DESTINATION "share/sb${SOFTBLOKS_VERSION_MAJOR}")
     set(SB_INSTALL_RUNTIME_DESTINATION "bin/sb${SOFTBLOKS_VERSION_MAJOR}")
@@ -77,23 +77,13 @@ function(sb_add_qt5_target _target_type _name)
 
             if(${_arg_prefix} STREQUAL "Qt5::")
                 list(APPEND _qt5_components ${_arg})
-            elseif(${_arg_prefix} STREQUAL "rcc::")
-                string(SUBSTRING ${_arg} 5 -1 _file_path)
-                list(APPEND _resources ${_file_path})
             else()
                 list(APPEND _sources ${_arg})
             endif()
         endforeach()
 
         set(CMAKE_AUTOMOC ON)
-
-        if(_resources)
-            qt5_add_resources(_added_resources
-                ${_resources}
-            )
-
-            list(APPEND _sources ${_added_resources})
-        endif()
+        set(CMAKE_AUTORCC ON)
 
         if(${_target_type} STREQUAL LIBRARY)
             sb_add_library(${_name}

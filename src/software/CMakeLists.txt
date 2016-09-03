@@ -29,7 +29,7 @@ if(BUILD_SOFTWARE)
         sw-mainwidget.cpp
         sw-mainwidget.h
         sw-mainwidget-private.h
-        rcc::sw-resources.qrc
+        sw-resources.qrc
         Qt5::Widgets
         Qt5::Svg
     )

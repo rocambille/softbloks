@@ -59,8 +59,8 @@ private:
 /// AbstractData).
 const ObjectFormat
 ANY_DATA_FORMAT = {
-    AbstractData::get_type_names(),
-    AbstractData::get_properties()
+    get_type_names<AbstractData>(),
+    get_properties<AbstractData>()
 };
 
 /// Alias for a managed data with shared ownership.

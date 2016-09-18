@@ -30,7 +30,5 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb-core/sb-data.h>
 #include <sb-core/sb-executive.h>
 #include <sb-core/sb-objectformat.h>
-#include <sb-core/sb-property.h>
-#include <sb-core/sb-propertyformat.h>
 
 #endif // SB_CORE_H

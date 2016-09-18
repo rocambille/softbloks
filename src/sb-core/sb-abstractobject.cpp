@@ -102,70 +102,14 @@ const
     );
 }
 
-Any
-AbstractObject::get
+ObjectProperty
+AbstractObject::get_property
 (
     const std::string& name_
 )
 const
 {
-    ObjectProperty wanted_property = d_ptr->properties.at(name_);
-
-    // check access rights
-
-    if(
-        !bitmask(
-            wanted_property.access_rights
-        ).is_set(
-            AccessRights::READ
-        )
-    )
-    {
-        throw std::invalid_argument(
-            std::string() +
-            "sb::AbstractBlok::get: " +
-            "calling on property " +
-            name_ +
-            " which is write-only"
-        );
-    }
-
-    // call the accessor
-
-    return wanted_property.get(*this);
-}
-
-void
-AbstractObject::set
-(
-    const std::string& name_,
-    const Any& value_
-)
-{
-    ObjectProperty wanted_property = d_ptr->properties.at(name_);
-
-    // check access rights
-
-    if(
-        !bitmask(
-            wanted_property.access_rights
-        ).is_set(
-            AccessRights::WRITE
-        )
-    )
-    {
-        throw std::invalid_argument(
-            std::string() +
-            "sb::AbstractBlok::set: " +
-            "calling on property " +
-            name_ +
-            " which is read-only"
-        );
-    }
-
-    // call the accessor
-
-    wanted_property.set(*this, value_);
+    return d_ptr->properties.at(name_);
 }
 
 void
@@ -194,7 +138,7 @@ AbstractObject::init
             // insertion failed, throw an exception
             throw std::invalid_argument(
                 std::string() +
-                "sb::AbstractBlok::init: " +
+                "sb::AbstractObject::init: " +
                 "failed to insert property " +
                 property.name +
                 "; a property with that name already exists"

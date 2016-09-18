@@ -42,7 +42,7 @@ TYPED_TEST(
     ) << (
         "Failed to register "
     ) << (
-        get_type_name<TypeParam>()
+        TypeParam::get_type_name()
     );
 }
 TEST_F(
@@ -55,7 +55,7 @@ TEST_F(
     ) << (
         "Failed to register "
     ) << (
-        get_type_name<AbstractObject>()
+        AbstractObject::get_type_name()
     );
 
     EXPECT_FALSE(
@@ -92,12 +92,12 @@ TYPED_TEST(
         std::find(
             name_sequence.begin(),
             name_sequence.end(),
-            get_type_name<TypeParam>()
+            TypeParam::get_type_name()
         ) !=  name_sequence.end()
     ) << (
         "Registered name "
     ) << (
-        get_type_name<TypeParam>()
+        TypeParam::get_type_name()
     ) << (
         "can not be found"
     );
@@ -111,7 +111,7 @@ TEST_F(
 )
 {
     EXPECT_EQ(
-        SB_NULLPTR,
+        nullptr,
         create_unique_object(
             "foo"
         ).get()
@@ -125,14 +125,14 @@ TYPED_TEST(
 )
 {
     EXPECT_NE(
-        SB_NULLPTR,
+        nullptr,
         create_unique<TypeParam>(
-            get_type_name<TypeParam>()
+            TypeParam::get_type_name()
         ).get()
     ) << (
         "Failed to create unique "
     ) << (
-        get_type_name<TypeParam>()
+        TypeParam::get_type_name()
     );
 }
 
@@ -144,7 +144,7 @@ TEST_F(
 )
 {
     EXPECT_EQ(
-        SB_NULLPTR,
+        nullptr,
         create_shared_object(
             "foo"
         ).get()
@@ -158,14 +158,14 @@ TYPED_TEST(
 )
 {
     EXPECT_NE(
-        SB_NULLPTR,
+        nullptr,
         create_shared<TypeParam>(
-            get_type_name<TypeParam>()
+            TypeParam::get_type_name()
         )
     ) << (
         "Failed to create shared "
     ) << (
-        get_type_name<TypeParam>()
+        TypeParam::get_type_name()
     );
 }
 
@@ -193,7 +193,7 @@ TYPED_TEST(
 
     ASSERT_NO_THROW(
         object_format = get_object_format(
-            get_type_name<TypeParam>()
+            TypeParam::get_type_name()
         )
     );
 

@@ -25,7 +25,7 @@ struct OVERLOAD
 
     template<typename C, typename R>
     static
-    SB_CONSTEXPR_FUNCTION
+    constexpr
     auto
     OF
     (

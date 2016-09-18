@@ -39,7 +39,7 @@ public:
     init
     (
     )
-    SB_OVERRIDE
+    override
     {
         this->set_text("Hello World!!!");
     }
@@ -49,7 +49,7 @@ public:
     process
     (
     )
-    SB_OVERRIDE
+    override
     {
         this->push_output();
     }
@@ -109,7 +109,7 @@ public:
     process
     (
     )
-    SB_OVERRIDE
+    override
     {
         // compute output text
 
@@ -185,7 +185,7 @@ public:
     process
     (
     )
-    SB_OVERRIDE
+    override
     {
         if(notifier)
         {

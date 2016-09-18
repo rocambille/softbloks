@@ -71,12 +71,12 @@ namespace sb
 template<typename T>
 struct BitmaskWrapper : public std::reference_wrapper<
     // T should be an enum, disable it otherwise
-    typename std::enable_if<std::is_enum<T>::value, T>::type
+    typename std::enable_if_t<std::is_enum<T>::value, T>
 >
 {
 
     /// Alias for the underlying type of \a T.
-    using UnderlyingType = typename std::underlying_type<T>::type;
+    using UnderlyingType = typename std::underlying_type_t<T>;
 
     /// Constructs a bitmask wrapper on the lvalue reference \a value_.
     BitmaskWrapper
@@ -198,9 +198,9 @@ bitmask
 template<
     typename T,
     // T should be an enum, disable it otherwise
-    typename = typename std::enable_if<std::is_enum<T>::value>::type
+    typename = typename std::enable_if_t<std::is_enum<T>::value>
 >
-SB_CONSTEXPR_FUNCTION
+constexpr
 T
 make_empty_bitmask
 (
@@ -216,11 +216,11 @@ make_empty_bitmask
 ///
 /// \sa BitmaskWrapper.
 #define SB_BITMASK_OPERATORS(bitmask_)\
-SB_STATIC_ASSERT_MSG(\
+static_assert(\
     std::is_enum<bitmask_>::value,\
     "declared bitmask operators on non enum type"\
 );\
-SB_CONSTEXPR_FUNCTION \
+constexpr \
 bitmask_ \
 operator&\
 (\
@@ -229,12 +229,12 @@ operator&\
 )\
 {\
     return static_cast<bitmask_>(\
-        static_cast<std::underlying_type<bitmask_>::type>(left_) &\
-        static_cast<std::underlying_type<bitmask_>::type>(right_)\
+        static_cast<std::underlying_type_t<bitmask_>>(left_) &\
+        static_cast<std::underlying_type_t<bitmask_>>(right_)\
     );\
 }\
 \
-SB_CONSTEXPR_FUNCTION \
+constexpr \
 bitmask_ \
 operator|\
 (\
@@ -243,12 +243,12 @@ operator|\
 )\
 {\
     return static_cast<bitmask_>(\
-        static_cast<std::underlying_type<bitmask_>::type>(left_) |\
-        static_cast<std::underlying_type<bitmask_>::type>(right_)\
+        static_cast<std::underlying_type_t<bitmask_>>(left_) |\
+        static_cast<std::underlying_type_t<bitmask_>>(right_)\
     );\
 }\
 \
-SB_CONSTEXPR_FUNCTION \
+constexpr \
 bitmask_ \
 operator^\
 (\
@@ -257,12 +257,12 @@ operator^\
 )\
 {\
     return static_cast<bitmask_>(\
-        static_cast<std::underlying_type<bitmask_>::type>(left_) ^\
-        static_cast<std::underlying_type<bitmask_>::type>(right_)\
+        static_cast<std::underlying_type_t<bitmask_>>(left_) ^\
+        static_cast<std::underlying_type_t<bitmask_>>(right_)\
     );\
 }\
 \
-SB_CONSTEXPR_FUNCTION \
+constexpr \
 bitmask_ \
 operator~\
 (\
@@ -270,7 +270,7 @@ operator~\
 )\
 {\
     return static_cast<bitmask_>(\
-        ~static_cast<std::underlying_type<bitmask_>::type>(value_)\
+        ~static_cast<std::underlying_type_t<bitmask_>>(value_)\
     );\
 }\
 \
@@ -311,6 +311,37 @@ operator^=\
     left_ = left_ ^ right_;\
 \
     return left_;\
+}
+
+namespace sb
+{
+
+/// \brief This enum describes a bitmask for access rights.
+///
+/// The applicable operators for this enum are overloaded using
+/// SB_BITMASK_OPERATORS().
+///
+/// \sa BitmaskWrapper.
+enum class AccessRights
+{
+
+// empty bitmask
+
+    NONE        = 0,            ///< No access permissions.
+
+// bitmask values
+
+    READ        = 1 << 0,       ///< Read permission.
+    WRITE       = 1 << 1,       ///< Write permission.
+
+// bitwise combinations
+
+    READ_WRITE  = READ | WRITE  ///< Read/write permissions.
+
+};
+
+SB_BITMASK_OPERATORS(AccessRights)
+
 }
 
 #endif // SB_BITMASK_H

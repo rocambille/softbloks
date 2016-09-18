@@ -38,7 +38,7 @@ public:
     SetUp
     (
     )
-    SB_OVERRIDE
+    override
     {
         this->destruction_progress = 0;
     }
@@ -48,7 +48,7 @@ public:
     //TearDown
     //(
     //)
-    //SB_OVERRIDE
+    //override
     //{
     //}
 
@@ -135,11 +135,11 @@ TEST_F(
         // assertions before cast
 
         EXPECT_NE( // a is not null
-            SB_NULLPTR,
+            nullptr,
             a.get()
         );
         EXPECT_EQ( // b is null
-            SB_NULLPTR,
+            nullptr,
             b.get()
         );
         EXPECT_EQ( // a points to c
@@ -154,11 +154,11 @@ TEST_F(
         // assertions after cast
 
         EXPECT_EQ( // a is null
-            SB_NULLPTR,
+            nullptr,
             a.get()
         );
         EXPECT_NE( // b is not null
-            SB_NULLPTR,
+            nullptr,
             b.get()
         );
         EXPECT_EQ( // b points to c

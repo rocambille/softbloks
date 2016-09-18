@@ -33,27 +33,27 @@ namespace sb
 /// Constant symbolizing the major component of Softbloks's version number.
 ///
 /// \sa VERSION_MINOR and VERSION.
-SB_CONSTEXPR_OBJECT long VERSION_MAJOR = @SOFTBLOKS_VERSION_MAJOR@;
+constexpr long VERSION_MAJOR = @SOFTBLOKS_VERSION_MAJOR@;
 
 /// Constant symbolizing the minor component of Softbloks's version number.
 ///
 /// \sa VERSION_MAJOR and VERSION.
-SB_CONSTEXPR_OBJECT long VERSION_MINOR = @SOFTBLOKS_VERSION_MINOR@;
+constexpr long VERSION_MINOR = @SOFTBLOKS_VERSION_MINOR@;
 
 /// Constant symbolizing the year component of Softbloks's build number.
 ///
 /// \sa BUILD_MONTH, BUILD_DAY and BUILD.
-SB_CONSTEXPR_OBJECT long BUILD_YEAR = @SOFTBLOKS_BUILD_YEAR@;
+constexpr long BUILD_YEAR = @SOFTBLOKS_BUILD_YEAR@;
 
 /// Constant symbolizing the month component of Softbloks's build number.
 ///
 /// \sa BUILD_YEAR, BUILD_MONTH and BUILD.
-SB_CONSTEXPR_OBJECT long BUILD_MONTH = @SOFTBLOKS_BUILD_MONTH@;
+constexpr long BUILD_MONTH = @SOFTBLOKS_BUILD_MONTH@;
 
 /// Constant symbolizing the day component of Softbloks's build number.
 ///
 /// \sa BUILD_YEAR, BUILD_MONTH and BUILD.
-SB_CONSTEXPR_OBJECT long BUILD_DAY = @SOFTBLOKS_BUILD_DAY@;
+constexpr long BUILD_DAY = @SOFTBLOKS_BUILD_DAY@;
 
 /// Turns \a major_, \a minor_ and \a patch_ into a version number of the form
 /// 0xMMNNPP where MM, NN and PP represent respectively the major, the minor
@@ -61,7 +61,7 @@ SB_CONSTEXPR_OBJECT long BUILD_DAY = @SOFTBLOKS_BUILD_DAY@;
 /// number.
 ///
 /// \sa VERSION and BUILD.
-SB_CONSTEXPR_FUNCTION
+constexpr
 long
 version_check
 (
@@ -83,7 +83,7 @@ version_check
 /// the major and the minor.
 ///
 /// \sa version_check(), VERSION_MAJOR, VERSION_MINOR and BUILD.
-SB_CONSTEXPR_OBJECT long VERSION = version_check(
+constexpr long VERSION = version_check(
     VERSION_MAJOR,
     VERSION_MINOR
 );
@@ -94,7 +94,7 @@ SB_CONSTEXPR_OBJECT long VERSION = version_check(
 /// respectively the year, the month and the day.
 ///
 /// \sa version_check(), BUILD_YEAR, BUILD_MONTH, BUILD_DAY and VERSION.
-SB_CONSTEXPR_OBJECT long BUILD = version_check(
+constexpr long BUILD = version_check(
     BUILD_YEAR,
     BUILD_MONTH,
     BUILD_DAY

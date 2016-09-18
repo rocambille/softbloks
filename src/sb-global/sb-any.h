@@ -44,7 +44,7 @@ public:
     Any
     (
     ):
-        content(SB_NULLPTR)
+        content(nullptr)
     {
     }
 
@@ -59,7 +59,7 @@ public:
     (
         const Any& other_
     ):
-        content(SB_NULLPTR)
+        content(nullptr)
     {
         if(other_.content)
         {
@@ -79,15 +79,15 @@ public:
     (
         Any&& other_
     ):
-        content(other_.content)
+        Any()
     {
-        other_.content = SB_NULLPTR;
+        this->swap(other_);
     }
 
     /// Constructs an object with content direct-initialized from
     /// \a std::forward<T>(value_).
     ///
-    /// Note that \a std::decay_t<ValueType> must be copy-constructible.
+    /// Note that \a std::decay_t<T> must be copy-constructible.
     ///
     /// \sa operator=, get_type_info() and any_cast().
     template<typename T>
@@ -95,10 +95,11 @@ public:
     (
         T&& value_
     ):
-        content(new Holder<T>(std::forward<T>(value_)))
+        content(new Holder<typename std::decay_t<T>>(std::forward<T>(value_)))
     {
-        SB_STATIC_ASSERT(
-            std::is_copy_constructible<typename std::decay<T>::type>::value
+        static_assert(
+            std::is_copy_constructible<typename std::decay_t<T>>::value,
+            "std::decay_t<T> must be copy-constructible"
         );
     }
 
@@ -123,42 +124,10 @@ public:
     Any&
     operator=
     (
-        const Any& other_
+        Any other_
     )
     {
-        delete this->content;
-
-        if(other_.content)
-        {
-            this->content = other_.content->clone();
-        }
-        else
-        {
-            this->content = SB_NULLPTR;
-        }
-
-        return (*this);
-    }
-
-    /// Assigns \a other_ to this object by moving its content and returns a
-    /// reference to this object.
-    ///
-    /// After assignment, \a other_ is empty while the type and the value held
-    /// by this object are equivalent to the type and the value held by
-    /// \a other_ before assignment. Notably this object is empty if \a other_
-    /// was empty.
-    ///
-    /// \sa Any(), get_type_info() and any_cast().
-    Any&
-    operator=
-    (
-        Any&& other_
-    )
-    {
-        delete this->content;
-
-        this->content = other_.content;
-        other_.content = SB_NULLPTR;
+        this->swap(other_);
 
         return (*this);
     }
@@ -166,7 +135,7 @@ public:
     /// Assigns the type and the value of \a std::forward<T>(value_) to this
     /// object.
     ///
-    /// Note that \a std::decay_t<ValueType> must be copy-constructible.
+    /// Note that \a std::decay_t<T> must be copy-constructible.
     ///
     /// \sa Any(), get_type_info() and any_cast().
     template<typename T>
@@ -176,13 +145,7 @@ public:
         T&& value_
     )
     {
-        SB_STATIC_ASSERT(
-            std::is_copy_constructible<typename std::decay<T>::type>::value
-        );
-
-        delete this->content;
-
-        this->content = new Holder<T>(std::forward<T>(value_));
+        this->swap(Any(std::forward<T>(value_)));
 
         return (*this);
     }
@@ -195,7 +158,7 @@ public:
     )
     {
         delete this->content;
-        this->content = SB_NULLPTR;
+        this->content = nullptr;
     }
 
     void
@@ -218,7 +181,7 @@ public:
     )
     const
     {
-        return this->content == SB_NULLPTR;
+        return this->content == nullptr;
     }
 
     const std::type_info&
@@ -282,7 +245,7 @@ private:
         (
         )
         const
-        SB_OVERRIDE
+        override
         {
             return typeid(T);
         }
@@ -293,7 +256,7 @@ private:
         (
         )
         const
-        SB_OVERRIDE
+        override
         {
             return new Holder(this->held);
         }
@@ -345,7 +308,7 @@ public:
     )
     const
     noexcept
-    SB_OVERRIDE
+    override
     {
         return "Bad any cast";
     }
@@ -360,19 +323,15 @@ any_cast
     const Any& value_
 )
 {
-    SB_STATIC_ASSERT_MSG(
-        SB_EVAL(
-            !std::is_same<void, typename std::decay<T>::type>::value
-        ),
+    static_assert(
+        !std::is_same<void, typename std::decay_t<T>>::value,
         "invalid any_cast with type void"
     );
     return *(
         any_cast<
-            typename std::add_const<
-                typename std::remove_reference<
-                    T
-                >::type
-            >::type
+            typename std::add_const_t<
+                typename std::remove_reference_t<T>
+            >
         >(&value_)
     );
 }
@@ -385,17 +344,13 @@ any_cast
     Any& value_
 )
 {
-    SB_STATIC_ASSERT_MSG(
-        SB_EVAL(
-            !std::is_same<void, typename std::decay<T>::type>::value
-        ),
+    static_assert(
+        !std::is_same<void, typename std::decay_t<T>>::value,
         "invalid any_cast with type void"
     );
     return *(
         any_cast<
-            typename std::remove_reference<
-                T
-            >::type
+            typename std::remove_reference_t<T>
         >(&value_)
     );
 }
@@ -408,17 +363,13 @@ any_cast
     Any&& value_
 )
 {
-    SB_STATIC_ASSERT_MSG(
-        SB_EVAL(
-            !std::is_same<void, typename std::decay<T>::type>::value
-        ),
+    static_assert(
+        !std::is_same<void, typename std::decay_t<T>>::value,
         "invalid any_cast with type void"
     );
     return *(
         any_cast<
-            typename std::remove_reference<
-                T
-            >::type
+            typename std::remove_reference_t<T>
         >(&value_)
     );
 }
@@ -431,7 +382,7 @@ any_cast
     const Any* value_
 )
 {
-    const T* result = SB_NULLPTR;
+    const T* result = nullptr;
 
     if(value_)
     {
@@ -463,7 +414,7 @@ any_cast
     Any* value_
 )
 {
-    T* result = SB_NULLPTR;
+    T* result = nullptr;
 
     if(value_)
     {

@@ -61,8 +61,8 @@ private:
 /// AbstractSoft).
 const ObjectFormat
 ANY_SOFT_FORMAT = {
-    AbstractSoft::get_type_names(),
-    AbstractSoft::get_properties()
+    get_type_names<AbstractSoft>(),
+    get_properties<AbstractSoft>()
 };
 
 /// Alias for a managed soft with shared ownership.

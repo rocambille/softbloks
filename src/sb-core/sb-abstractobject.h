@@ -28,6 +28,8 @@ namespace sb
 {
 
 using ObjectFactory = std::function<Unique<AbstractObject>(void)>;
+using ObjectProperty = Property<AbstractObject>;
+using ObjectPropertySequence = PropertySequence<AbstractObject>;
 
 /// \brief The AbstractObject class is the base class for all Softbloks
 /// objects.
@@ -83,9 +85,48 @@ using ObjectFactory = std::function<Unique<AbstractObject>(void)>;
 class SB_CORE_API AbstractObject
 {
 
-public:
+#define SB_NAME(name_)\
+    public:\
+        static\
+        std::string\
+        get_type_name\
+        (\
+        )\
+        {\
+            static_assert(\
+                std::is_same<Base, void>::value ||\
+                std::is_base_of<Base, Self>::value,\
+                "declared Self type not related to its base"\
+            );\
+            static_assert(\
+                std::is_base_of<sb::AbstractObject, Self>::value,\
+                "declared name on a type not derived from sb::AbstractObject"\
+            );\
+            return std::string{name_};\
+        }
 
-    using Self = AbstractObject;
+#define SB_PROPERTIES(...)\
+    public:\
+        static\
+        sb::ObjectPropertySequence\
+        get_properties\
+        (\
+        )\
+        {\
+            static_assert(\
+                std::is_base_of<sb::AbstractObject, Self>::value,\
+                "declared properties on a type not derived from sb::AbstractObject"\
+            );\
+            return {__VA_ARGS__};\
+        }
+
+    SB_ROOT(AbstractObject)
+
+    SB_NAME("sb.AbstractObject")
+
+    SB_PROPERTIES()
+
+public:
 
     class Private;
 
@@ -96,7 +137,7 @@ public:
     (
         const AbstractObject& other_
     )
-    SB_DELETED_FUNCTION;
+    = delete;
 
     /// Constructs a Softbloks object.
     AbstractObject
@@ -117,7 +158,7 @@ public:
     (
         const AbstractObject& other_
     )
-    SB_DELETED_FUNCTION;
+    = delete;
 
     virtual
     void
@@ -142,7 +183,6 @@ public:
     ///
     /// \sa set() and \ref property-system "Softbloks's property system".
     template<typename T>
-    inline
     T
     get
     (
@@ -150,8 +190,8 @@ public:
     )
     const
     {
-        return any_cast<T>(
-            this->get(name_)
+        return this->*sb::get<T>(
+            this->get_property(name_)
         );
     }
 
@@ -163,7 +203,6 @@ public:
     ///
     /// \sa get() and \ref property-system "Softbloks's property system".
     template<typename T>
-    inline
     void
     set
     (
@@ -171,25 +210,10 @@ public:
         const T& value_
     )
     {
-        this->set(name_, Any(value_));
-    }
-
-    static
-    StringSequence
-    get_type_names
-    (
-    )
-    {
-        return { "sb.AbstractObject" };
-    }
-
-    static
-    PropertySequence<AbstractObject>
-    get_properties
-    (
-    )
-    {
-        return { };
+        return this->*sb::set<T>(
+            this->get_property(name_),
+            value_
+        );
     }
 
     /// \cond INTERNAL
@@ -203,8 +227,8 @@ public:
     {
         AbstractObject::init(
             this_,
-            T::get_type_names(),
-            T::get_properties()
+            sb::get_type_names<T>(),
+            sb::get_properties<T>()
         );
     }
     /// \endcond
@@ -224,21 +248,12 @@ public:
 private:
 
     /// \cond INTERNAL
-    Any
-    get
+    ObjectProperty
+    get_property
     (
         const std::string& name_
     )
     const;
-    /// \endcond
-
-    /// \cond INTERNAL
-    void
-    set
-    (
-        const std::string& name_,
-        const Any& value_
-    );
     /// \endcond
 
     /// \cond INTERNAL
@@ -277,15 +292,15 @@ private:
 
 };
 
-using ObjectProperty = Property<AbstractObject>;
-using ObjectPropertySequence = PropertySequence<AbstractObject>;
+SB_META(get_type_names, get_type_name)
+SB_META(get_properties, get_properties)
 
 /// Constant value representing the format of a valid object (inheriting
 /// AbstractObject).
 const ObjectFormat
 ANY_OBJECT_FORMAT = {
-    AbstractObject::get_type_names(),
-    AbstractObject::get_properties()
+    get_type_names<AbstractObject>(),
+    get_properties<AbstractObject>()
 };
 
 /// Alias for a managed object with shared ownership.
@@ -422,8 +437,8 @@ register_object
 
     return AbstractObject::register_object(
         {
-            T::get_type_names(),
-            T::get_properties()
+            get_type_names<T>(),
+            get_properties<T>()
         },
         factory
     );
@@ -442,19 +457,6 @@ get_registered_object_names
 (
     const ObjectFormat& filter_ = ANY_OBJECT_FORMAT
 );
-
-/// Returns the type name for the type \a T.
-///
-/// \sa SB_NAME() and get_object_format().
-template<typename T>
-inline
-std::string
-get_type_name
-(
-)
-{
-    return T::get_type_names()[0];
-}
 
 /// Returns the format of the object identified by \a name_.
 ///
@@ -477,7 +479,7 @@ get_object_format
 )
 {
     return get_object_format(
-        get_type_name<T>()
+        T::get_type_name()
     );
 }
 
@@ -494,73 +496,5 @@ unregister_all_objects
 );
 
 }
-
-#define SB_SELF(type_)\
-    public:\
-        using Base = Self;\
-        using Self = type_;
-
-#define SB_NAME(name_)\
-    public:\
-        static\
-        sb::StringSequence\
-        get_type_names\
-        (\
-        )\
-        {\
-            SB_STATIC_ASSERT_MSG(\
-                SB_EVAL(\
-                    std::is_base_of<Base, Self>::value\
-                ),\
-                "declared Self type not related to its base"\
-            );\
-            SB_STATIC_ASSERT_MSG(\
-                SB_EVAL(\
-                    std::is_same<sb::AbstractObject, Self>::value ||\
-                    std::is_base_of<sb::AbstractObject, Self>::value\
-                ),\
-                "declared name on a type not derived from sb::AbstractObject"\
-            );\
-            sb::StringSequence type_names = (\
-                Self::get_type_names == get_type_names\
-            ) ? (\
-                Base::get_type_names()\
-            ) : (\
-                Self::get_type_names()\
-            );\
-            type_names.insert(type_names.begin(), name_);\
-            return type_names;\
-        }
-
-#define SB_PROPERTIES(...)\
-    public:\
-        static\
-        sb::ObjectPropertySequence\
-        get_properties\
-        (\
-        )\
-        {\
-            SB_STATIC_ASSERT_MSG(\
-                SB_EVAL(\
-                    std::is_same<sb::AbstractObject, Self>::value ||\
-                    std::is_base_of<sb::AbstractObject, Self>::value\
-                ),\
-                "declared properties on a type not derived from sb::AbstractObject"\
-            );\
-            sb::ObjectPropertySequence properties = {__VA_ARGS__};\
-            sb::ObjectPropertySequence base_properties = (\
-                Self::get_properties == get_properties\
-            ) ? (\
-                Base::get_properties()\
-            ) : (\
-                Self::get_properties()\
-            );\
-            properties.insert(\
-                properties.begin(),\
-                base_properties.begin(),\
-                base_properties.end()\
-            );\
-            return properties;\
-        }
 
 #endif // SB_ABSTRACTOBJECT_H

@@ -18,7 +18,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SB_OBJECTFORMAT_H
 #define SB_OBJECTFORMAT_H
 
-#include <sb-core/sb-property.h>
+#include <sb-core/sb-coredefine.h>
 
 #include <algorithm>
 
@@ -221,13 +221,6 @@ class Data;
 
 template<typename T>
 inline
-std::string
-get_type_name
-(
-);
-
-template<typename T>
-inline
 ObjectFormat
 get_object_format
 (
@@ -242,14 +235,11 @@ make_type_name_sequence
 )
 {
     return {
-        get_type_name<
-            typename std::conditional<
-                std::is_same<AbstractObject, Types>::value ||
-                std::is_base_of<AbstractObject, Types>::value,
-                Types,
-                Data<Types>
-            >::type
-        >()...
+        typename std::conditional_t<
+            std::is_base_of<AbstractObject, Types>::value,
+            Types,
+            Data<Types>
+        >::get_type_name()...
     };
 }
 /// \endcond
@@ -264,12 +254,11 @@ make_object_format_sequence
 {
     return {
         get_object_format<
-            typename std::conditional<
-                std::is_same<AbstractObject, Types>::value ||
+            typename std::conditional_t<
                 std::is_base_of<AbstractObject, Types>::value,
                 Types,
                 Data<Types>
-            >::type
+            >
         >()...
     };
 }

@@ -42,7 +42,7 @@ AbstractData::Private::Private
     AbstractData* q_ptr_
 ):
     q_ptr       (q_ptr_),
-    source_blok (SB_NULLPTR)
+    source_blok (nullptr)
 {
 }
 

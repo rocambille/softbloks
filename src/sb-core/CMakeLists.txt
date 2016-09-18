@@ -46,22 +46,4 @@ sb_add_library(sb-core
     sb-executive.h
     sb-executive-private.h
     sb-objectformat.h
-    sb-property.h
-    sb-propertyformat.h
-)
-
-target_compile_features(sb-core
-    PUBLIC
-        cxx_alias_templates
-        cxx_delegating_constructors
-        cxx_lambdas
-        cxx_strong_enums
-        cxx_variadic_macros
-        cxx_variadic_templates
-)
-
-target_compile_features(sb-core
-    PRIVATE
-        cxx_auto_type
-        cxx_range_for
 )

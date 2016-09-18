@@ -36,7 +36,7 @@ AbstractBlok::AbstractBlok
     this->d_ptr = new Private(this);
 
     this->use_executive(
-        get_type_name<PushPullExecutive>()
+        PushPullExecutive::get_type_name()
     );
 }
 
@@ -53,7 +53,7 @@ AbstractBlok::~AbstractBlok
     {
         AbstractData::Private::from(
             output
-        )->source_blok = SB_NULLPTR;
+        )->source_blok = nullptr;
     }
 
     // d_ptr->executive points to this blok:
@@ -239,7 +239,7 @@ AbstractBlok::Private::set_input
     bool ok = false;
 
     if(
-        value_ == SB_NULLPTR ||
+        value_ ||
         value_->get_format().includes(
             this->inputs_formats.at(index_)
         )

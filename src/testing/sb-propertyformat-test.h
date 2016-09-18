@@ -20,7 +20,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <gtest/gtest.h>
 
-#include <sb-core/sb-propertyformat.h>
+#include <sb-global/sb-property.h>
 
 namespace sb
 {
@@ -79,7 +79,7 @@ public:
     //SetUp
     //(
     //)
-    //SB_OVERRIDE
+    //override
     //{
     //}
 
@@ -88,7 +88,7 @@ public:
     //TearDown
     //(
     //)
-    //SB_OVERRIDE
+    //override
     //{
     //}
 

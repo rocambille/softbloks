@@ -49,7 +49,7 @@ public:
     SetUp
     (
     )
-    SB_OVERRIDE
+    override
     {
         unregister_all_objects();
     }
@@ -59,7 +59,7 @@ public:
     //TearDown
     //(
     //)
-    //SB_OVERRIDE
+    //override
     //{
     //}
 
@@ -76,7 +76,7 @@ public:
     SetUp
     (
     )
-    SB_OVERRIDE
+    override
     {
         unregister_all_objects();
     }
@@ -86,7 +86,7 @@ public:
     //TearDown
     //(
     //)
-    //SB_OVERRIDE
+    //override
     //{
     //}
 
@@ -105,7 +105,7 @@ public:
     SetUp
     (
     )
-    SB_OVERRIDE
+    override
     {
         unregister_all_objects();
 
@@ -117,7 +117,7 @@ public:
     //TearDown
     //(
     //)
-    //SB_OVERRIDE
+    //override
     //{
     //}
 
@@ -136,14 +136,14 @@ public:
     SetUp
     (
     )
-    SB_OVERRIDE
+    override
     {
         unregister_all_objects();
 
         register_object<T>();
 
         this->instance = create_unique<T>(
-            get_type_name<T>()
+            T::get_type_name()
         );
     }
 
@@ -152,7 +152,7 @@ public:
     //TearDown
     //(
     //)
-    //SB_OVERRIDE
+    //override
     //{
     //}
 

@@ -64,32 +64,6 @@ using Index = Size;
 /// Alias for a sequence container of strings.
 using StringSequence = std::vector<std::string>;
 
-/// \brief This enum describes a bitmask for access rights.
-///
-/// The applicable operators for this enum are overloaded using
-/// SB_BITMASK_OPERATORS().
-///
-/// \sa BitmaskWrapper.
-enum class AccessRights
-{
-
-// empty bitmask
-
-    NONE        = 0,            ///< No access permissions.
-
-// bitmask values
-
-    READ        = 1 << 0,       ///< Read permission.
-    WRITE       = 1 << 1,       ///< Write permission.
-
-// bitwise combinations
-
-    READ_WRITE  = READ | WRITE  ///< Read/write permissions.
-
-};
-
-SB_BITMASK_OPERATORS(AccessRights)
-
 /// Returns a std::unique_ptr object move-constructed from \a unique_pointer_.
 ///
 /// The standard move-cast-constructor of std::unique_ptr needs T* to be

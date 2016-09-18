@@ -19,8 +19,6 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SB_GLOBALDEFINE_H
 #define SB_GLOBALDEFINE_H
 
-#include <sb-global/sb-compilerdetection.h>
-
 /// \cond INTERNAL
 
 // os detection, see:
@@ -41,6 +39,22 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #   define SB_OS_IS_LINUX 1
 #else
 #   error "Softbloks doesn't support this OS for now: ask for it"
+#endif
+
+// compiler detection
+
+# define SB_COMPILER_IS_GNU 0
+# define SB_COMPILER_IS_MSVC 0
+
+#if defined(__GNUC__)
+#   undef SB_COMPILER_IS_GNU
+#   define SB_COMPILER_IS_GNU 1
+
+#elif defined(_MSC_VER)
+#   undef SB_COMPILER_IS_MSVC
+#   define SB_COMPILER_IS_MSVC 1
+#else
+#   error "Softbloks doesn't support this compiler for now: ask for it"
 #endif
 
 // visibility support
@@ -69,18 +83,6 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #   define SB_DECL_HIDDEN
 #endif
 
-// miscellaneous
-
-#ifdef SB_COMPILER_CXX_CONSTEXPR
-#   define SB_CONSTEXPR_FUNCTION constexpr
-#   define SB_CONSTEXPR_OBJECT constexpr
-#else
-#   define SB_CONSTEXPR_FUNCTION inline
-#   define SB_CONSTEXPR_OBJECT const
-#endif
-
-#define SB_EVAL(...) __VA_ARGS__
-
 /// \endcond
 
 #ifdef DOXYGEN
@@ -91,6 +93,9 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #define SB_OS_IS_WIN
 /// Defined on all supported versions of Linux.
 #define SB_OS_IS_LINUX
+
+# define SB_COMPILER_IS_GNU
+# define SB_COMPILER_IS_MSVC
 
 /// This macro declares a symbol to be an export from a shared library.
 #define SB_DECL_EXPORT

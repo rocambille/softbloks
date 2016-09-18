@@ -49,7 +49,7 @@ public:
     (
         Index index_
     )
-    SB_OVERRIDE;
+    override;
 
     virtual
     void
@@ -57,7 +57,7 @@ public:
     (
         Index index_
     )
-    SB_OVERRIDE;
+    override;
 
 private:
 
@@ -94,7 +94,7 @@ public:
     (
         Index index_
     )
-    SB_OVERRIDE;
+    override;
 
     virtual
     void
@@ -102,7 +102,7 @@ public:
     (
         Index index_
     )
-    SB_OVERRIDE;
+    override;
 
 private:
 
@@ -139,7 +139,7 @@ public:
     (
         Index index_
     )
-    SB_OVERRIDE;
+    override;
 
     virtual
     void
@@ -147,7 +147,7 @@ public:
     (
         Index index_
     )
-    SB_OVERRIDE;
+    override;
 
 private:
 

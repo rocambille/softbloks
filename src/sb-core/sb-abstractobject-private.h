@@ -32,27 +32,20 @@ public:
 
     Private
     (
-        AbstractObject* q_ptr_
-    );
+    ) = default;
 
+    template<typename T>
     static
-    Private*
+    auto
     from
     (
-        const AbstractObject* this_
-    );
-
-    static
-    Private*
-    from
-    (
-        const SharedObject& this_
-    );
+        T&& this_
+    )
+    {
+        return this_->AbstractObject::d_ptr;
+    }
 
 public:
-
-    AbstractObject*
-    q_ptr;
 
     StringSequence
     type_names;

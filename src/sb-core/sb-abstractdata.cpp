@@ -42,24 +42,7 @@ AbstractData::Private::Private
     AbstractData* q_ptr_
 ):
     q_ptr       (q_ptr_),
-    source_blok (nullptr)
+    source_blok (nullptr),
+    source_index(0)
 {
-}
-
-AbstractData::Private*
-AbstractData::Private::from
-(
-    const AbstractData* this_
-)
-{
-    return this_->d_ptr;
-}
-
-AbstractData::Private*
-AbstractData::Private::from
-(
-    const SharedData& this_
-)
-{
-    return this_->d_ptr;
 }

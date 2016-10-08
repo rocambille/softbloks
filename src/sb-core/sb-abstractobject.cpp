@@ -81,14 +81,14 @@ AbstractObject::AbstractObject
 (
 )
 {
-    this->d_ptr = new Private(this);
+    this->d_ptr = new Private;
 }
 
 AbstractObject::~AbstractObject
 (
 )
 {
-    delete d_ptr;
+    delete this->d_ptr;
 }
 
 ObjectFormat
@@ -176,32 +176,6 @@ AbstractObject::register_object
     }
 
     return registered;
-}
-
-AbstractObject::Private::Private
-(
-    AbstractObject* q_ptr_
-):
-    q_ptr   (q_ptr_)
-{
-}
-
-AbstractObject::Private*
-AbstractObject::Private::from
-(
-    const AbstractObject* this_
-)
-{
-    return this_->d_ptr;
-}
-
-AbstractObject::Private*
-AbstractObject::Private::from
-(
-    const SharedObject& this_
-)
-{
-    return this_->d_ptr;
 }
 
 SharedObject

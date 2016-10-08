@@ -164,8 +164,8 @@ private:
 /// AbstractBlok).
 const ObjectFormat
 ANY_BLOK_FORMAT = {
-    get_type_names<AbstractBlok>(),
-    get_properties<AbstractBlok>()
+    get_all_type_names<AbstractBlok>(),
+    get_all_properties<AbstractBlok>()
 };
 
 /// Alias for a managed blok uniquely owned.

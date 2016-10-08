@@ -67,19 +67,16 @@ public:
         Index index_
     );
 
+    template<typename T>
     static
-    Private*
+    auto
     from
     (
-        const AbstractBlok* this_
-    );
-
-    static
-    Private*
-    from
-    (
-        const UniqueBlok& this_
-    );
+        T&& this_
+    )
+    {
+        return this_->AbstractBlok::d_ptr;
+    }
 
 public:
 

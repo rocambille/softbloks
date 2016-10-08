@@ -28,6 +28,7 @@ sb_add_header_only_target(sb-global
     sb-meta.h
     sb-property.h
     sb-type_traits.h
+    sb-utility.h
     "${CMAKE_CURRENT_BINARY_DIR}/sb-version.h"
 )
 

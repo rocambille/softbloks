@@ -24,6 +24,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb-global/sb-meta.h>
 #include <sb-global/sb-property.h>
 #include <sb-global/sb-type_traits.h>
+#include <sb-global/sb-utility.h>
 #include <sb-global/sb-version.h>
 
 #endif // SB_GLOBAL_H

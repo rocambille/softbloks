@@ -35,19 +35,16 @@ public:
         AbstractExecutive* q_ptr_
     );
 
+    template<typename T>
     static
-    Private*
+    auto
     from
     (
-        const AbstractExecutive* this_
-    );
-
-    static
-    Private*
-    from
-    (
-        const UniqueExecutive& this_
-    );
+        T&& this_
+    )
+    {
+        return this_->AbstractExecutive::d_ptr;
+    }
 
 public:
 

@@ -20,6 +20,7 @@ along with Softbloks.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sb-global/sb-globaldefine.h>
 
+#include <memory>
 #include <type_traits>
 #include <typeinfo>
 #include <utility>
@@ -44,7 +45,7 @@ public:
     Any
     (
     ):
-        content(nullptr)
+        content{nullptr}
     {
     }
 
@@ -59,7 +60,7 @@ public:
     (
         const Any& other_
     ):
-        content(nullptr)
+        Any{}
     {
         if(other_.content)
         {
@@ -79,7 +80,7 @@ public:
     (
         Any&& other_
     ):
-        Any()
+        Any{}
     {
         this->swap(other_);
     }
@@ -95,7 +96,11 @@ public:
     (
         T&& value_
     ):
-        content(new Holder<typename std::decay_t<T>>(std::forward<T>(value_)))
+        content{
+            std::make_unique<Holder<typename std::decay_t<T>>>(
+                std::forward<T>(value_)
+            )
+        }
     {
         static_assert(
             std::is_copy_constructible<typename std::decay_t<T>>::value,
@@ -108,10 +113,7 @@ public:
     /// \sa clear().
     ~Any
     (
-    )
-    {
-        delete this->content;
-    }
+    ) = default;
 
     /// Assigns \a other_ to this object by copying its content and returns a
     /// reference to this object.
@@ -132,24 +134,6 @@ public:
         return (*this);
     }
 
-    /// Assigns the type and the value of \a std::forward<T>(value_) to this
-    /// object.
-    ///
-    /// Note that \a std::decay_t<T> must be copy-constructible.
-    ///
-    /// \sa Any(), get_type_info() and any_cast().
-    template<typename T>
-    Any&
-    operator=
-    (
-        T&& value_
-    )
-    {
-        this->swap(Any(std::forward<T>(value_)));
-
-        return (*this);
-    }
-
     // modifiers
 
     void
@@ -157,8 +141,7 @@ public:
     (
     )
     {
-        delete this->content;
-        this->content = nullptr;
+        this->content.reset();
     }
 
     void
@@ -191,7 +174,11 @@ public:
     const
     {
         return (
-            this->content ? this->content->get_type_info() : typeid(void)
+            this->content
+        ) ? (
+            this->content->get_type_info()
+        ) : (
+            typeid(void)
         );
     }
 
@@ -216,7 +203,7 @@ private:
         const = 0;
 
         virtual
-        Placeholder*
+        std::unique_ptr<Placeholder>
         clone
         (
         )
@@ -235,7 +222,7 @@ private:
         (
             U&& value_
         ):
-            held(std::forward<U>(value_))
+            held{std::forward<U>(value_)}
         {
         }
 
@@ -251,14 +238,14 @@ private:
         }
 
         virtual
-        Placeholder*
+        std::unique_ptr<Placeholder>
         clone
         (
         )
         const
         override
         {
-            return new Holder(this->held);
+            return std::make_unique<Holder>(this->held);
         }
 
         T
@@ -290,7 +277,7 @@ private:
     /// \endcond
 
     /// \cond INTERNAL
-    Placeholder*
+    std::unique_ptr<Placeholder>
     content;
     /// \endcond
 
@@ -392,7 +379,7 @@ any_cast
             {
                 result = &(
                     static_cast<const Any::Holder<T>*>(
-                        value_->content
+                        value_->content.get()
                     )->held
                 );
             }
@@ -424,7 +411,7 @@ any_cast
             {
                 result = &(
                     static_cast<Any::Holder<T>*>(
-                        value_->content
+                        value_->content.get()
                     )->held
                 );
             }

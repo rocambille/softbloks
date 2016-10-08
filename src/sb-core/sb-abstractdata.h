@@ -55,12 +55,13 @@ private:
     /// \endcond
 
 };
+
 /// Constant value representing the format of a valid data (inheriting
 /// AbstractData).
 const ObjectFormat
 ANY_DATA_FORMAT = {
-    get_type_names<AbstractData>(),
-    get_properties<AbstractData>()
+    get_all_type_names<AbstractData>(),
+    get_all_properties<AbstractData>()
 };
 
 /// Alias for a managed data with shared ownership.

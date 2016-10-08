@@ -55,24 +55,7 @@ AbstractExecutive::Private::Private
     AbstractExecutive* q_ptr_
 ):
     q_ptr           (q_ptr_),
+    blok            (nullptr),
     is_executing    (false)
 {
-}
-
-AbstractExecutive::Private*
-AbstractExecutive::Private::from
-(
-    const AbstractExecutive* this_
-)
-{
-    return this_->d_ptr;
-}
-
-AbstractExecutive::Private*
-AbstractExecutive::Private::from
-(
-    const UniqueExecutive& this_
-)
-{
-    return this_->d_ptr;
 }

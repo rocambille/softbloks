@@ -302,24 +302,6 @@ AbstractBlok::Private::unlink_input
     }
 }
 
-AbstractBlok::Private*
-AbstractBlok::Private::from
-(
-    const AbstractBlok* this_
-)
-{
-    return this_->d_ptr;
-}
-
-AbstractBlok::Private*
-AbstractBlok::Private::from
-(
-    const UniqueBlok& this_
-)
-{
-    return this_->d_ptr;
-}
-
 bool
 sb::connect
 (

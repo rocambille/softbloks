@@ -64,19 +64,16 @@ public:
         AbstractData* q_ptr_
     );
 
+    template<typename T>
     static
-    Private*
+    auto
     from
     (
-        const AbstractData* this_
-    );
-
-    static
-    Private*
-    from
-    (
-        const SharedData& this_
-    );
+        T&& this_
+    )
+    {
+        return this_->AbstractData::d_ptr;
+    }
 
 public:
 

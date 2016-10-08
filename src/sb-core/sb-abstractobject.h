@@ -130,15 +130,6 @@ public:
 
     class Private;
 
-    // deletion of copy-constructor. copy-constructor for a derived class
-    // won't work unless it is explicitly defined and it doesn't call this
-    // constructor: by default, copy is disabled
-    AbstractObject
-    (
-        const AbstractObject& other_
-    )
-    = delete;
-
     /// Constructs a Softbloks object.
     AbstractObject
     (
@@ -149,16 +140,6 @@ public:
     ~AbstractObject
     (
     );
-
-    // deletion of operator=. operator= for a derived class won't work unless
-    // it is explicitly defined and it doesn't call this operator: by default,
-    // copy is disabled
-    AbstractObject&
-    operator=
-    (
-        const AbstractObject& other_
-    )
-    = delete;
 
     virtual
     void
@@ -227,8 +208,8 @@ public:
     {
         AbstractObject::init(
             this_,
-            sb::get_type_names<T>(),
-            sb::get_properties<T>()
+            sb::get_all_type_names<T>(),
+            sb::get_all_properties<T>()
         );
     }
     /// \endcond
@@ -292,15 +273,15 @@ private:
 
 };
 
-SB_META(get_type_names, get_type_name)
-SB_META(get_properties, get_properties)
+SB_META(get_all_type_names, get_type_name)
+SB_META(get_all_properties, get_properties)
 
 /// Constant value representing the format of a valid object (inheriting
 /// AbstractObject).
 const ObjectFormat
 ANY_OBJECT_FORMAT = {
-    get_type_names<AbstractObject>(),
-    get_properties<AbstractObject>()
+    get_all_type_names<AbstractObject>(),
+    get_all_properties<AbstractObject>()
 };
 
 /// Alias for a managed object with shared ownership.
@@ -414,31 +395,29 @@ register_object
         (
         )
         {
-            Unique<T> instance = Unique<T>(
+            Unique<T> instance(
                 new T,
                 []
                 (
                     AbstractObject* ptr_
                 )
                 {
-                    T::template on_destruction<T>(ptr_);
-
-                    delete ptr_;
+                    auto t_ptr = static_cast<T*>(ptr_);
+                    T::template on_destruction<T>(t_ptr);
+                    delete t_ptr;
                 }
             );
 
             T::template on_creation<T>(instance.get());
 
-            return static_move_cast<AbstractObject>(
-                std::move(instance)
-            );
+            return instance;
         }
     );
 
     return AbstractObject::register_object(
         {
-            get_type_names<T>(),
-            get_properties<T>()
+            get_all_type_names<T>(),
+            get_all_properties<T>()
         },
         factory
     );

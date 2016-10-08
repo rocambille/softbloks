@@ -136,16 +136,43 @@ public:
             name_,
             AccessRights::NONE
         },
-        gettor{Caller<Object, Value>{get_t<Object, Value>{gettor_}}},
-        settor{Caller<Object, Value>{set_t<Object, Value>{settor_}}}
+        gettor{
+            [gettor_](const Base& object_)
+            {
+                using object_type = typename gettor_traits<decltype(gettor_)>::object_type;
+                using value_type = typename gettor_traits<decltype(gettor_)>::value_type;
+
+                static get_t<object_type, value_type> get{gettor_};
+
+                return Any{
+                    get(
+                        static_cast<const object_type&>(object_)
+                    )
+                };
+            }
+        },
+        settor{
+            [settor_](Base& object_, const Any& value_)
+            {
+                using object_type = typename settor_traits<decltype(settor_)>::object_type;
+                using value_type = typename settor_traits<decltype(settor_)>::value_type;
+
+                static set_t<object_type, value_type> set{settor_};
+
+                set(
+                    static_cast<object_type&>(object_),
+                    any_cast<value_type>(value_)
+                );
+            }
+        }
     {
         if(gettor_)
         {
-            bitmask(this->access_rights).set(AccessRights::READ);
+            this->access_rights->*set(AccessRights::READ);
         }
         if(settor_)
         {
-            bitmask(this->access_rights).set(AccessRights::WRITE);
+            this->access_rights->*set(AccessRights::WRITE);
         }
     }
 
@@ -203,62 +230,6 @@ public:
 
 private:
 
-    template<typename Object, typename Value>
-    struct Caller
-    {
-
-        get_t<Object, Value>
-        gettor;
-
-        set_t<Object, Value>
-        settor;
-
-        Caller
-        (
-            get_t<Object, Value> gettor_
-        ):
-            gettor{gettor_}
-        {
-        }
-
-        Caller
-        (
-            set_t<Object, Value> settor_
-        ):
-            settor{settor_}
-        {
-        }
-
-        Any
-        operator()
-        (
-            const Base& object_
-        )
-        {
-            return Any{
-                this->gettor(
-                    static_cast<const Object&>(object_)
-                )
-            };
-        }
-
-        void
-        operator()
-        (
-            Base& object_,
-            const Any& value_
-        )
-        {
-            this->settor(
-                static_cast<Object&>(object_),
-                any_cast<Value>(value_)
-            );
-        }
-
-    };
-
-private:
-
     get_t<Base, Any>
     gettor;
 
@@ -284,28 +255,6 @@ private:
 
 };
 
-template<typename T, typename F>
-auto
-operator->*
-(
-    T* t_,
-    F f_
-) -> std::enable_if_t<std::is_void<decltype(f_(*t_))>::value>
-{
-    f_(*t_);
-}
-
-template<typename T, typename F>
-auto
-operator->*
-(
-    T* t_,
-    F f_
-) -> std::enable_if_t<!std::is_void<decltype(f_(*t_))>::value, decltype(f_(*t_))>
-{
-    return f_(*t_);
-}
-
 template<typename U, typename T>
 get_t<T, U>
 get
@@ -314,11 +263,9 @@ get
 )
 {
     if(
-        !bitmask(
-            p_.access_rights
-        ).is_set(
+        !(p_.access_rights->*is_set(
             AccessRights::READ
-        )
+        ))
     )
     {
         throw std::invalid_argument(
@@ -341,16 +288,14 @@ set
 )
 {
     if(
-        !bitmask(
-            p_.access_rights
-        ).is_set(
+        !(p_.access_rights->*is_set(
             AccessRights::WRITE
-        )
+        ))
     )
     {
         throw std::invalid_argument(
             std::string() +
-            "sb::get: " +
+            "sb::set: " +
             "calling on property " +
             p_.name +
             " which has no write access"
